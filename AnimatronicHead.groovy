@@ -23,6 +23,7 @@ ArrayList<CSG> makeHead(){
                         )
 	HashMap<String,Object> jawServoConfig = servoConfig.get(jawServoName)
 	double servoHeightFromMechPlate = jawServoConfig.get("servoThinDimentionThickness")/2
+	double servoJawMountPlateOffset = jawServoConfig.get("tipOfShaftToBottomOfFlange")
 	
 	CSG jawServo = (CSG)ScriptingEngine
 	                    .gitScriptRun(
@@ -30,12 +31,14 @@ ArrayList<CSG> makeHead(){
 	                              "servo.groovy" , // file to load
 	                              [jawServoName]
                         )
+                        .toZMax()
                         .roty(90)
                         .rotz(90)
                         .movez(	jawHeight.getMM() 
                        		 	+thickness.getMM()
                        		 	+servoHeightFromMechPlate
                         )
+                        .movey(jawAttachOffset+thickness.getMM()/2)
                         
 	CSG smallServo = (CSG)ScriptingEngine
 	                    .gitScriptRun(
@@ -75,14 +78,15 @@ ArrayList<CSG> makeHead(){
 			JawSideWidth.getMM(),
 			thickness.getMM(),
 			jawHeight.getMM()+thickness.getMM()
+			+servoHeightFromMechPlate
 			).toCSG()
-			.movez(jawHeight.getMM()/2 +thickness.getMM()/2 )
+			.toZMin()
 			.union(new Cylinder(	JawSideWidth.getMM()/2,
 								JawSideWidth.getMM()/2,
 								thickness.getMM(),(int)30).toCSG()
 					.movez(-thickness.getMM()/2)
 					.rotx(90)
-					.movez(jawHeight.getMM() +thickness.getMM() )
+					.movez(jawHeight.getMM() +thickness.getMM()+servoHeightFromMechPlate )
 							)
 
 				
@@ -91,7 +95,7 @@ ArrayList<CSG> makeHead(){
 	CSG RightSideJaw =sideJaw
 			.movey(-jawAttachOffset) 
 
-	mechPlate = mechPlate.difference(LeftSideJaw.scalex(1.5),RightSideJaw.scalex(1.5))
+	mechPlate = mechPlate.difference(LeftSideJaw.scalex(1.8),RightSideJaw.scalex(1.8))
 	bottomJaw = bottomJaw.difference(LeftSideJaw,RightSideJaw)
 		
 	def returnValues = 	[mechPlate,bottomJaw,LeftSideJaw,RightSideJaw,jawServo,smallServo]
