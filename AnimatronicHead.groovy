@@ -9,19 +9,33 @@ ArrayList<CSG> makeHead(){
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
+
+	String jawServoName = "standard"
+	
 	double jawAttachOffset =  (headDiameter.getMM()/2
 				-thickness.getMM()/2 
 				-thickness.getMM())
-				
+	HashMap<String,Object> servoConfig =(HashMap<String,Object>) ScriptingEngine
+	                    .gitScriptRun(
+                                "https://github.com/madhephaestus/Hardware-Dimensions.git", // git location of the library
+	                              "json/hobbyServo.json" , // file to load
+	                              null
+                        )
+	HashMap<String,Object> jawServoConfig = servoConfig.get(jawServoName)
+	double servoHeightFromMechPlate = jawServoConfig.get("servoThinDimentionThickness")/2
+	
 	CSG jawServo = (CSG)ScriptingEngine
 	                    .gitScriptRun(
                                 "https://gist.github.com/3f9fef17b23acfadf3f7.git", // git location of the library
 	                              "servo.groovy" , // file to load
-	                              ["hv6214mg"]
+	                              [jawServoName]
                         )
                         .roty(90)
                         .rotz(90)
-                        .movez(jawHeight.getMM())
+                        .movez(	jawHeight.getMM() 
+                       		 	+thickness.getMM()
+                       		 	+servoHeightFromMechPlate
+                        )
                         
 	CSG smallServo = (CSG)ScriptingEngine
 	                    .gitScriptRun(
@@ -70,7 +84,7 @@ ArrayList<CSG> makeHead(){
 					.rotx(90)
 					.movez(jawHeight.getMM() +thickness.getMM() )
 							)
-	
+
 				
 	CSG LeftSideJaw =sideJaw
 			.movey(jawAttachOffset) 
