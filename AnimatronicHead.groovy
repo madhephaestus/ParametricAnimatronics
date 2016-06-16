@@ -32,8 +32,20 @@ ArrayList<CSG> makeHead(){
 	
 	mechPlate=mechPlate 
 		.movez(jawHeight.getMM())
+
+	CSG sideJaw = new Cube(
+			JawSideWidth.getMM(),
+			thickness.getMM(),
+			jawHeight.getMM()+thickness.getMM()
+			).toCSG()
+			.movez(jawHeight.getMM()/2 +thickness.getMM()/2 )
+	CSG LeftSideJaw =sideJaw
+			.movey(
+				headDiameter.getMM()/2
+			) 
+	
 		
-	def returnValues = 	[mechPlate,bottomJaw]
+	def returnValues = 	[mechPlate,bottomJaw,LeftSideJaw]
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
