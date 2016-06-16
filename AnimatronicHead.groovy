@@ -39,6 +39,7 @@ ArrayList<CSG> makeHead(){
                        		 	+servoHeightFromMechPlate
                         )
                         .movey(jawAttachOffset+thickness.getMM()/2)
+                        .setColor(javafx.scene.paint.Color.CYAN)
                         
 	CSG smallServo = (CSG)ScriptingEngine
 	                    .gitScriptRun(
@@ -92,6 +93,7 @@ ArrayList<CSG> makeHead(){
 				
 	CSG LeftSideJaw =sideJaw
 			.movey(jawAttachOffset) 
+			.difference(jawServo)
 	CSG RightSideJaw =sideJaw
 			.movey(-jawAttachOffset) 
 
