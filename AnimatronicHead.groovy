@@ -32,13 +32,18 @@ ArrayList<CSG> makeHead(){
 	
 	mechPlate=mechPlate 
 		.movez(jawHeight.getMM())
+		
+	def returnValues = 	[mechPlate,bottomJaw]
+	for (int i=0;i<returnValues.size();i++){
+		int index = i
+		returnValues[i] = returnValues[i]
 		.setParameter(thickness)
 		.setParameter(headDiameter)
 		.setParameter(snoutLen)
 		.setParameter(jawHeight)
-		.setRegenerate({ makeHead().get(0)})
-		
-	return [mechPlate,bottomJaw]
+		.setRegenerate({ makeHead().get(index)})
+	}
+	return returnValues
 }
 CSGDatabase.clear()//set up the database to force only the default values in			
 return makeHead();
