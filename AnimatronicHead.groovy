@@ -1,5 +1,5 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
-
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 CSG tSlotTabs(){
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
@@ -21,13 +21,18 @@ CSG tSlotTabsWithHole(){
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	
 	return tSlotTabs()
-			.union(
-				new Cube( thickness,
-			boltDiam,
-			thickness)
-			.toCSG()
+			.union(new Cylinder(
+				boltDiam.getMM()/2,
+				boltDiam.getMM()/2,
+				thickness.getMM(),
+				(int)15).toCSG()
 			.toZMin())
 }
+
+CSG tSlotKeepAway(){
+	return tSlotTabs().hull()
+}
+
 
 CSG tSlotNutAssembly(){
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
@@ -45,9 +50,70 @@ CSG tSlotNutAssembly(){
 			.toCSG()
 			.toZMin()
 			.movez(thickness.getMM()*2)
-	return bolt.union(nut)
-	
+	return bolt.union(nut)		
+}
+
+CSG tSlotPunch(CSG allignedIncoming){
+	return allignedIncoming
+			.difference(tSlotKeepAway(),tSlotNutAssembly())
+			.union(tSlotTabs())
 			
+	
+}
+
+ArrayList <CSG> generateServoBracket(String servoName){
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+	HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",servoName)
+	double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
+	double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
+	double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
+	double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
+	double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
+	double leftOffset = servoCentering+thickness.getMM()*1.5+boltDiam.getMM()
+	double rightOffset = servoWidth-leftOffset+thickness.getMM()*2+boltDiam.getMM()
+	
+	CSG jawServo = Vitamins.get("hobbyServo",servoName)
+                        .toZMax()
+                        .roty(90)
+                        .rotz(90)
+     CSG bracket =  new Cube(servoWidth+thickness.getMM()*6+boltDiam.getMM()*4,
+						thickness.getMM(),
+						servoHeightFromMechPlate*2+thickness.getMM()
+						).toCSG()
+						.toZMin()
+						.toXMax()
+						.movex(servoCentering+thickness.getMM()*4+boltDiam.getMM()*2)	
+						.movez(thickness.getMM())
+	bracket=tSlotPunch(bracket
+			.movex(rightOffset)
+			.rotz(90)
+			).rotz(-90).movex(-rightOffset)
+	bracket=tSlotPunch(bracket
+			.movex(-leftOffset)
+			.rotz(90)
+			).rotz(-90).movex(leftOffset)
+	CSG bracketWithHoles = bracket
+						.movex(-leftOffset)
+						.rotz(90)
+						.union( tSlotTabsWithHole())
+						.rotz(-90)
+						.movex(leftOffset)
+	bracketWithHoles = bracketWithHoles
+						.movex(rightOffset)
+						.rotz(90)
+						.union( tSlotTabsWithHole())
+						.rotz(-90)
+						.movex(-rightOffset)
+	def bracketParts = [bracket,bracketWithHoles] .collect{
+   		it.movez(-servoHeightFromMechPlate) 
+			.toYMax()
+			.movey(-flangeMountOffset)
+			.movez(-thickness.getMM())
+			.difference(jawServo)                   
+   	}
+	//bracketParts.add(jawServo)	            
+   	return bracketParts
 }
 
 ArrayList<CSG> makeHead(){
@@ -61,44 +127,30 @@ ArrayList<CSG> makeHead(){
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
 
-	String jawServoName = "standard"
+	String jawServoName = "towerProMG91"
 	
 	double jawAttachOffset =  (headDiameter.getMM()/2
 				-thickness.getMM()/2 
 				-thickness.getMM())
-	HashMap<String,Object> servoConfig =(HashMap<String,Object>) ScriptingEngine
-	                    .gitScriptRun(
-                                "https://github.com/madhephaestus/Hardware-Dimensions.git", // git location of the library
-	                              "json/hobbyServo.json" , // file to load
-	                              null
-                        )
-	HashMap<String,Object> jawServoConfig = servoConfig.get(jawServoName)
-	double servoHeightFromMechPlate = jawServoConfig.get("servoThinDimentionThickness")/2
-	double servoJawMountPlateOffset = jawServoConfig.get("tipOfShaftToBottomOfFlange")
+     HashMap<String, Object> shaftmap = Vitamins.getConfiguration("hobbyServoHorn","standardMicro1")
+	double hornOffset = shaftmap.get("hornThickness")
+	HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",jawServoName)
+	double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
+	double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
+	double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
+	double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
+	double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
 	
-	CSG jawServo = (CSG)ScriptingEngine
-	                    .gitScriptRun(
-                                "https://gist.github.com/3f9fef17b23acfadf3f7.git", // git location of the library
-	                              "servo.groovy" , // file to load
-	                              [jawServoName]
-                        )
+	CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
+	CSG jawServo = Vitamins.get("hobbyServo",jawServoName)
                         .toZMax()
                         .roty(90)
                         .rotz(90)
-                        .movez(	jawHeight.getMM() 
-                       		 	+thickness.getMM()
-                       		 	+servoHeightFromMechPlate
-                        )
-                        .movey(jawAttachOffset+thickness.getMM()/2)
-                        .setColor(javafx.scene.paint.Color.CYAN)
+
                         
-	CSG smallServo = (CSG)ScriptingEngine
-	                    .gitScriptRun(
-                                "https://gist.github.com/3f9fef17b23acfadf3f7.git", // git location of the library
-	                              "servo.groovy" , // file to load
-	                              ["towerProMG91"]
-                        )
                         
+                        
+	CSG smallServo = Vitamins.get("hobbyServo","towerProMG91")
 
 	CSG baseHead =new Cylinder(	headDiameter.getMM()/2,
 							headDiameter.getMM()/2,
@@ -154,18 +206,96 @@ ArrayList<CSG> makeHead(){
 					.rotx(90)
 					.movez(jawHeight.getMM() +thickness.getMM()+servoHeightFromMechPlate )
 							)
+	sideJaw=	tSlotPunch(sideJaw.rotz(90)).rotz(-90)
 
-				
+
+	horn=	horn
+			.roty(90)
+			.rotz(-90)
+			.movey(-thickness.getMM()/2)
+	def servoBrackets  =generateServoBracket(jawServoName)
+			/*
+	CSG []servoBrackets = new Cube(servoWidth+thickness.getMM()*3,
+						thickness.getMM(),
+						servoHeightFromMechPlate*2+thickness.getMM()
+						).toCSG()
+						.toZMin()
+						.toYMax()
+						.toXMax()
+						.movex(servoCentering+thickness.getMM()*1.5)	
+						.movey(-flangeMountOffset)
+						.movez(-servoHeightFromMechPlate)
+						*/
+	
+	def allJawServoParts = [horn,jawServo,servoBrackets.get(0),servoBrackets.get(1)].collect { 
+		it.movez(	jawHeight.getMM() 
+                       		 	+thickness.getMM()
+                       		 	+servoHeightFromMechPlate
+                        )
+                        .movey(jawAttachOffset+thickness.getMM()/2)
+					.setColor(javafx.scene.paint.Color.CYAN)
+		} 
+	//CSG servoBracket = jawServoParts[2].setColor(javafx.scene.paint.Color.WHITE)
 	CSG LeftSideJaw =sideJaw
 			.movey(jawAttachOffset) 
-			.difference(jawServo)
+			.difference(
+				allJawServoParts
+			)
 	CSG RightSideJaw =sideJaw
 			.movey(-jawAttachOffset) 
+			
 
-	mechPlate = mechPlate.difference(LeftSideJaw.scalex(1.8),RightSideJaw.scalex(1.8))
-	bottomJaw = bottomJaw.difference(LeftSideJaw,RightSideJaw)
-		
-	def returnValues = 	[mechPlate,bottomJaw,LeftSideJaw,RightSideJaw,jawServo,tSlotNutAssembly()]
+	mechPlate = mechPlate
+				.difference(LeftSideJaw.scalex(1.8),RightSideJaw.scalex(1.8),)// scale forrro for the jaw to move
+				.difference(allJawServoParts)
+	bottomJaw = bottomJaw.difference(
+						LeftSideJaw,
+						RightSideJaw,
+						tSlotTabsWithHole()
+							.rotz(90)
+							.movey(jawAttachOffset), 
+						tSlotTabsWithHole()
+							.rotz(90)
+							.movey(-jawAttachOffset) 	
+						)
+	CSG jawServoBracket = allJawServoParts.get(2)
+
+	jawServoBracket.setManufactuing({incoming ->
+		return 	incoming
+					.rotx(90)
+					.rotz (90)
+					.toZMin()
+					.toXMin()
+					.movex(snoutLen.getMM()+JawSideWidth.getMM()+2)
+					
+	})
+	
+	RightSideJaw.setManufactuing({incoming ->
+		return 	incoming
+					.rotx(90)
+					.toZMin()
+					.toXMin()
+					.movex(snoutLen.getMM()+1)
+					
+	})
+	LeftSideJaw.setManufactuing({incoming ->
+		return 	incoming
+					.rotx(-90)
+					.toZMin()
+					.movey(-1)
+					.toXMin()
+					.movex(snoutLen.getMM()+1)
+					
+	})
+	mechPlate.setManufactuing({incoming ->
+		return 	incoming
+					.toZMin()
+					.movey(headDiameter.getMM())
+	})
+	
+	
+	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket]
+
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
@@ -180,5 +310,6 @@ ArrayList<CSG> makeHead(){
 	}
 	return returnValues
 }
-CSGDatabase.clear()//set up the database to force only the default values in			
-return makeHead();
+CSGDatabase.clear()//set up the database to force only the default values in	
+//return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file		
+return makeHead()	.collect { it.prepForManufacturing() }
