@@ -170,8 +170,25 @@ ArrayList <CSG> generateUpperHead(){
 							.toXMax()))
 			.rotx(90)	
 			.movey( -thickness.getMM()/2)	
-			.movez(thickness.getMM()+jawHeight.getMM())
-	def parts = [upperHead]
+			.movez(thickness.getMM())
+	double moutOffset = headDiameter.getMM()/3
+	upperHead = upperHead.rotz(90)
+	upperHead = tSlotPunch(	upperHead				
+	.movey(-moutOffset)
+	)
+	.movey(moutOffset)	
+	upperHead = tSlotPunch(	upperHead				
+	.movey(moutOffset)
+	)
+	.movey(-moutOffset)	
+
+	upperHead = upperHead.rotz(-90)
+	CSG 	upperHeadWithHoles = upperHead.union(tSlotTabsWithHole().rotz(90).movex(-moutOffset)	)
+	.union(tSlotTabsWithHole().rotz(90).movex(moutOffset)	)
+			
+	def parts = [upperHead,upperHeadWithHoles].collect{
+		it.movez(jawHeight.getMM())
+	}
 
 	return parts
 }
@@ -321,10 +338,13 @@ ArrayList<CSG> makeHead(){
 				                        .movey(-jawAttachOffset+thickness.getMM()/2)
 									.setColor(javafx.scene.paint.Color.BLUE)
 							}
+	def upperHead = generateUpperHead()
+						
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
 				.difference(allJawServoParts)
 				.difference(jawHingeParts)
+				.difference(upperHead)
 	bottomJaw = bottomJaw.difference(
 						LeftSideJaw,
 						RightSideJaw,
@@ -335,10 +355,21 @@ ArrayList<CSG> makeHead(){
 							.rotz(90)
 							.movey(-jawAttachOffset) 	
 						)
-	def upperHead = generateUpperHead()
-						
+	
+	CSG upperHeadPart = upperHead.get(0)					
 	CSG jawServoBracket = allJawServoParts.get(2)
 	CSG jawHingePin = jawHingeParts.get(0)
+	
+	upperHeadPart.setManufactuing({incoming ->
+		return 	incoming
+					
+					.toZMin()
+					.rotx(-90)
+					.toZMin()
+					.toYMax()
+					.movey(- headDiameter.getMM()/2-1)
+					
+	})
 	jawHingePin.setManufactuing({incoming ->
 		return 	incoming
 					.roty(90)
@@ -383,7 +414,7 @@ ArrayList<CSG> makeHead(){
 	})
 	
 	
-	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin,upperHead.get(0)]
+	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin,upperHeadPart]
 	
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
