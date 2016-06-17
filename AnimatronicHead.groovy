@@ -116,6 +116,34 @@ ArrayList <CSG> generateServoBracket(String servoName){
    	return bracketParts
 }
 
+ArrayList <CSG> generateServoHinge(String servoName){
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+	HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",servoName)
+	double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
+	double widthOfTab = thickness.getMM()*4+boltDiam.getMM()
+	CSG pinAssembly = new Cube(	thickness.getMM(),
+							widthOfTab,
+							servoHeightFromMechPlate+thickness.getMM()
+	
+		).toCSG()
+		.toZMin()
+		.movez(thickness.getMM())
+		
+	pinAssembly =tSlotPunch(	pinAssembly)
+				.toYMin()
+				.union(new Cube(thickness.getMM()).toCSG()
+						.movez(servoHeightFromMechPlate+thickness.getMM())
+						.movey(-thickness.getMM()/2)
+						)
+	def parts = [pinAssembly,pinAssembly
+						.union(tSlotTabsWithHole()
+							.movey(widthOfTab/2)
+						)]
+
+	return parts
+}
+
 ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
@@ -140,7 +168,8 @@ ArrayList<CSG> makeHead(){
 	double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
 	double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
 	double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
-	
+	double jawHingeSlotScale = 1.9
+	double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 	CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
 	CSG jawServo = Vitamins.get("hobbyServo",jawServoName)
                         .toZMax()
@@ -242,13 +271,27 @@ ArrayList<CSG> makeHead(){
 			.difference(
 				allJawServoParts
 			)
+	
 	CSG RightSideJaw =sideJaw
+			.difference(new Cylinder(thicknessHoleRadius,thicknessHoleRadius,thickness.getMM()*2,(int)30).toCSG()
+						.movez(-thickness.getMM())
+						.rotx(-90)
+						.movez(jawHeight.getMM()+thickness.getMM()+servoHeightFromMechPlate)
+						)
+			
 			.movey(-jawAttachOffset) 
 			
-
+			
+	def jawHingeParts =generateServoHinge(jawServoName).collect { 
+							it.movez(	jawHeight.getMM() 
+		                       		 	)
+				                        .movey(-jawAttachOffset+thickness.getMM()/2)
+									.setColor(javafx.scene.paint.Color.BLUE)
+							}
 	mechPlate = mechPlate
-				.difference(LeftSideJaw.scalex(1.8),RightSideJaw.scalex(1.8),)// scale forrro for the jaw to move
+				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
 				.difference(allJawServoParts)
+				.difference(jawHingeParts)
 	bottomJaw = bottomJaw.difference(
 						LeftSideJaw,
 						RightSideJaw,
@@ -260,7 +303,17 @@ ArrayList<CSG> makeHead(){
 							.movey(-jawAttachOffset) 	
 						)
 	CSG jawServoBracket = allJawServoParts.get(2)
-
+	CSG jawHingePin = jawHingeParts.get(0)
+	jawHingePin.setManufactuing({incoming ->
+		return 	incoming
+					.roty(90)
+					.rotz (90)
+					.toZMin()
+					.toXMin()
+					.movey(-headDiameter.getMM()/2)
+					
+	})
+	
 	jawServoBracket.setManufactuing({incoming ->
 		return 	incoming
 					.rotx(90)
@@ -295,8 +348,8 @@ ArrayList<CSG> makeHead(){
 	})
 	
 	
-	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket]
-
+	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin]
+	
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
@@ -311,6 +364,6 @@ ArrayList<CSG> makeHead(){
 	}
 	return returnValues
 }
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file		
-return makeHead()	
+return makeHead()
