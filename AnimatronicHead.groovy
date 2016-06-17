@@ -149,6 +149,7 @@ ArrayList <CSG> generateUpperHead(){
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
+	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
 	CSG upperHead = new Cylinder(	headDiameter.getMM()/2,
 							headDiameter.getMM()/2,
 							thickness.getMM(),
@@ -167,7 +168,9 @@ ArrayList <CSG> generateUpperHead(){
 							.toCSG()
 							.toYMax()
 							.toXMax()))
-						
+			.rotx(90)	
+			.movey( -thickness.getMM()/2)	
+			.movez(thickness.getMM()+jawHeight.getMM())
 	def parts = [upperHead]
 
 	return parts
