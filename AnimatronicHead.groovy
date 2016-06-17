@@ -170,10 +170,11 @@ ArrayList<CSG> makeHead(){
 			)
 							
 	CSG bottomJaw = mechPlate.difference(
-		mechPlate
-		.scalex(-0.8)
-		.scaley(-0.8)
-		.scalez(5),
+		new Cylinder(	headDiameter.getMM()/2 - thickness.getMM()*3,
+					headDiameter.getMM()/2- thickness.getMM()*3,
+					thickness.getMM(),(int)30).toCSG()
+						.scalex(2*snoutLen.getMM()/headDiameter.getMM())
+							,
 		new Cube(
 			snoutLen.getMM()+JawSideWidth.getMM(),
 			headDiameter.getMM(),
@@ -232,7 +233,7 @@ ArrayList<CSG> makeHead(){
                        		 	+thickness.getMM()
                        		 	+servoHeightFromMechPlate
                         )
-                        .movey(jawAttachOffset+thickness.getMM()/2)
+                        .movey(jawAttachOffset-thickness.getMM()/2+hornOffset/2)
 					.setColor(javafx.scene.paint.Color.CYAN)
 		} 
 	//CSG servoBracket = jawServoParts[2].setColor(javafx.scene.paint.Color.WHITE)
@@ -266,7 +267,7 @@ ArrayList<CSG> makeHead(){
 					.rotz (90)
 					.toZMin()
 					.toXMin()
-					.movex(snoutLen.getMM()+JawSideWidth.getMM()+2)
+					.movex(snoutLen.getMM()+JawSideWidth.getMM()+6)
 					
 	})
 	
@@ -310,6 +311,6 @@ ArrayList<CSG> makeHead(){
 	}
 	return returnValues
 }
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file		
-return makeHead()	.collect { it.prepForManufacturing() }
+return makeHead()	
