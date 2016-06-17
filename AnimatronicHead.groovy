@@ -310,7 +310,7 @@ ArrayList<CSG> makeHead(){
 					.rotz (90)
 					.toZMin()
 					.toXMin()
-					.movey(-headDiameter.getMM()/2)
+					.movey(-jawHeight.getMM())
 					
 	})
 	
@@ -364,6 +364,10 @@ ArrayList<CSG> makeHead(){
 	}
 	return returnValues
 }
-CSGDatabase.clear()//set up the database to force only the default values in	
-//return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file		
-return makeHead()
+//CSGDatabase.clear()//set up the database to force only the default values in	
+//return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
+def allParts = 	makeHead().collect { it.prepForManufacturing() } 	
+CSG cutSheet = allParts.get(0).union(allParts)
+def allPartsPlusCut =makeHead()
+allPartsPlusCut.add(cutSheet)
+return allPartsPlusCut
