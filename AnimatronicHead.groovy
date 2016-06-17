@@ -144,6 +144,35 @@ ArrayList <CSG> generateServoHinge(String servoName){
 	return parts
 }
 
+ArrayList <CSG> generateUpperHead(){
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
+	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
+	CSG upperHead = new Cylinder(	headDiameter.getMM()/2,
+							headDiameter.getMM()/2,
+							thickness.getMM(),
+							(int)30).toCSG()
+							.difference(new Cube(headDiameter.getMM()+snoutLen.getMM())
+							.toCSG()
+							.toYMin()
+							
+							)
+	upperHead=upperHead
+		.union( 
+			upperHead.union(upperHead.movey(-upperHeadDiam.getMM())).hull(),
+			upperHead
+			.scalex(2*snoutLen.getMM()/headDiameter.getMM())
+			.difference(new Cube(upperHeadDiam.getMM()+snoutLen.getMM())
+							.toCSG()
+							.toYMax()
+							.toXMax()))
+						
+	def parts = [upperHead]
+
+	return parts
+}
+
 ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
@@ -154,6 +183,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
+	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
 
 	String jawServoName = "towerProMG91"
 	
@@ -302,6 +332,8 @@ ArrayList<CSG> makeHead(){
 							.rotz(90)
 							.movey(-jawAttachOffset) 	
 						)
+	def upperHead = generateUpperHead()
+						
 	CSG jawServoBracket = allJawServoParts.get(2)
 	CSG jawHingePin = jawHingeParts.get(0)
 	jawHingePin.setManufactuing({incoming ->
@@ -348,7 +380,7 @@ ArrayList<CSG> makeHead(){
 	})
 	
 	
-	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin]
+	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin,upperHead.get(0)]
 	
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
@@ -360,11 +392,12 @@ ArrayList<CSG> makeHead(){
 		.setParameter(boltDiam)
 		.setParameter(nutDiam)
 		.setParameter(nutThick)
+		.setParameter(upperHeadDiam)
 		.setRegenerate({ makeHead().get(index)})
 	}
 	return returnValues
 }
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 def allParts = 	makeHead().collect { it.prepForManufacturing() } 	
 CSG cutSheet = allParts.get(0).union(allParts)
