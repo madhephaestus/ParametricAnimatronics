@@ -437,4 +437,5 @@ def allParts = 	makeHead().collect { it.prepForManufacturing() }
 CSG cutSheet = allParts.get(0).union(allParts)
 def allPartsPlusCut =makeHead()
 allPartsPlusCut.add(cutSheet)
+cutSheet.setRegenerate({ makeHead().get(allParts.size()-1)})
 return allPartsPlusCut
