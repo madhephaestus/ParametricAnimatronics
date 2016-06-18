@@ -415,7 +415,9 @@ ArrayList<CSG> makeHead(){
 	
 	
 	def returnValues = 	[mechPlate,bottomJaw,RightSideJaw,LeftSideJaw,jawServoBracket,jawHingePin,upperHeadPart]
-	
+	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+	CSG cutSheet = allParts.get(0).union(allParts)
+	returnValues.add(cutSheet)
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
@@ -429,13 +431,9 @@ ArrayList<CSG> makeHead(){
 		.setParameter(upperHeadDiam)
 		.setRegenerate({ makeHead().get(index)})
 	}
+	
 	return returnValues
 }
 //CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
-def allParts = 	makeHead().collect { it.prepForManufacturing() } 	
-CSG cutSheet = allParts.get(0).union(allParts)
-def allPartsPlusCut =makeHead()
-allPartsPlusCut.add(cutSheet)
-cutSheet.setRegenerate({ makeHead().get(allParts.size()-1)})
-return allPartsPlusCut
+return makeHead()
