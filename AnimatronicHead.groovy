@@ -17,7 +17,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",20,[headDiameter.getMM()/2,10])
-	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",20,[headDiameter.getMM()/2,10])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",30,[headDiameter.getMM()/2,10])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
 	
 	String jawServoName = "towerProMG91"
@@ -154,10 +154,22 @@ ArrayList<CSG> makeHead(){
 									.setColor(javafx.scene.paint.Color.BLUE)
 							}
 	def upperHead = generateUpperHead()
+	/**
+	 * Setting up the eyes
+	 */
+	double eyeHeight = jawHeight.getMM()+thickness.getMM()
+	if(leyeDiam.getMM()>reyeDiam.getMM()){
+		eyeHeight+=leyeDiam.getMM()/2
+	}else
+		eyeHeight+=reyeDiam.getMM()/2
 	CSG leftEye = getEye(leyeDiam.getMM())
 				.movey(eyeCenter.getMM()/2)
+				.movex(headDiameter.getMM()/2)
+				.movez(eyeHeight)
 	CSG rightEye = getEye(reyeDiam.getMM())	
 				.movey(-eyeCenter.getMM()/2)
+				.movex(headDiameter.getMM()/2)
+				.movez(eyeHeight)
 			
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
@@ -455,6 +467,6 @@ ArrayList <CSG> generateUpperHead(){
 	return parts
 }
 
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
