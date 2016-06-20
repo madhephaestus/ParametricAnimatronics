@@ -166,7 +166,7 @@ ArrayList<CSG> makeHead(){
 									.setColor(javafx.scene.paint.Color.BLUE)
 							}
 	//BowlerStudioController.addCsg((ArrayList<CSG>)jawHingeParts)
-	def upperHead = generateUpperHead()
+	def upperHead = generateUpperHead(mechPlate)
 	/**
 	 * Setting up the eyes
 	 */
@@ -680,7 +680,7 @@ ArrayList <CSG> generateServoHinge(String servoName){
 	return parts
 }
 
-ArrayList <CSG> generateUpperHead(){
+ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
@@ -707,12 +707,14 @@ ArrayList <CSG> generateUpperHead(){
 			.rotx(90)	
 			.movey( -thickness.getMM()/2)	
 			.movez(thickness.getMM())
-	double moutOffset = headDiameter.getMM()/3
+	double moutOffset = lowerHead.getMinX()+thickness.getMM()*3
 	upperHead = upperHead.rotz(90)
 	upperHead = tSlotPunch(	upperHead				
-	.movey(-moutOffset)
+	.movey(moutOffset)
 	)
-	.movey(moutOffset)	
+	.movey(-moutOffset)	
+
+	moutOffset = lowerHead.getMaxX()-thickness.getMM()*3
 	upperHead = tSlotPunch(	upperHead				
 	.movey(moutOffset)
 	)
@@ -729,6 +731,6 @@ ArrayList <CSG> generateUpperHead(){
 	return parts
 }
 
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
