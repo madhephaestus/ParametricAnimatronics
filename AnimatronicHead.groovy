@@ -13,6 +13,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",4,[8,2])
+	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[20,5])
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",8.56,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",3,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
@@ -23,6 +24,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 	                              "ballJointBall.groovy" , // file to load
@@ -511,6 +513,7 @@ ArrayList<CSG> makeHead(){
 		.setParameter(ballJointPinSize)
 		.setParameter(centerOfBall)
 		.setParameter(ballJointPinSize)
+		.setParameter(boltLength)
 		.setRegenerate({ makeHead().get(index)})
 		
 		
