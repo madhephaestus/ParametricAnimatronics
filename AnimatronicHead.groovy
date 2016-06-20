@@ -9,7 +9,7 @@ ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",57,[200,50])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
@@ -181,7 +181,7 @@ ArrayList<CSG> makeHead(){
 	}
 	eyeHeight+=minKeepaway
 	double eyePlateHeight = eyeHeight - thickness.getMM()/2
-	double eyeMechWeelPlateHeight = eyePlateHeight+smallServo.getMaxZ()
+	double eyeMechWeelPlateHeight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
 	double eyeStockBoltDistance = boltDiam.getMM()*2+	thickness.getMM()*4		
 	
 	eyeHeight +=ballJointPin.getMM()
@@ -232,9 +232,35 @@ ArrayList<CSG> makeHead(){
 						eyeLinkageLength,
 						eyeLinkageLength,
 						thickness.getMM(),
-						(int)15).toCSG()
+						(int)15).toCSG().difference(bolt)
 						.movez(eyeMechWeelPlateHeight)
-						.setColor(javafx.scene.paint.Color.WHITE)
+	for(int i=0;i<4;i++){
+		eyeMechWheel=eyeMechWheel
+					.difference(
+						bolt.movez(eyeMechWeelPlateHeight)
+							.movex(eyeLinkageLength-boltDiam.getMM())
+							.rotz(90*i)
+							)
+	}
+	CSG eyeMechWheel1 = eyeMechWheel
+						.movey(-eyeCenter.getMM()/2)
+						.movex(eyeLinkageLength)	
+	CSG eyeMechWheel2 = eyeMechWheel
+						.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
+						.movex(-eyeLinkageLength)
+	CSG eyeMechWheel3 = eyeMechWheel
+						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
+						.movex(-eyeLinkageLength)
+	CSG eyeMechWheel4 = eyeMechWheel
+						.movey(eyeCenter.getMM()/2)
+						.movex(eyeLinkageLength)	
+	CSG eyeBoltPan1 =bolt.movez(eyePlateHeight)
+						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
+						.movex(-eyeLinkageLength)
+	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
+						.movey(eyeCenter.getMM()/2)
+						.movex(eyeLinkageLength)
+									
 	// CUt the slot for the eye mec from the upper head			
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
@@ -252,7 +278,7 @@ ArrayList<CSG> makeHead(){
 	eyePlate = eyePlate	.difference(upperHeadPart)
 					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
-					.difference(eyePan,eyeTilt)
+					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2)
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
 				.difference(allJawServoParts)
@@ -346,8 +372,9 @@ ArrayList<CSG> makeHead(){
 					leftBallJoint,
 					rightBallJoint,
 					eyePlate,
-					eyePan,
-					eyeTilt
+					//eyePan,
+					//eyeTilt,
+					eyeMechWheel1,eyeMechWheel2,eyeMechWheel3,eyeMechWheel4
 					]
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 	CSG cutSheet = allParts.get(0).union(allParts)
@@ -575,6 +602,6 @@ ArrayList <CSG> generateUpperHead(){
 	return parts
 }
 
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
