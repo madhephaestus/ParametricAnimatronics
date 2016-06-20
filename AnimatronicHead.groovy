@@ -273,13 +273,8 @@ ArrayList<CSG> makeHead(){
 						eyeLinkageLength+boltDiam.getMM(),
 						eyeLinkageLength+boltDiam.getMM(),
 						thickness.getMM(),
-						(int)15).toCSG().difference(
-							new Cylinder(
-								eyemechWheelHoleDiam.getMM()/2,
-								eyemechWheelHoleDiam.getMM()/2,
-								thickness.getMM(),
-								(int)15).toCSG())
-						.movez(eyeMechWeelPlateHeight)
+						(int)15).toCSG()
+						
 	CSG mechLinkage = new Cylinder(boltDiam.getMM(),
 						boltDiam.getMM(),
 						thickness.getMM(),
@@ -300,21 +295,36 @@ ArrayList<CSG> makeHead(){
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
 					.difference(
-						bolt.movez(eyeMechWeelPlateHeight)
+						bolt
 							.movex(eyeLinkageLength)
 							.rotz(90*i)
 							)
 	}
 	CSG eyeMechWheel1 = eyeMechWheel
+						.difference(
+							new Cylinder(
+								eyemechWheelHoleDiam.getMM()/2,
+								eyemechWheelHoleDiam.getMM()/2,
+								thickness.getMM(),
+								(int)15).toCSG())
 						.movey(-eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)	
 	CSG eyeMechWheel2 = eyeMechWheel
+						.difference(
+							new Cylinder(
+								eyemechWheelHoleDiam.getMM()/2,
+								eyemechWheelHoleDiam.getMM()/2,
+								thickness.getMM(),
+								(int)15).toCSG()
+								)
 						.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
 						.movex(titlServoPlacement)
 	CSG eyeMechWheel3 = eyeMechWheel
+						.difference(bolt)
 						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
 						.movex(titlServoPlacement)
 	CSG eyeMechWheel4 = eyeMechWheel
+						.difference(bolt)
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)	
 	CSG eyeBoltPan1 =bolt.movez(eyePlateHeight)
@@ -324,6 +334,7 @@ ArrayList<CSG> makeHead(){
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)
 	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)	
+				.movez(eyeMechWeelPlateHeight)
 	BowlerStudioController.addCsg(eyeMechWheel)							
 	// CUt the slot for the eye mec from the upper head
 	CSG mechKeepaway=mechLinkage
