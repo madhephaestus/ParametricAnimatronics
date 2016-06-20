@@ -188,7 +188,8 @@ ArrayList<CSG> makeHead(){
 	
 	eyeHeight +=ballJointPin.getMM()
 	double eyeStockThickness = (ballJointPin.getMM()+4)/2
-	double firstEyeBoltDistance = (headDiameter.getMM()/2
+	
+	double firstEyeBoltDistance = (Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
 							-centerOfBall.getMM()
 							+thickness.getMM()
 							)
@@ -204,11 +205,15 @@ ArrayList<CSG> makeHead(){
 					.movex(firstEyeBoltDistance)
 					.union(
 						bolt
-						.movex(secondEyeBoltDistance)	)		
-	CSG eyeStockAttach = new Cube(eyeStockBoltDistance +thickness.getMM()*2,
+						.movex(secondEyeBoltDistance)	)	
+		
+	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
+							-firstEyeBoltDistance
+							,
 							ballJointPin.getMM()+4,
 							eyeStockThickness).toCSG()
-						.movex(-centerOfBall.getMM()-thickness.getMM()/2)
+						.toXMax()
+						.movex(-centerOfBall.getMM()+thickness.getMM()/2)
 						.toZMin()
 	CSG eyestock = ballJoint
 				.rotz(180)
