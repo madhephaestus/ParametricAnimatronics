@@ -363,7 +363,7 @@ ArrayList<CSG> makeHead(){
 					.toZMin()
 					.toXMin()
 					.toYMin()
-					.movey(headDiameter.getMM())
+					.movey(-headDiameter.getMM()*1.3)
 					.movex( headDiameter.getMM()*2/3)
 					
 	})
@@ -373,6 +373,16 @@ ArrayList<CSG> makeHead(){
 					.toXMin()
 					.toYMin()
 					.movey(headDiameter.getMM()-reyeDiam.getMM())
+					.movex( -headDiameter.getMM())
+					
+	})
+	leftBallJoint.setManufactuing({incoming ->
+		return 	incoming.roty(180)
+					.toZMin()
+					.toXMin()
+					.toYMin()
+					.movey(headDiameter.getMM()-reyeDiam.getMM() +1+ballJointPinSize.getMM()*2 )
+					
 					.movex( -headDiameter.getMM())
 					
 	})
