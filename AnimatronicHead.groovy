@@ -512,9 +512,10 @@ ArrayList<CSG> makeHead(){
 		.setParameter(centerOfBall)
 		.setParameter(ballJointPinSize)
 		.setRegenerate({ makeHead().get(index)})
-		BowlerStudioController.addCsg(returnValues[i])	
+		
 		
 	}
+	BowlerStudioController.setCsg(returnValues)	
 	print "Done!\n"
 	return returnValues
 }
@@ -752,6 +753,6 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	return parts
 }
 
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
