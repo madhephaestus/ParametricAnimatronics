@@ -24,6 +24,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	LengthParameter eyemechWheelHoleDiam		= new LengthParameter("Eye Mech WHeel Center Hole Diam",7.25,[8,3])
 	
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
@@ -267,11 +268,17 @@ ArrayList<CSG> makeHead(){
 	CSG upperHeadPart = upperHead.get(0)
 	CSG eyePlate=baseHead
 				.movez(eyePlateHeight)
+				eyemechWheelHoleDiam
 	CSG eyeMechWheel= new Cylinder(
 						eyeLinkageLength+boltDiam.getMM(),
 						eyeLinkageLength+boltDiam.getMM(),
 						thickness.getMM(),
-						(int)15).toCSG().difference(bolt)
+						(int)15).toCSG().difference(
+							new Cylinder(
+								eyemechWheelHoleDiam.getMM()/2,
+								eyemechWheelHoleDiam.getMM()/2,
+								thickness.getMM(),
+								(int)15).toCSG())
 						.movez(eyeMechWeelPlateHeight)
 	CSG mechLinkage = new Cylinder(boltDiam.getMM(),
 						boltDiam.getMM(),
@@ -418,7 +425,7 @@ ArrayList<CSG> makeHead(){
 	mechLinkage.setManufactuing({incoming ->
 		return 	incoming.toZMin()
 					.toXMax()
-					.movex( -headDiameter.getMM()+eyeLinkageLength*4)
+					.movex( -headDiameter.getMM()+eyeLinkageLength*5)
 					.movey(- headDiameter.getMM())
 					
 	})
@@ -523,6 +530,7 @@ ArrayList<CSG> makeHead(){
 		.setParameter(ballJointPinSize)
 		.setParameter(boltLength)
 		.setParameter(eyemechRadius)
+		.setParameter(eyemechWheelHoleDiam)
 		.setRegenerate({ makeHead().get(index)})
 		
 		
