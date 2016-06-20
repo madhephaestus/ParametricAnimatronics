@@ -223,8 +223,31 @@ ArrayList<CSG> makeHead(){
 				.movey(-eyeCenter.getMM()/2)
 				.movex(headDiameter.getMM()/2)
 				.movez(eyeHeight)
-	CSG leftBallJoint =  eyestock.movey(-eyeCenter.getMM()/2)
-	CSG rightBallJoint = eyestock.movey( eyeCenter.getMM()/2)
+	
+	CSG eyeKeepAwayr =new Sphere(reyeDiam.getMM()/2+1)// Spheres radius
+					.toCSG()
+				.movey(-eyeCenter.getMM()/2)		
+				.movex(headDiameter.getMM()/2)
+				.movez(eyePlateHeight-thickness.getMM())
+	eyeKeepAwayr= eyeKeepAwayr.union(eyeKeepAwayr.movez(	thickness.getMM()*2)).hull()
+
+	CSG eyeKeepAwayl =new Sphere(leyeDiam.getMM()/2+1)// Spheres radius
+					.toCSG()
+				.movey(eyeCenter.getMM()/2)		
+				.movex(headDiameter.getMM()/2)
+				.movez(eyePlateHeight-thickness.getMM())
+	eyeKeepAwayl= eyeKeepAwayl.union(eyeKeepAwayl.movez(	thickness.getMM()*2)).hull()
+
+	CSG eyeKeepAway = eyeKeepAwayl.union(eyeKeepAwayr)
+					.difference(new Cube(headDiameter.getMM())
+					.toCSG()
+					.toXMax()
+					.movex(firstEyeBoltDistance+boltDiam.getMM())
+					.movez(eyePlateHeight-thickness.getMM())
+					)
+		
+	CSG leftBallJoint =  eyestock.movey(  eyeCenter.getMM()/2)
+	CSG rightBallJoint = eyestock.movey( -eyeCenter.getMM()/2)
 	CSG upperHeadPart = upperHead.get(0)
 	CSG eyePlate=baseHead
 				.movez(eyePlateHeight)
@@ -234,6 +257,22 @@ ArrayList<CSG> makeHead(){
 						thickness.getMM(),
 						(int)15).toCSG().difference(bolt)
 						.movez(eyeMechWeelPlateHeight)
+	CSG mechLinkage = new Cylinder(boltDiam.getMM(),
+						boltDiam.getMM(),
+						thickness.getMM(),
+						(int)15).toCSG()
+	mechLinkage =mechLinkage
+		.movey(eyeCenter.getMM()/2)
+		.union(mechLinkage.movey(-eyeCenter.getMM()/2))
+		.hull()
+		.difference(bolt.movey(eyeCenter.getMM()/2))
+		.difference(bolt.movey(-eyeCenter.getMM()/2))
+		.movez(eyeMechWeelPlateHeight+thickness.getMM())
+		.movex(-eyeLinkageLength+boltDiam.getMM())
+	CSG mechLinkage2 = mechLinkage.movex(eyeLinkageLength)
+	mechLinkage=mechLinkage.movex(-eyeLinkageLength)
+					.movey(eyeLinkageLength)
+					.union(mechLinkage2)
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
 					.difference(
@@ -260,11 +299,12 @@ ArrayList<CSG> makeHead(){
 	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)
-									
+	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)								
 	// CUt the slot for the eye mec from the upper head			
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
-				.movex(-headDiameter.getMM()/2))	
+				.movex(-headDiameter.getMM()/2))
+				.difference(mechLinkage.union(mechLinkage.movex(eyeLinkageLength)).hull())	
 	CSG eyePan = smallServo
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2)
@@ -278,7 +318,7 @@ ArrayList<CSG> makeHead(){
 	eyePlate = eyePlate	.difference(upperHeadPart)
 					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
-					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2)
+					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
 				.difference(allJawServoParts)
@@ -299,6 +339,38 @@ ArrayList<CSG> makeHead(){
 	CSG jawServoBracket = allJawServoParts.get(2)
 	CSG jawHingePin = jawHingeParts.get(0)
 	eyePlate.setColor(javafx.scene.paint.Color.WHITE)
+	rightEye.setManufactuing({incoming ->
+		return 	incoming.roty(90)
+					.toZMin()
+					.toXMin()
+					.toYMin()
+					.movey(headDiameter.getMM())
+					.movex( -headDiameter.getMM())
+					
+	})
+	rightBallJoint.setManufactuing({incoming ->
+		return 	incoming.roty(180)
+					.toZMin()
+					.toXMin()
+					.toYMin()
+					.movey(headDiameter.getMM()-reyeDiam.getMM())
+					.movex( -headDiameter.getMM())
+					
+	})
+	eyeMechWheel.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+					.toXMax()
+					.movex( -headDiameter.getMM()+eyeLinkageLength)
+					.movey(- headDiameter.getMM())
+					
+	})
+	mechLinkage.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+					.toXMax()
+					.movex( -headDiameter.getMM()+eyeLinkageLength*4)
+					.movey(- headDiameter.getMM())
+					
+	})
 	eyePlate.setManufactuing({incoming ->
 		return 	incoming.toZMin()
 					.toXMax()
@@ -374,7 +446,8 @@ ArrayList<CSG> makeHead(){
 					eyePlate,
 					//eyePan,
 					//eyeTilt,
-					eyeMechWheel1,eyeMechWheel2,eyeMechWheel3,eyeMechWheel4
+					eyeMechWheel,
+					mechLinkage
 					]
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 	CSG cutSheet = allParts.get(0).union(allParts)
@@ -436,9 +509,19 @@ CSG tSlotKeepAway(){
 }
 
 CSG getEye(double diameter,CSG ballJointKeepAway){
+	ballJointKeepAway= ballJointKeepAway
+					.union(
+						ballJointKeepAway
+						.union(ballJointKeepAway.movex(-10))
+						.hull()
+						.difference(new Cube(diameter)
+						.toCSG()
+						.toZMin()
+						)
+						)
 	CSG eye = new Sphere(diameter/2)// Spheres radius
 				.toCSG()// convert to CSG to display
-				.difference(new Cube(diameter).toCSG().toXMax())
+				.difference(new Cube(diameter).toCSG().toXMax().movex(-3))
 				.difference(ballJointKeepAway)
 	return eye			
 }
