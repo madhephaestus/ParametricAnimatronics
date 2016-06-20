@@ -16,13 +16,13 @@ ArrayList<CSG> makeHead(){
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",20,[headDiameter.getMM()/2,20])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",25,[headDiameter.getMM()/2,25])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",headDiameter.getMM()/2-thickness.getMM()*4,[headDiameter.getMM()/2-thickness.getMM()*4,20])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
 	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
-
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 	                              "ballJointBall.groovy" , // file to load
@@ -194,7 +194,7 @@ ArrayList<CSG> makeHead(){
 							+thickness.getMM()
 							)
 	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()*2	
-	double eyeLinkageLength = 10
+	double eyeLinkageLength = eyemechRadius.getMM()
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
 						boltDiam.getMM()/2,
@@ -553,6 +553,9 @@ CSG tSlotKeepAway(){
 }
 
 CSG getEye(double diameter,CSG ballJointKeepAway){
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	ballJointKeepAway= ballJointKeepAway
 					.union(
 						ballJointKeepAway
@@ -567,6 +570,24 @@ CSG getEye(double diameter,CSG ballJointKeepAway){
 				.toCSG()// convert to CSG to display
 				.difference(new Cube(diameter).toCSG().toXMax().movex(-3))
 				.difference(ballJointKeepAway)
+	CSG slot = new Cylinder(
+				boltDiam.getMM(),
+				boltDiam.getMM(),
+				thickness.getMM(),
+				(int)15).toCSG()
+				.difference(new Cylinder(
+				boltDiam.getMM()/2,
+				boltDiam.getMM()/2,
+				thickness.getMM(),
+				(int)15).toCSG())
+				.movez(-thickness.getMM()/2)
+				.roty(90)
+				.rotz(90)
+				.toXMax()
+				
+	for (int i=0;i<4;i++){
+		eye=eye.difference(slot.movez(eyemechRadius.getMM()+boltDiam.getMM()/2).rotx(90*i))
+	}
 	return eye			
 }
 
@@ -731,6 +752,6 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	return parts
 }
 
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
