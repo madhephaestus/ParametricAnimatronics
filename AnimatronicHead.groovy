@@ -348,6 +348,15 @@ ArrayList<CSG> makeHead(){
 					.movex( -headDiameter.getMM())
 					
 	})
+	leftEye.setManufactuing({incoming ->
+		return 	incoming.roty(90)
+					.toZMin()
+					.toXMin()
+					.toYMin()
+					.movey(headDiameter.getMM())
+					.movex( headDiameter.getMM()*2/3)
+					
+	})
 	rightBallJoint.setManufactuing({incoming ->
 		return 	incoming.roty(180)
 					.toZMin()
