@@ -7,14 +7,14 @@ import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
  */
 ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
-	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",57,[200,50])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
-	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
-	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
-	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",4,[8,2])
+	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",8.56,[10,3])
+	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",3,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",25,[headDiameter.getMM()/2,25])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",headDiameter.getMM()/2-thickness.getMM()*4,[headDiameter.getMM()/2-thickness.getMM()*4,20])
@@ -753,6 +753,6 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	return parts
 }
 
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
