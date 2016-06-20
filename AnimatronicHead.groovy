@@ -600,9 +600,10 @@ CSG tSlotNutAssembly(){
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",4,[10,3])
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2,[10,3])
+	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[20,5])
 	CSG bolt = new Cube( thickness.getMM(),
 			boltDiam.getMM(),
-			thickness.getMM()*3)
+			boltLength.getMM()+thickness.getMM())
 			.toCSG()
 			.toZMin()
 	CSG nut =new Cube( thickness,
