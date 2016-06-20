@@ -197,6 +197,7 @@ ArrayList<CSG> makeHead(){
 							)
 	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()	
 	double eyeLinkageLength = eyemechRadius.getMM()
+	double titlServoPlacement = -eyeLinkageLength-boltDiam.getMM()*2
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
 						boltDiam.getMM()/2,
@@ -267,8 +268,8 @@ ArrayList<CSG> makeHead(){
 	CSG eyePlate=baseHead
 				.movez(eyePlateHeight)
 	CSG eyeMechWheel= new Cylinder(
-						eyeLinkageLength,
-						eyeLinkageLength,
+						eyeLinkageLength+boltDiam.getMM(),
+						eyeLinkageLength+boltDiam.getMM(),
 						thickness.getMM(),
 						(int)15).toCSG().difference(bolt)
 						.movez(eyeMechWeelPlateHeight)
@@ -283,9 +284,9 @@ ArrayList<CSG> makeHead(){
 		.difference(bolt.movey(eyeCenter.getMM()/2))
 		.difference(bolt.movey(-eyeCenter.getMM()/2))
 		.movez(eyeMechWeelPlateHeight+thickness.getMM())
-		.movex(-eyeLinkageLength+boltDiam.getMM())
+		.movex(-eyeLinkageLength)
 	CSG mechLinkage2 = mechLinkage.movex(eyeLinkageLength)
-	mechLinkage=mechLinkage.movex(-eyeLinkageLength)
+	mechLinkage=mechLinkage.movex(titlServoPlacement)
 					.movey(eyeLinkageLength)
 					.union(mechLinkage2)
 	BowlerStudioController.addCsg(mechLinkage)
@@ -293,7 +294,7 @@ ArrayList<CSG> makeHead(){
 		eyeMechWheel=eyeMechWheel
 					.difference(
 						bolt.movez(eyeMechWeelPlateHeight)
-							.movex(eyeLinkageLength-boltDiam.getMM())
+							.movex(eyeLinkageLength)
 							.rotz(90*i)
 							)
 	}
@@ -302,25 +303,32 @@ ArrayList<CSG> makeHead(){
 						.movex(eyeLinkageLength)	
 	CSG eyeMechWheel2 = eyeMechWheel
 						.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
-						.movex(-eyeLinkageLength)
+						.movex(titlServoPlacement)
 	CSG eyeMechWheel3 = eyeMechWheel
 						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
-						.movex(-eyeLinkageLength)
+						.movex(titlServoPlacement)
 	CSG eyeMechWheel4 = eyeMechWheel
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)	
 	CSG eyeBoltPan1 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
-						.movex(-eyeLinkageLength)
+						.movex(titlServoPlacement)
 	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)
 	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)	
 	BowlerStudioController.addCsg(eyeMechWheel)							
 	// CUt the slot for the eye mec from the upper head
-	CSG mechKeepaway=mechLinkage.movex(-thickness.getMM()).union(mechLinkage.movex(eyeLinkageLength)).hull()	
-					.movez(thickness.getMM())
-	mechKeepaway=mechKeepaway.union(mechKeepaway.movez(-thickness.getMM()*2)).hull()				
+	CSG mechKeepaway=mechLinkage
+	.movex(-thickness.getMM())
+	.union(mechLinkage
+		.movex(eyeLinkageLength))
+	.hull()	
+	.movez(thickness.getMM())
+	mechKeepaway=mechKeepaway
+				.union(mechKeepaway
+						.movez(-thickness.getMM()*2))
+				.hull()				
 			
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
@@ -334,7 +342,7 @@ ArrayList<CSG> makeHead(){
 	CSG eyeTilt = smallServo.clone()
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
-				.movex(-eyeLinkageLength)
+				.movex(titlServoPlacement)
 				
 	//cut a matching slot from the eye plate 					
 	eyePlate = eyePlate	.difference(upperHeadPart)
@@ -514,6 +522,7 @@ ArrayList<CSG> makeHead(){
 		.setParameter(centerOfBall)
 		.setParameter(ballJointPinSize)
 		.setParameter(boltLength)
+		.setParameter(eyemechRadius)
 		.setRegenerate({ makeHead().get(index)})
 		
 		
@@ -711,6 +720,7 @@ ArrayList <CSG> generateServoHinge(String servoName){
 }
 
 ArrayList <CSG> generateUpperHead(CSG lowerHead){
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",4,[8,2])
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM(),[200,50])
@@ -743,7 +753,7 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	.movey(moutOffset)
 	)
 	.movey(-moutOffset)	
-
+	double backeHeadMount = 
 	moutOffset = lowerHead.getMaxX()-thickness.getMM()*3
 	upperHead = tSlotPunch(	upperHead				
 	.movey(moutOffset)
@@ -751,7 +761,7 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	.movey(-moutOffset)	
 
 	upperHead = upperHead.rotz(-90)
-	CSG 	upperHeadWithHoles = upperHead.union(tSlotTabsWithHole().rotz(90).movex(-moutOffset)	)
+	CSG 	upperHeadWithHoles = upperHead.union(tSlotTabsWithHole().rotz(90).movex(-moutOffset+thickness.getMM() + boltDiam.getMM())	)
 	.union(tSlotTabsWithHole().rotz(90).movex(moutOffset)	)
 			
 	def parts = [upperHead,upperHeadWithHoles].collect{
