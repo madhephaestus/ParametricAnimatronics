@@ -307,11 +307,15 @@ ArrayList<CSG> makeHead(){
 						.movex(eyeLinkageLength)
 	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)	
 	BowlerStudioController.addCsg(eyeMechWheel)							
-	// CUt the slot for the eye mec from the upper head			
+	// CUt the slot for the eye mec from the upper head
+	CSG mechKeepaway=mechLinkage.movex(-thickness.getMM()).union(mechLinkage.movex(eyeLinkageLength)).hull()	
+					.movez(thickness.getMM())
+	mechKeepaway=mechKeepaway.union(mechKeepaway.movez(-thickness.getMM()*2)).hull()				
+			
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
 				.movex(-headDiameter.getMM()/2))
-				.difference(mechLinkage.union(mechLinkage.movex(eyeLinkageLength)).hull())
+				.difference(mechKeepaway)
 	BowlerStudioController.addCsg(upperHeadPart)		
 	CSG eyePan = smallServo
 				.movez(eyePlateHeight+thickness.getMM())
