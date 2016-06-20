@@ -37,7 +37,7 @@ ArrayList<CSG> makeHead(){
 	
 	double jawAttachOffset =  (headDiameter.getMM()/2
 				-thickness.getMM()/2 
-				-thickness.getMM())
+				-thickness.getMM()*2)
      HashMap<String, Object> shaftmap = Vitamins.getConfiguration("hobbyServoHorn","standardMicro1")
 	double hornOffset = shaftmap.get("hornThickness")
 	HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",jawServoName)
@@ -77,8 +77,8 @@ ArrayList<CSG> makeHead(){
 			)
 							
 	CSG bottomJaw = mechPlate.difference(
-		new Cylinder(	headDiameter.getMM()/2 - thickness.getMM()*3,
-					headDiameter.getMM()/2- thickness.getMM()*3,
+		new Cylinder(	headDiameter.getMM()/2 - thickness.getMM()*4,
+					headDiameter.getMM()/2- thickness.getMM()*4,
 					thickness.getMM(),(int)30).toCSG()
 						.scalex(2*snoutLen.getMM()/headDiameter.getMM())
 							,
@@ -195,7 +195,7 @@ ArrayList<CSG> makeHead(){
 							-centerOfBall.getMM()
 							+thickness.getMM()
 							)
-	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()*2	
+	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()	
 	double eyeLinkageLength = eyemechRadius.getMM()
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
@@ -212,7 +212,7 @@ ArrayList<CSG> makeHead(){
 	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
 							-firstEyeBoltDistance
 							-centerOfBall.getMM()
-							+nutDiam.getMM()*2
+							+nutDiam.getMM()
 							+thickness.getMM()*1.5
 							,
 							ballJointPin.getMM()+4,
