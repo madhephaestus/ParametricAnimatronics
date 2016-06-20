@@ -681,12 +681,13 @@ ArrayList <CSG> generateServoBracket(String servoName){
 ArrayList <CSG> generateServoHinge(String servoName){
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[20,5])
 	HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",servoName)
 	double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
 	double widthOfTab = thickness.getMM()*4+boltDiam.getMM()
 	CSG pinAssembly = new Cube(	thickness.getMM(),
 							widthOfTab,
-							servoHeightFromMechPlate+thickness.getMM()
+							boltLength.getMM()+thickness.getMM()
 	
 		).toCSG()
 		.toZMin()
@@ -694,7 +695,10 @@ ArrayList <CSG> generateServoHinge(String servoName){
 		
 	pinAssembly =tSlotPunch(	pinAssembly)
 				.toYMin()
-				.union(new Cube(thickness.getMM()).toCSG()
+				.union(new Cube(	thickness.getMM(),
+								thickness.getMM()*2,
+								thickness.getMM()
+				).toCSG()
 						.movez(servoHeightFromMechPlate+thickness.getMM())
 						.movey(-thickness.getMM()/2)
 						)
