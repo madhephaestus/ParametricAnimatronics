@@ -193,7 +193,7 @@ ArrayList<CSG> makeHead(){
 							-centerOfBall.getMM()
 							+thickness.getMM()
 							)
-	double secondEyeBoltDistance = 	firstEyeBoltDistance- boltDiam.getMM()*2-	thickness.getMM()*2		
+	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()*2	
 	double eyeLinkageLength = 10
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
@@ -209,6 +209,9 @@ ArrayList<CSG> makeHead(){
 		
 	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
 							-firstEyeBoltDistance
+							-centerOfBall.getMM()
+							+nutDiam.getMM()*2
+							+thickness.getMM()*1.5
 							,
 							ballJointPin.getMM()+4,
 							eyeStockThickness).toCSG()
@@ -726,6 +729,6 @@ ArrayList <CSG> generateUpperHead(){
 	return parts
 }
 
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
