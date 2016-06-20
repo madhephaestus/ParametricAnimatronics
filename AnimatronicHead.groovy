@@ -93,7 +93,7 @@ ArrayList<CSG> makeHead(){
 		)
 		
 					
-	
+	BowlerStudioController.setCsg([bottomJaw]);
 	mechPlate=mechPlate 
 		.movez(jawHeight.getMM())
 	
@@ -141,6 +141,7 @@ ArrayList<CSG> makeHead(){
                         .movey(jawAttachOffset-thickness.getMM()/2+hornOffset/2)
 					.setColor(javafx.scene.paint.Color.CYAN)
 		} 
+	//BowlerStudioController.addCsg((ArrayList<CSG>) allJawServoParts)
 	//CSG servoBracket = jawServoParts[2].setColor(javafx.scene.paint.Color.WHITE)
 	CSG LeftSideJaw =sideJaw
 			.movey(jawAttachOffset) 
@@ -164,6 +165,7 @@ ArrayList<CSG> makeHead(){
 				                        .movey(-jawAttachOffset+thickness.getMM()/2)
 									.setColor(javafx.scene.paint.Color.BLUE)
 							}
+	//BowlerStudioController.addCsg((ArrayList<CSG>)jawHingeParts)
 	def upperHead = generateUpperHead()
 	/**
 	 * Setting up the eyes
@@ -223,7 +225,8 @@ ArrayList<CSG> makeHead(){
 				.movey(-eyeCenter.getMM()/2)
 				.movex(headDiameter.getMM()/2)
 				.movez(eyeHeight)
-	
+	BowlerStudioController.addCsg(leftEye)
+	BowlerStudioController.addCsg(rightEye)
 	CSG eyeKeepAwayr =new Sphere(reyeDiam.getMM()/2+1)// Spheres radius
 					.toCSG()
 				.movey(-eyeCenter.getMM()/2)		
@@ -248,6 +251,8 @@ ArrayList<CSG> makeHead(){
 		
 	CSG leftBallJoint =  eyestock.movey(  eyeCenter.getMM()/2)
 	CSG rightBallJoint = eyestock.movey( -eyeCenter.getMM()/2)
+	BowlerStudioController.addCsg(leftBallJoint)
+	BowlerStudioController.addCsg(rightBallJoint)
 	CSG upperHeadPart = upperHead.get(0)
 	CSG eyePlate=baseHead
 				.movez(eyePlateHeight)
@@ -273,6 +278,7 @@ ArrayList<CSG> makeHead(){
 	mechLinkage=mechLinkage.movex(-eyeLinkageLength)
 					.movey(eyeLinkageLength)
 					.union(mechLinkage2)
+	BowlerStudioController.addCsg(mechLinkage)
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
 					.difference(
@@ -299,12 +305,14 @@ ArrayList<CSG> makeHead(){
 	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)
-	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)								
+	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)	
+	BowlerStudioController.addCsg(eyeMechWheel)							
 	// CUt the slot for the eye mec from the upper head			
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
 				.movex(-headDiameter.getMM()/2))
-				.difference(mechLinkage.union(mechLinkage.movex(eyeLinkageLength)).hull())	
+				.difference(mechLinkage.union(mechLinkage.movex(eyeLinkageLength)).hull())
+	BowlerStudioController.addCsg(upperHeadPart)		
 	CSG eyePan = smallServo
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2)
@@ -319,11 +327,13 @@ ArrayList<CSG> makeHead(){
 					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
+	BowlerStudioController.addCsg(eyePlate)	
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
 				.difference(allJawServoParts)
 				.difference(jawHingeParts)
 				.difference(upperHead)
+	BowlerStudioController.addCsg(mechPlate)	
 	bottomJaw = bottomJaw.difference(
 						LeftSideJaw,
 						RightSideJaw,
@@ -458,6 +468,7 @@ ArrayList<CSG> makeHead(){
 					eyeMechWheel,
 					mechLinkage
 					]
+	print "\nBuilding cut sheet..."
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 	CSG cutSheet = allParts.get(0).union(allParts)
 	returnValues.add(cutSheet)
@@ -479,8 +490,10 @@ ArrayList<CSG> makeHead(){
 		.setParameter(centerOfBall)
 		.setParameter(ballJointPinSize)
 		.setRegenerate({ makeHead().get(index)})
+		BowlerStudioController.addCsg(returnValues[i])	
+		
 	}
-	
+	print "Done!\n"
 	return returnValues
 }
 
