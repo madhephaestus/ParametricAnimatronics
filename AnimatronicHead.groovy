@@ -162,12 +162,7 @@ ArrayList<CSG> makeHead(){
 			.movey(-jawAttachOffset) 
 			
 			
-	def jawHingeParts =generateServoHinge(jawServoName).collect { 
-							it.movez(	jawHeight.getMM() 
-		                       		 	)
-				                        .movey(-jawAttachOffset+thickness.getMM()/2)
-									.setColor(javafx.scene.paint.Color.BLUE)
-							}
+	
 	//BowlerStudioController.addCsg((ArrayList<CSG>)jawHingeParts)
 	def upperHead = generateUpperHead(mechPlate)
 	/**
@@ -183,6 +178,9 @@ ArrayList<CSG> makeHead(){
 	
 	if(	bracketClearence>	minKeepaway){
 		minKeepaway=bracketClearence
+	}
+	if(boltLength.getMM()*2+thickness.getMM()>minKeepaway){
+		minKeepaway = boltLength.getMM()*2+thickness.getMM()
 	}
 	eyeHeight+=minKeepaway
 	double eyePlateHeight = eyeHeight - thickness.getMM()/2
@@ -361,12 +359,22 @@ ArrayList<CSG> makeHead(){
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
 				.movex(titlServoPlacement)
-				
+	def jawHingeParts =generateServoHinge(jawServoName,eyePlateHeight-jawHeight.getMM()).collect { 
+							it.movez(	jawHeight.getMM() 
+		                       		 	)
+				                        .movey(-jawAttachOffset+thickness.getMM()/2)
+									.setColor(javafx.scene.paint.Color.BLUE)
+							}
+	/**			
+	 * 			Building the main plates
+	 * 			
+	 */
 	//cut a matching slot from the eye plate 					
 	eyePlate = eyePlate	.difference(upperHeadPart)
 					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
+					.difference(jawHingeParts)
 	BowlerStudioController.addCsg(eyePlate)	
 	mechPlate = mechPlate
 				.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
@@ -706,7 +714,7 @@ ArrayList <CSG> generateServoBracket(String servoName){
    	return bracketParts
 }
 
-ArrayList <CSG> generateServoHinge(String servoName){
+ArrayList <CSG> generateServoHinge(String servoName, double eyePlateHeight){
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[20,5])
@@ -715,14 +723,16 @@ ArrayList <CSG> generateServoHinge(String servoName){
 	double widthOfTab = thickness.getMM()*4+boltDiam.getMM()
 	CSG pinAssembly = new Cube(	thickness.getMM(),
 							widthOfTab,
-							boltLength.getMM()+thickness.getMM()
+							eyePlateHeight-thickness.getMM()
 	
 		).toCSG()
 		.toZMin()
 		.movez(thickness.getMM())
 		
 	pinAssembly =tSlotPunch(	pinAssembly)
-				.toYMin()
+	pinAssembly =tSlotPunch(	pinAssembly.rotx(180).toZMin().movez(+thickness.getMM()))	
+
+	pinAssembly=pinAssembly.toYMin()
 				.union(new Cube(	thickness.getMM(),
 								thickness.getMM()*2,
 								thickness.getMM()
@@ -732,6 +742,10 @@ ArrayList <CSG> generateServoHinge(String servoName){
 						)
 	def parts = [pinAssembly,pinAssembly
 						.union(tSlotTabsWithHole()
+							.movey(widthOfTab/2),
+							tSlotTabsWithHole()
+							.roty(180)
+							.movez(eyePlateHeight+thickness.getMM())
 							.movey(widthOfTab/2)
 						)]
 
@@ -780,8 +794,15 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	.movey(-moutOffset)	
 
 	upperHead = upperHead.rotz(-90)
-	CSG 	upperHeadWithHoles = upperHead.union(tSlotTabsWithHole().rotz(90).movex(-moutOffset+thickness.getMM() + boltDiam.getMM())	)
-	.union(tSlotTabsWithHole().rotz(90).movex(moutOffset)	)
+	CSG 	upperHeadWithHoles = upperHead
+							.union(tSlotTabsWithHole()
+									.rotz(90)
+									.movex(lowerHead.getMinX()+thickness.getMM()*3)	)
+									.union(
+										tSlotTabsWithHole()
+										.rotz(90)
+										.movex(lowerHead.getMaxX()-thickness.getMM()*3)	
+										)
 			
 	def parts = [upperHead,upperHeadWithHoles].collect{
 		it.movez(jawHeight.getMM())
