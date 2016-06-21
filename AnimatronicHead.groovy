@@ -24,7 +24,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
-	LengthParameter eyemechWheelHoleDiam		= new LengthParameter("Eye Mech WHeel Center Hole Diam",7.25,[8,3])
+	LengthParameter eyemechWheelHoleDiam		= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
@@ -545,11 +545,11 @@ ArrayList<CSG> makeHead(){
 		.setParameter(leyeDiam)
 		.setParameter(reyeDiam)
 		.setParameter(eyeCenter)
-		.setParameter(ballJointPinSize)
-		.setParameter(centerOfBall)
+		//.setParameter(ballJointPinSize)
+		//.setParameter(centerOfBall)
 		.setParameter(ballJointPinSize)
 		.setParameter(boltLength)
-		.setParameter(eyemechRadius)
+		//.setParameter(eyemechRadius)
 		.setParameter(eyemechWheelHoleDiam)
 		.setRegenerate({ makeHead().get(index)})
 		
