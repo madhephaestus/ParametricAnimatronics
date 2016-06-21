@@ -121,6 +121,7 @@ ArrayList<CSG> makeHead(){
 	horn=	horn
 			.roty(90)
 			.rotz(-90)
+			
 			.movey(-thickness.getMM()/2)
 	def servoBrackets  =generateServoBracket(jawServoName)
 			/*
@@ -370,7 +371,7 @@ ArrayList<CSG> makeHead(){
 	 * 			
 	 */
 	//cut a matching slot from the eye plate 					
-	eyePlate = eyePlate	.difference(upperHeadPart)
+	eyePlate = eyePlate	.difference(upperHeadPart,upperHeadPart.movex(10))
 					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
 					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
@@ -606,7 +607,7 @@ CSG getEye(double diameter,CSG ballJointKeepAway){
 						.toZMin()
 						)
 						)
-	CSG eye = new Sphere(diameter/2)// Spheres radius
+	CSG eye = new Sphere(diameter/2,40,20)// Spheres radius
 				.toCSG()// convert to CSG to display
 				.difference(new Cube(diameter).toCSG().toXMax().movex(-3))
 				.difference(ballJointKeepAway)
