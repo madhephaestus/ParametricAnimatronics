@@ -16,16 +16,16 @@ ArrayList<CSG> makeHead(){
 	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
-	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
+	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2-thickness.getMM()*4,29])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
-	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
+	LengthParameter ballJointPinSize 	= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
-	LengthParameter eyemechWheelHoleDiam		= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
-	LengthParameter wireDiam		= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
+	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
+	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 	
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
@@ -304,12 +304,12 @@ ArrayList<CSG> makeHead(){
 	//Eye to wheel linkage
 	double tiltLinkagelength = Math.abs(titlServoPlacement) +eyeXdistance - boltDiam.getMM()*2
 	double panLinkagelength = Math.abs(panServoPlacement) +eyeXdistance - boltDiam.getMM()*2
-	
+	CSG wire = new Cylinder(wireDiam.getMM()/2,wireDiam.getMM()/2,thickness.getMM(),(int)15).toCSG()
 	CSG tiltEyeLinkage  = 	mechLinkageCore
 		.union(mechLinkageCore.movex(tiltLinkagelength))
 		.hull()
 		.difference(bolt)
-		.difference(bolt.movex(tiltLinkagelength))
+		.difference(wire.movex(tiltLinkagelength))
 		.movez(tiltWheelheight+thickness.getMM())
 		.movex(titlServoPlacement)
 		.movey(-eyeCenter.getMM()/2)
@@ -320,7 +320,7 @@ ArrayList<CSG> makeHead(){
 		.union(mechLinkageCore.movex(panLinkagelength))
 		.hull()
 		.difference(bolt)
-		.difference(bolt.movex(panLinkagelength))
+		.difference(wire.movex(panLinkagelength))
 		.movez(panWheelheight-thickness.getMM())
 		.movex(panServoPlacement)
 		.movey(-eyeCenter.getMM()/2-eyeLinkageLength)
