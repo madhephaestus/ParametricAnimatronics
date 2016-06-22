@@ -14,7 +14,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
 	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
-	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",5.42,[10,3])
+	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
@@ -25,6 +25,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
 	LengthParameter eyemechWheelHoleDiam		= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
+	LengthParameter wireDiam		= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 	
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
