@@ -47,6 +47,7 @@ ArrayList<CSG> makeHead(){
 	double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
 	double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
 	double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
+	double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness"))
 	double jawHingeSlotScale = 1.9
 	double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 	CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
@@ -124,18 +125,6 @@ ArrayList<CSG> makeHead(){
 			
 			.movey(-thickness.getMM()/2)
 	def servoBrackets  =generateServoBracket(jawServoName)
-			/*
-	CSG []servoBrackets = new Cube(servoWidth+thickness.getMM()*3,
-						thickness.getMM(),
-						servoHeightFromMechPlate*2+thickness.getMM()
-						).toCSG()
-						.toZMin()
-						.toYMax()
-						.toXMax()
-						.movex(servoCentering+thickness.getMM()*1.5)	
-						.movey(-flangeMountOffset)
-						.movez(-servoHeightFromMechPlate)
-						*/
 	
 	def allJawServoParts = [horn,jawServo,servoBrackets.get(0),servoBrackets.get(1)].collect { 
 		it.movez(	jawHeight.getMM() 
@@ -145,8 +134,7 @@ ArrayList<CSG> makeHead(){
                         .movey(jawAttachOffset-thickness.getMM()/2+hornOffset/2)
 					.setColor(javafx.scene.paint.Color.CYAN)
 		} 
-	//BowlerStudioController.addCsg((ArrayList<CSG>) allJawServoParts)
-	//CSG servoBracket = jawServoParts[2].setColor(javafx.scene.paint.Color.WHITE)
+
 	CSG LeftSideJaw =sideJaw
 			.movey(jawAttachOffset) 
 			.difference(
@@ -162,9 +150,6 @@ ArrayList<CSG> makeHead(){
 			
 			.movey(-jawAttachOffset) 
 			
-			
-	
-	//BowlerStudioController.addCsg((ArrayList<CSG>)jawHingeParts)
 	def upperHead = generateUpperHead(mechPlate)
 	/**
 	 * Setting up the eyes
@@ -185,7 +170,7 @@ ArrayList<CSG> makeHead(){
 	}
 	eyeHeight+=minKeepaway
 	double eyePlateHeight = eyeHeight - thickness.getMM()/2
-	double eyeMechWeelPlateHeight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
+
 	double eyeStockBoltDistance = boltDiam.getMM()*2+	thickness.getMM()*4		
 	
 	eyeHeight +=ballJointPin.getMM()
@@ -197,7 +182,10 @@ ArrayList<CSG> makeHead(){
 							)
 	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()	
 	double eyeLinkageLength = eyemechRadius.getMM()
-	double titlServoPlacement = -eyeLinkageLength-boltDiam.getMM()*2
+	double titlServoPlacement = -(eyeLinkageLength*2+servoHeightFromMechPlate+thickness.getMM())
+	double panServoPlacement  = -eyeLinkageLength
+	double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
+	double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
 						boltDiam.getMM()/2,
@@ -273,7 +261,7 @@ ArrayList<CSG> makeHead(){
 						eyeLinkageLength+boltDiam.getMM(),
 						thickness.getMM(),
 						(int)15).toCSG()
-						
+	//Generate Linkages					
 	CSG mechLinkage = new Cylinder(boltDiam.getMM(),
 						boltDiam.getMM(),
 						thickness.getMM(),
@@ -284,13 +272,33 @@ ArrayList<CSG> makeHead(){
 		.hull()
 		.difference(bolt.movey(eyeCenter.getMM()/2))
 		.difference(bolt.movey(-eyeCenter.getMM()/2))
-		.movez(eyeMechWeelPlateHeight+thickness.getMM())
-		.movex(-eyeLinkageLength)
-	CSG mechLinkage2 = mechLinkage.movex(eyeLinkageLength)
-	mechLinkage=mechLinkage.movex(titlServoPlacement)
+		
+	CSG mechLinkage2 = mechLinkage
+					.movex(panServoPlacement+eyeLinkageLength)
+					.movez(panWheelheight+thickness.getMM())
+	mechLinkage=mechLinkage
+					.movex(titlServoPlacement+eyeLinkageLength)
 					.movey(eyeLinkageLength)
+					.movez(tiltWheelheight-thickness.getMM())
+					//.union(mechLinkage2)
+	//keepaway for the linkages				
+	CSG mechKeepaway=	mechLinkage
 					.union(mechLinkage2)
+					.movex(-eyeLinkageLength+boltDiam.getMM())
+					.union(mechLinkage
+						.movex(eyeLinkageLength))
+					.hull()	
+					.movez(thickness.getMM())
+					mechKeepaway=mechKeepaway
+								.union(mechKeepaway
+										.movez(-thickness.getMM()*2))
+								.hull()
+	mechKeepaway = mechKeepaway
+				.union(mechKeepaway.movex(thickness.getMM()+eyeLinkageLength))
+				.hull()						
+	// Make the linkage wheels
 	BowlerStudioController.addCsg(mechLinkage)
+	BowlerStudioController.addCsg(mechLinkage2)
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
 					.difference(
@@ -307,7 +315,7 @@ ArrayList<CSG> makeHead(){
 								thickness.getMM(),
 								(int)15).toCSG())
 						.movey(-eyeCenter.getMM()/2)
-						.movex(eyeLinkageLength)	
+						.movex(panServoPlacement)	
 	CSG eyeMechWheel2 = eyeMechWheel
 						.difference(
 							new Cylinder(
@@ -325,41 +333,37 @@ ArrayList<CSG> makeHead(){
 	CSG eyeMechWheel4 = eyeMechWheel
 						.difference(bolt)
 						.movey(eyeCenter.getMM()/2)
-						.movex(eyeLinkageLength)	
+						.movex(panServoPlacement)	
 	CSG eyeBoltPan1 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
 						.movex(titlServoPlacement)
 	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2)
 						.movex(eyeLinkageLength)
-	eyeMechWheel = eyeMechWheel1.union(eyeMechWheel2,eyeMechWheel3,eyeMechWheel4)	
-				.movez(eyeMechWeelPlateHeight)
-	BowlerStudioController.addCsg(eyeMechWheel)							
-	// CUt the slot for the eye mec from the upper head
-	CSG mechKeepaway=mechLinkage
-	.movex(-thickness.getMM())
-	.union(mechLinkage
-		.movex(eyeLinkageLength))
-	.hull()	
-	.movez(thickness.getMM())
-	mechKeepaway=mechKeepaway
-				.union(mechKeepaway
-						.movez(-thickness.getMM()*2))
-				.hull()				
-			
+	
+	eyeMechWheelPan = eyeMechWheel1.union(eyeMechWheel4)	
+				.movez(panWheelheight)
+	eyeMechWheelTilt = eyeMechWheel2.union(eyeMechWheel3)	
+				.movez(tiltWheelheight)
+				
+	BowlerStudioController.addCsg(eyeMechWheelPan)		
+	BowlerStudioController.addCsg(eyeMechWheelTilt)							
+	// Cut the slot for the eye mec from the upper head
 	upperHeadPart = upperHeadPart
 				.difference(eyePlate
 				.movex(-headDiameter.getMM()/2))
 				.difference(mechKeepaway)
 	BowlerStudioController.addCsg(upperHeadPart)		
 	CSG eyePan = smallServo
-				.movez(eyePlateHeight+thickness.getMM())
+				.movez(eyePlateHeight-flangeThickness)
 				.movey(-eyeCenter.getMM()/2)
-				.movex(eyeLinkageLength)
+				.movex(panServoPlacement)
+	BowlerStudioController.addCsg(eyePan)
 	CSG eyeTilt = smallServo.clone()
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
 				.movex(titlServoPlacement)
+	BowlerStudioController.addCsg(eyeTilt)
 	def jawHingeParts =generateServoHinge(jawServoName,eyePlateHeight-jawHeight.getMM()).collect { 
 							it.movez(	jawHeight.getMM() 
 		                       		 	)
@@ -435,18 +439,35 @@ ArrayList<CSG> makeHead(){
 					.movex( -headDiameter.getMM())
 					
 	})
-	eyeMechWheel.setManufactuing({incoming ->
+	eyeMechWheelPan.setManufactuing({incoming ->
 		return 	incoming.toZMin()
 					.toXMax()
 					.movex( -headDiameter.getMM()+eyeLinkageLength)
 					.movey(- headDiameter.getMM())
 					
 	})
+	eyeMechWheelTilt.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+					.toXMin()
+					.movex( -headDiameter.getMM()+eyeLinkageLength+1)
+					.movey(- headDiameter.getMM())
+					
+	})
 	mechLinkage.setManufactuing({incoming ->
 		return 	incoming.toZMin()
-					.toXMax()
-					.movex( -headDiameter.getMM()+eyeLinkageLength*5)
-					.movey(- headDiameter.getMM())
+					.toXMin()
+					.toYMin()
+					.rotz(90)
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*2 )
+					
+					
+	})
+	mechLinkage2.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+				.toXMin()
+					.toYMin()
+					.rotz(90)
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*5 )	
 					
 	})
 	eyePlate.setManufactuing({incoming ->
@@ -522,10 +543,10 @@ ArrayList<CSG> makeHead(){
 					leftBallJoint,
 					rightBallJoint,
 					eyePlate,
-					//eyePan,
-					//eyeTilt,
-					eyeMechWheel,
-					mechLinkage
+					eyePan,
+					eyeTilt,
+					eyeMechWheelTilt,eyeMechWheelPan,
+					mechLinkage,mechLinkage2
 					]
 	print "\nBuilding cut sheet..."
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
