@@ -9,8 +9,8 @@ ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-	LengthParameter snoutLen 		= new LengthParameter("Snout Length",57,[200,50])
-	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",50,[200,10])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",85,[200,50])
+	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
 	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
