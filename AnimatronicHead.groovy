@@ -17,8 +17,8 @@ ArrayList<CSG> makeHead(){
 	LengthParameter nutDiam 		= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 		= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",25,[headDiameter.getMM()/2,25])
-	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",headDiameter.getMM()/2-thickness.getMM()*4,[headDiameter.getMM()/2-thickness.getMM()*4,20])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",29,[headDiameter.getMM()/2,29])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",headDiameter.getMM()/2-thickness.getMM()*4,[headDiameter.getMM()/2-thickness.getMM()*4,29])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
 	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
@@ -149,7 +149,8 @@ ArrayList<CSG> makeHead(){
 						)
 			
 			.movey(-jawAttachOffset) 
-			
+	BowlerStudioController.addCsg(LeftSideJaw);		
+	BowlerStudioController.addCsg(RightSideJaw);	
 	def upperHead = generateUpperHead(mechPlate)
 	/**
 	 * Setting up the eyes
@@ -186,6 +187,7 @@ ArrayList<CSG> makeHead(){
 	double panServoPlacement  = -eyeLinkageLength
 	double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
 	double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
+	double eyeXdistance  =headDiameter.getMM()/2
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
 						boltDiam.getMM()/2,
@@ -218,11 +220,11 @@ ArrayList<CSG> makeHead(){
 				.movez(eyeHeight)
 	CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
 				.movey(eyeCenter.getMM()/2)
-				.movex(headDiameter.getMM()/2)
+				.movex(eyeXdistance)
 				.movez(eyeHeight)
 	CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
 				.movey(-eyeCenter.getMM()/2)
-				.movex(headDiameter.getMM()/2)
+				.movex(eyeXdistance)
 				.movez(eyeHeight)
 	BowlerStudioController.addCsg(leftEye)
 	BowlerStudioController.addCsg(rightEye)
@@ -262,22 +264,24 @@ ArrayList<CSG> makeHead(){
 						thickness.getMM(),
 						(int)15).toCSG()
 	//Generate Linkages					
-	CSG mechLinkage = new Cylinder(boltDiam.getMM(),
+	CSG mechLinkageCore = new Cylinder(boltDiam.getMM(),
 						boltDiam.getMM(),
 						thickness.getMM(),
 						(int)15).toCSG()
-	mechLinkage =mechLinkage
+	CSG mechLinkage =mechLinkageCore
 		.movey(eyeCenter.getMM()/2)
-		.union(mechLinkage.movey(-eyeCenter.getMM()/2))
+		.union(mechLinkageCore.movey(-eyeCenter.getMM()/2))
 		.hull()
 		.difference(bolt.movey(eyeCenter.getMM()/2))
 		.difference(bolt.movey(-eyeCenter.getMM()/2))
+
+	
 		
 	CSG mechLinkage2 = mechLinkage
 					.movex(panServoPlacement+eyeLinkageLength)
 					.movez(panWheelheight+thickness.getMM())
 	mechLinkage=mechLinkage
-					.movex(titlServoPlacement+eyeLinkageLength)
+					.movex(titlServoPlacement-eyeLinkageLength)
 					.movey(eyeLinkageLength)
 					.movez(tiltWheelheight-thickness.getMM())
 					//.union(mechLinkage2)
@@ -295,10 +299,40 @@ ArrayList<CSG> makeHead(){
 								.hull()
 	mechKeepaway = mechKeepaway
 				.union(mechKeepaway.movex(thickness.getMM()+eyeLinkageLength))
-				.hull()						
-	// Make the linkage wheels
+				.hull()	
+	//Eye to wheel linkage
+	double tiltLinkagelength = Math.abs(titlServoPlacement) +eyeXdistance - boltDiam.getMM()*2
+	double panLinkagelength = Math.abs(panServoPlacement) +eyeXdistance - boltDiam.getMM()*2
+	
+	CSG tiltEyeLinkage  = 	mechLinkageCore
+		.union(mechLinkageCore.movex(tiltLinkagelength))
+		.hull()
+		.difference(bolt)
+		.difference(bolt.movex(tiltLinkagelength))
+		.movez(tiltWheelheight+thickness.getMM())
+		.movex(titlServoPlacement)
+		.movey(-eyeCenter.getMM()/2)
+	CSG tiltEyeLinkage2 = tiltEyeLinkage
+		.movey(eyeCenter.getMM())
+
+	CSG panEyeLinkage  = 	mechLinkageCore
+		.union(mechLinkageCore.movex(panLinkagelength))
+		.hull()
+		.difference(bolt)
+		.difference(bolt.movex(panLinkagelength))
+		.movez(panWheelheight-thickness.getMM())
+		.movex(panServoPlacement)
+		.movey(-eyeCenter.getMM()/2-eyeLinkageLength)
+	CSG panEyeLinkage2 = panEyeLinkage
+		.movey(eyeCenter.getMM()+eyeLinkageLength*2)
+		
 	BowlerStudioController.addCsg(mechLinkage)
 	BowlerStudioController.addCsg(mechLinkage2)
+	BowlerStudioController.addCsg(tiltEyeLinkage)
+	BowlerStudioController.addCsg(tiltEyeLinkage2)		
+	BowlerStudioController.addCsg(panEyeLinkage)
+	BowlerStudioController.addCsg(panEyeLinkage2)
+	// Make the linkage wheels
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
 					.difference(
@@ -339,7 +373,7 @@ ArrayList<CSG> makeHead(){
 						.movex(titlServoPlacement)
 	CSG eyeBoltPan2 =bolt.movez(eyePlateHeight)
 						.movey(eyeCenter.getMM()/2)
-						.movex(eyeLinkageLength)
+						.movex(panServoPlacement)
 	
 	eyeMechWheelPan = eyeMechWheel1.union(eyeMechWheel4)	
 				.movez(panWheelheight)
@@ -355,6 +389,7 @@ ArrayList<CSG> makeHead(){
 				.difference(mechKeepaway)
 	BowlerStudioController.addCsg(upperHeadPart)		
 	CSG eyePan = smallServo
+				.rotz(180)
 				.movez(eyePlateHeight-flangeThickness)
 				.movey(-eyeCenter.getMM()/2)
 				.movex(panServoPlacement)
@@ -470,6 +505,34 @@ ArrayList<CSG> makeHead(){
 					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*5 )	
 					
 	})
+	tiltEyeLinkage.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+				.toXMin()
+					.toYMin()
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*10 )	
+					
+	})
+	tiltEyeLinkage2.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+				.toXMin()
+					.toYMin()
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*13 )	
+					
+	})
+	panEyeLinkage.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+				.toXMin()
+					.toYMin()
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*16 )	
+					
+	})
+	panEyeLinkage2.setManufactuing({incoming ->
+		return 	incoming.toZMin()
+				.toXMin()
+					.toYMin()
+					.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*19 )	
+					
+	})
 	eyePlate.setManufactuing({incoming ->
 		return 	incoming.toZMin()
 					.toXMax()
@@ -546,7 +609,9 @@ ArrayList<CSG> makeHead(){
 					eyePan,
 					eyeTilt,
 					eyeMechWheelTilt,eyeMechWheelPan,
-					mechLinkage,mechLinkage2
+					mechLinkage,mechLinkage2,
+					tiltEyeLinkage,tiltEyeLinkage2,
+					panEyeLinkage,panEyeLinkage2
 					]
 	print "\nBuilding cut sheet..."
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
@@ -648,7 +713,13 @@ CSG getEye(double diameter,CSG ballJointKeepAway){
 				.toXMax()
 				
 	for (int i=0;i<4;i++){
-		eye=eye.difference(slot.movez(eyemechRadius.getMM()+boltDiam.getMM()/2).rotx(90*i))
+		eye=eye
+		.difference(
+			slot
+			.rotx(-90*i)
+			.movez(
+				eyemechRadius.getMM()+boltDiam.getMM()/2)
+				.rotx(90*i))
 	}
 	return eye			
 }
