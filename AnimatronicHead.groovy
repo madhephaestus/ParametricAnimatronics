@@ -20,13 +20,15 @@ ArrayList<CSG> makeHead(){
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2-thickness.getMM()*4,29])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
-	LengthParameter ballJointPinSize 	= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
-	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,ballJointPinSize.getMM()])
-	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,ballJointPinSize.getMM()])
+	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
+	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
+	
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
 	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
+
 	
+	ballJointPin.setMM(4)
 	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
                                 "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 	                              "ballJointBall.groovy" , // file to load
@@ -51,6 +53,7 @@ ArrayList<CSG> makeHead(){
 	double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness"))
 	double jawHingeSlotScale = 1.9
 	double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
+	double servoLongSideOffset = servoWidth-servoCentering
 	CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
 	CSG jawServo = Vitamins.get("hobbyServo",jawServoName)
                         .toZMax()
@@ -141,7 +144,7 @@ ArrayList<CSG> makeHead(){
 			.difference(
 				allJawServoParts
 			)
-	
+	.setColor(javafx.scene.paint.Color.CYAN)
 	CSG RightSideJaw =sideJaw
 			.difference(new Cylinder(thicknessHoleRadius,thicknessHoleRadius,thickness.getMM()*2,(int)30).toCSG()
 						.movez(-thickness.getMM())
@@ -150,13 +153,14 @@ ArrayList<CSG> makeHead(){
 						)
 			
 			.movey(-jawAttachOffset) 
+			.setColor(javafx.scene.paint.Color.CYAN)
 	BowlerStudioController.addCsg(LeftSideJaw);		
 	BowlerStudioController.addCsg(RightSideJaw);	
 	def upperHead = generateUpperHead(mechPlate)
 	/**
 	 * Setting up the eyes
 	 */
-	double eyeHeight = jawHeight.getMM()+thickness.getMM()*2
+	double eyeHeight = jawHeight.getMM()+thickness.getMM()
 	double minKeepaway =0;
 	double bracketClearence = servoHeightFromMechPlate*2+thickness.getMM()
 	if(leyeDiam.getMM()>reyeDiam.getMM()){
@@ -175,31 +179,32 @@ ArrayList<CSG> makeHead(){
 
 	double eyeStockBoltDistance = boltDiam.getMM()*2+	thickness.getMM()*4		
 	
-	eyeHeight +=ballJointPin.getMM()
-	double eyeStockThickness = (ballJointPin.getMM()+4)/2
+	eyeHeight +=ballJointPin.getMM()+thickness.getMM()/2
+	double eyeStockThickness = ballJointPin.getMM()
 	
 	double firstEyeBoltDistance = (Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
 							-centerOfBall.getMM()
-							+thickness.getMM()
+							+thickness.getMM()*3
 							)
-	double secondEyeBoltDistance = 	firstEyeBoltDistance- nutDiam.getMM()	
+	
 	double eyeLinkageLength = eyemechRadius.getMM()
-	double titlServoPlacement = -(eyeLinkageLength*2+servoHeightFromMechPlate+thickness.getMM())
-	double panServoPlacement  = -eyeLinkageLength
+	double titlServoPlacement = -(eyeLinkageLength+boltDiam.getMM()*2)
+	double panServoPlacement  = (eyeLinkageLength+boltDiam.getMM()*2)
 	double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
 	double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
 	double eyeXdistance  =headDiameter.getMM()/2
+	double eyeBoltDistance =eyeCenter.getMM()/2-servoLongSideOffset+thickness.getMM()
 	CSG bolt =new Cylinder(
 						boltDiam.getMM()/2,
 						boltDiam.getMM()/2,
 						firstEyeBoltDistance*2,
 						(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)		
-	CSG bolts =	bolt
-					.movex(firstEyeBoltDistance)
-					.union(
+	CSG bolts =	bolt.union(
 						bolt
-						.movex(secondEyeBoltDistance)	)	
+						.movey(-nutDiam.getMM()	)	)
+					
+						
 		
 	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
 							-firstEyeBoltDistance
@@ -212,23 +217,48 @@ ArrayList<CSG> makeHead(){
 						.toXMax()
 						.movex(-centerOfBall.getMM()+thickness.getMM()/2)
 						.toZMin()
-	CSG eyestock = ballJoint
+						.movex(boltDiam.getMM()*2)
+	CSG eyeStockanchor = new Cube(thickness.getMM(),
+							ballJointPin.getMM()*2,
+							eyeStockThickness).toCSG()
+						.toXMax()
+						.movex(-centerOfBall.getMM()+thickness.getMM()/2)
+						.toZMin()
+						
+	CSG rigtStockAttach = eyeStockanchor
+						.union(
+							eyeStockAttach
+							.movey(-eyeCenter.getMM()/2+eyeBoltDistance)
+							)
+						.hull()
+	CSG leftStockAttach = eyeStockanchor
+						.union(
+							eyeStockAttach
+							.movey(eyeCenter.getMM()/2-eyeBoltDistance)
+							)
+						.hull()				
+	CSG eyestockRight = ballJoint
 				.rotz(180)
-				.union(eyeStockAttach)
+				.union(rigtStockAttach)
 				.rotx(180)
 				.movex(headDiameter.getMM()/2)
-				.difference(bolts)
+				.difference(bolts
+						.movex(firstEyeBoltDistance)
+						.movey(eyeCenter.getMM()/2-eyeBoltDistance))
 				.movez(eyeHeight)
-	CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
-				.movey(eyeCenter.getMM()/2)
-				.movex(eyeXdistance)
+	CSG eyestockLeft = ballJoint
+				.rotz(180)
+				.union(leftStockAttach)
+				.rotx(180)
+				.movex(headDiameter.getMM()/2)
+				.difference(
+						bolts
+						.rotz(180)
+						.movex(firstEyeBoltDistance)
+						.movey(-eyeCenter.getMM()/2+eyeBoltDistance))
 				.movez(eyeHeight)
-	CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
-				.movey(-eyeCenter.getMM()/2)
-				.movex(eyeXdistance)
-				.movez(eyeHeight)
-	BowlerStudioController.addCsg(leftEye)
-	BowlerStudioController.addCsg(rightEye)
+	
+
 	CSG eyeKeepAwayr =new Sphere(reyeDiam.getMM()/2+1)// Spheres radius
 					.toCSG()
 				.movey(-eyeCenter.getMM()/2)		
@@ -251,8 +281,10 @@ ArrayList<CSG> makeHead(){
 					.movez(eyePlateHeight-thickness.getMM())
 					)
 		
-	CSG leftBallJoint =  eyestock.movey(  eyeCenter.getMM()/2)
-	CSG rightBallJoint = eyestock.movey( -eyeCenter.getMM()/2)
+	CSG leftBallJoint =  eyestockLeft.movey(  eyeCenter.getMM()/2)
+					.setColor(javafx.scene.paint.Color.BLUE)
+	CSG rightBallJoint = eyestockRight.movey( -eyeCenter.getMM()/2)
+					.setColor(javafx.scene.paint.Color.BLUE)
 	BowlerStudioController.addCsg(leftBallJoint)
 	BowlerStudioController.addCsg(rightBallJoint)
 	CSG upperHeadPart = upperHead.get(0)
@@ -302,9 +334,10 @@ ArrayList<CSG> makeHead(){
 				.union(mechKeepaway.movex(thickness.getMM()+eyeLinkageLength))
 				.hull()	
 	//Eye to wheel linkage
-	double tiltLinkagelength = Math.abs(titlServoPlacement) +eyeXdistance - boltDiam.getMM()*2
-	double panLinkagelength = Math.abs(panServoPlacement) +eyeXdistance - boltDiam.getMM()*2
-	CSG wire = new Cylinder(wireDiam.getMM()/2,wireDiam.getMM()/2,thickness.getMM(),(int)15).toCSG()
+	double tiltLinkagelength = -titlServoPlacement +eyeXdistance - boltDiam.getMM()*2
+	double panLinkagelength = -panServoPlacement +eyeXdistance - boltDiam.getMM()*2
+	CSG wire = new Cylinder(wireDiam.getMM()/2,wireDiam.getMM()/2
+	,thickness.getMM(),(int)15).toCSG()
 	CSG tiltEyeLinkage  = 	mechLinkageCore
 		.union(mechLinkageCore.movex(tiltLinkagelength))
 		.hull()
@@ -412,8 +445,15 @@ ArrayList<CSG> makeHead(){
 	 */
 	//cut a matching slot from the eye plate 					
 	eyePlate = eyePlate	.difference(upperHeadPart,upperHeadPart.movex(10))
-					.difference(bolts.movey(-eyeCenter.getMM()/2).movez(eyeHeight))
-					.difference(bolts.movey(eyeCenter.getMM()/2).movez(eyeHeight))
+					.difference(bolts
+								.movex(firstEyeBoltDistance)
+								.movey(-eyeBoltDistance)
+								.movez(eyeHeight))
+					.difference(bolts
+								.rotz(180)
+								.movex(firstEyeBoltDistance)
+								.movey(eyeBoltDistance)
+								.movez(eyeHeight))
 					.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
 					.difference(jawHingeParts)
 	BowlerStudioController.addCsg(eyePlate)	
@@ -434,7 +474,19 @@ ArrayList<CSG> makeHead(){
 							.movey(-jawAttachOffset) 	
 						)
 	
-						
+		print "\nLoading eyes..."
+	CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
+				.movey(eyeCenter.getMM()/2)
+				.movex(eyeXdistance)
+				.movez(eyeHeight)
+				
+	CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
+				.movey(-eyeCenter.getMM()/2)
+				.movex(eyeXdistance)
+				.movez(eyeHeight)
+	print "Done\n"			
+	BowlerStudioController.addCsg(leftEye)
+	BowlerStudioController.addCsg(rightEye)					
 	CSG jawServoBracket = allJawServoParts.get(2)
 	CSG jawHingePin = jawHingeParts.get(0)
 	eyePlate.setColor(javafx.scene.paint.Color.WHITE)
@@ -470,7 +522,7 @@ ArrayList<CSG> makeHead(){
 					.toZMin()
 					.toXMin()
 					.toYMin()
-					.movey(headDiameter.getMM()-reyeDiam.getMM() +1+ballJointPinSize.getMM()*2 )
+					.movey(headDiameter.getMM()-reyeDiam.getMM() +1+16 )
 					
 					.movex( -headDiameter.getMM())
 					
@@ -607,14 +659,14 @@ ArrayList<CSG> makeHead(){
 					leftBallJoint,
 					rightBallJoint,
 					eyePlate,
-					eyePan,
-					eyeTilt,
+					//eyePan,
+					//eyeTilt,
 					eyeMechWheelTilt,eyeMechWheelPan,
 					mechLinkage,mechLinkage2,
 					tiltEyeLinkage,tiltEyeLinkage2,
 					panEyeLinkage,panEyeLinkage2
 					]
-	print "\nBuilding cut sheet..."
+	print "\nBuilding cut sheet... ballJointPinSize"
 	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 	CSG cutSheet = allParts.get(0).union(allParts)
 	returnValues.add(cutSheet)
@@ -634,7 +686,7 @@ ArrayList<CSG> makeHead(){
 		.setParameter(eyeCenter)
 		//.setParameter(ballJointPinSize)
 		//.setParameter(centerOfBall)
-		.setParameter(ballJointPinSize)
+		//.setParameter(ballJointPinSize)
 		.setParameter(boltLength)
 		//.setParameter(eyemechRadius)
 		.setParameter(eyemechWheelHoleDiam)
