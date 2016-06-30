@@ -183,8 +183,8 @@ ArrayList<CSG> makeHead(){
 	double eyePlateHeight = eyeHeight - thickness.getMM()/2
 
 	double eyeStockBoltDistance = boltDiam.getMM()*2+	thickness.getMM()*4		
-	
-	eyeHeight +=ballJointPin.getMM()+thickness.getMM()/2
+	double eyestockStandoffDistance= bottomOfFlangeToTopOfBody+thickness.getMM()/2
+	eyeHeight +=eyestockStandoffDistance
 	double eyeStockThickness = ballJointPin.getMM()
 	
 	double firstEyeBoltDistance = (Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
@@ -218,9 +218,9 @@ ArrayList<CSG> makeHead(){
 							+thickness.getMM()*1.5
 							,
 							ballJointPin.getMM()+4,
-							eyeStockThickness).toCSG()
+							eyestockStandoffDistance).toCSG()
 						.toXMax()
-						.movex(-centerOfBall.getMM()+thickness.getMM()/2)
+						.movex(-centerOfBall.getMM())
 						.toZMin()
 						.movex(boltDiam.getMM()*2)
 	CSG eyeStockanchor = new Cube(thickness.getMM(),
@@ -316,12 +316,12 @@ ArrayList<CSG> makeHead(){
 	
 		
 	CSG mechLinkage2 = mechLinkage
-					.movex(panServoPlacement+eyeLinkageLength)
+					.movex(panServoPlacement-eyeLinkageLength)
 					.movez(panWheelheight+thickness.getMM())
 	mechLinkage=mechLinkage
 					.movex(titlServoPlacement-eyeLinkageLength)
 					.movey(eyeLinkageLength)
-					.movez(tiltWheelheight-thickness.getMM())
+					.movez(tiltWheelheight+thickness.getMM())
 					//.union(mechLinkage2)
 	//keepaway for the linkages				
 	CSG mechKeepaway=	mechLinkage
@@ -334,9 +334,11 @@ ArrayList<CSG> makeHead(){
 					mechKeepaway=mechKeepaway
 								.union(mechKeepaway
 										.movez(-thickness.getMM()*2))
+										
 								.hull()
 	mechKeepaway = mechKeepaway
 				.union(mechKeepaway.movex(thickness.getMM()+eyeLinkageLength))
+				.union(mechKeepaway.movex(-headDiameter.getMM()))
 				.hull()	
 	//Eye to wheel linkage
 	double tiltLinkagelength = -titlServoPlacement +eyeXdistance - boltDiam.getMM()*2
@@ -359,7 +361,7 @@ ArrayList<CSG> makeHead(){
 		.hull()
 		.difference(bolt)
 		.difference(wire.movex(panLinkagelength))
-		.movez(panWheelheight-thickness.getMM())
+		.movez(panWheelheight+thickness.getMM())
 		.movex(panServoPlacement)
 		.movey(-eyeCenter.getMM()/2-eyeLinkageLength)
 	CSG panEyeLinkage2 = panEyeLinkage
@@ -432,7 +434,7 @@ ArrayList<CSG> makeHead(){
 				.movez(eyePlateHeight-flangeThickness)
 				.movey(-eyeCenter.getMM()/2)
 				.movex(panServoPlacement)
-	//BowlerStudioController.addCsg(eyePan)
+	BowlerStudioController.addCsg(eyePan)
 	CSG eyeTilt = smallServo.clone()
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
@@ -672,10 +674,10 @@ ArrayList<CSG> makeHead(){
 					tiltEyeLinkage,tiltEyeLinkage2,
 					panEyeLinkage,panEyeLinkage2
 					]
-	print "\nBuilding cut sheet... ballJointPinSize"
-	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-	CSG cutSheet = allParts.get(0).union(allParts)
-	returnValues.add(cutSheet)
+	print "\nBuilding cut sheet... "
+	//def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+	//CSG cutSheet = allParts.get(0).union(allParts)
+	//returnValues.add(cutSheet)
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
@@ -963,6 +965,6 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 	return parts
 }
 
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
