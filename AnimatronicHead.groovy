@@ -189,7 +189,7 @@ ArrayList<CSG> makeHead(){
 	
 	double firstEyeBoltDistance = (Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
 							-centerOfBall.getMM()
-							+thickness.getMM()*3
+							+eyemechRadius.getMM()
 							)
 	
 	double eyeLinkageLength = eyemechRadius.getMM()
@@ -214,13 +214,12 @@ ArrayList<CSG> makeHead(){
 	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
 							-firstEyeBoltDistance
 							-centerOfBall.getMM()
-							+nutDiam.getMM()
-							+thickness.getMM()*1.5
+							+nutDiam.getMM()*2
 							,
-							ballJointPin.getMM()+4,
-							eyestockStandoffDistance).toCSG()
+							ballJointPin.getMM()+6,
+							eyestockStandoffDistance-thickness.getMM()/2).toCSG()
 						.toXMax()
-						.movex(-centerOfBall.getMM())
+						.movex(-centerOfBall.getMM()+nutDiam.getMM()/4)
 						.toZMin()
 						.movex(boltDiam.getMM()*2)
 	CSG eyeStockanchor = new Cube(thickness.getMM(),
@@ -233,13 +232,15 @@ ArrayList<CSG> makeHead(){
 	CSG rigtStockAttach = eyeStockanchor
 						.union(
 							eyeStockAttach
-							.movey(-eyeCenter.getMM()/2+eyeBoltDistance)
+							.toYMin()
+							.movey(-eyeCenter.getMM()/2-eyeBoltDistance+boltDiam.getMM()*2)
 							)
 						.hull()
 	CSG leftStockAttach = eyeStockanchor
 						.union(
 							eyeStockAttach
-							.movey(eyeCenter.getMM()/2-eyeBoltDistance)
+							.toYMax()
+							.movey(eyeCenter.getMM()/2+eyeBoltDistance-boltDiam.getMM()*2)
 							)
 						.hull()				
 	CSG eyestockRight = ballJoint
