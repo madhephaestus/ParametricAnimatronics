@@ -204,6 +204,10 @@ ArrayList<CSG> makeHead(){
 						boltDiam.getMM()/2,
 						firstEyeBoltDistance*2,
 						(int)15).toCSG()
+						.movez(-firstEyeBoltDistance)	
+	CSG wire = new Cylinder(wireDiam.getMM()/2,
+						wireDiam.getMM()/2
+						,firstEyeBoltDistance*2,(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)		
 	CSG bolts =	bolt.union(
 						bolt
@@ -233,14 +237,14 @@ ArrayList<CSG> makeHead(){
 						.union(
 							eyeStockAttach
 							.toYMin()
-							.movey(-eyeCenter.getMM()/2-eyeBoltDistance+boltDiam.getMM()*2)
+							.movey(-eyeCenter.getMM()/2-eyeBoltDistance+boltDiam.getMM()+thickness.getMM()*2)
 							)
 						.hull()
 	CSG leftStockAttach = eyeStockanchor
 						.union(
 							eyeStockAttach
 							.toYMax()
-							.movey(eyeCenter.getMM()/2+eyeBoltDistance-boltDiam.getMM()*2)
+							.movey(eyeCenter.getMM()/2+eyeBoltDistance-boltDiam.getMM()-thickness.getMM()*2)
 							)
 						.hull()				
 	CSG eyestockRight = ballJoint
@@ -344,8 +348,7 @@ ArrayList<CSG> makeHead(){
 	//Eye to wheel linkage
 	double tiltLinkagelength = -titlServoPlacement +eyeXdistance - boltDiam.getMM()*2
 	double panLinkagelength = -panServoPlacement +eyeXdistance - boltDiam.getMM()*2
-	CSG wire = new Cylinder(wireDiam.getMM()/2,wireDiam.getMM()/2
-	,thickness.getMM(),(int)15).toCSG()
+	
 	CSG tiltEyeLinkage  = 	mechLinkageCore
 		.union(mechLinkageCore.movex(tiltLinkagelength))
 		.hull()
@@ -374,6 +377,7 @@ ArrayList<CSG> makeHead(){
 	BowlerStudioController.addCsg(tiltEyeLinkage2)		
 	BowlerStudioController.addCsg(panEyeLinkage)
 	BowlerStudioController.addCsg(panEyeLinkage2)
+	CSG slot = wire.union(wire.movex(eyeLinkageLength/3)).hull()
 	// Make the linkage wheels
 	for(int i=0;i<4;i++){
 		eyeMechWheel=eyeMechWheel
@@ -382,6 +386,14 @@ ArrayList<CSG> makeHead(){
 							.movex(eyeLinkageLength)
 							.rotz(90*i)
 							)
+		if(i%2==0){
+			eyeMechWheel=eyeMechWheel
+					.difference(
+						slot
+							.movex(eyeLinkageLength/1.5)
+							.rotz(90*i-45)
+							)
+		}
 	}
 	CSG eyeMechWheel1 = eyeMechWheel
 						.difference(
