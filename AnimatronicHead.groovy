@@ -51,6 +51,8 @@ ArrayList<CSG> makeHead(){
 	double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
 	double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
 	double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness"))
+	double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight"))	
+	double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody"))
 	double jawHingeSlotScale = 1.9
 	double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 	double servoLongSideOffset = servoWidth-servoCentering
@@ -162,7 +164,10 @@ ArrayList<CSG> makeHead(){
 	 */
 	double eyeHeight = jawHeight.getMM()+thickness.getMM()
 	double minKeepaway =0;
-	double bracketClearence = servoHeightFromMechPlate*2+thickness.getMM()
+	//double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness"))
+	//double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight"))	
+	//double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody"))
+	double bracketClearence = servoShaftSideHeight-bottomOfFlangeToTopOfBody+flangeThickness*2+thickness.getMM()
 	if(leyeDiam.getMM()>reyeDiam.getMM()){
 		minKeepaway=leyeDiam.getMM()/2
 	}else
@@ -427,12 +432,12 @@ ArrayList<CSG> makeHead(){
 				.movez(eyePlateHeight-flangeThickness)
 				.movey(-eyeCenter.getMM()/2)
 				.movex(panServoPlacement)
-	BowlerStudioController.addCsg(eyePan)
+	//BowlerStudioController.addCsg(eyePan)
 	CSG eyeTilt = smallServo.clone()
 				.movez(eyePlateHeight+thickness.getMM())
 				.movey(-eyeCenter.getMM()/2+eyeLinkageLength)
 				.movex(titlServoPlacement)
-	BowlerStudioController.addCsg(eyeTilt)
+	//BowlerStudioController.addCsg(eyeTilt)
 	def jawHingeParts =generateServoHinge(jawServoName,eyePlateHeight-jawHeight.getMM()).collect { 
 							it.movez(	jawHeight.getMM() 
 		                       		 	)
@@ -462,6 +467,7 @@ ArrayList<CSG> makeHead(){
 				.difference(allJawServoParts)
 				.difference(jawHingeParts)
 				.difference(upperHead)
+				.difference(eyePan,eyeTilt)
 	BowlerStudioController.addCsg(mechPlate)	
 	bottomJaw = bottomJaw.difference(
 						LeftSideJaw,
