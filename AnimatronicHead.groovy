@@ -22,7 +22,7 @@ ArrayList<CSG> makeHead(){
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
-	
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
 	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
@@ -205,12 +205,19 @@ ArrayList<CSG> makeHead(){
 						firstEyeBoltDistance*2,
 						(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)	
+	CSG printedBolt =new Cylinder(
+						boltDiam.getMM()/2+printerOffset.getMM(),
+						boltDiam.getMM()/2+printerOffset.getMM(),
+						firstEyeBoltDistance*2,
+						(int)15).toCSG()
+						.movez(-firstEyeBoltDistance)	
+						
 	CSG wire = new Cylinder(wireDiam.getMM()/2,
 						wireDiam.getMM()/2
 						,firstEyeBoltDistance*2,(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)		
-	CSG bolts =	bolt.union(
-						bolt
+	CSG bolts =	printedBolt.union(
+						printedBolt
 						.movey(-nutDiam.getMM()	)	)
 					
 						
@@ -390,7 +397,7 @@ ArrayList<CSG> makeHead(){
 			eyeMechWheel=eyeMechWheel
 					.difference(
 						slot
-							.movex(eyeLinkageLength/1.5)
+							.movex(eyeLinkageLength/2)
 							.rotz(90*i-45)
 							)
 		}
@@ -705,6 +712,7 @@ ArrayList<CSG> makeHead(){
 		.setParameter(leyeDiam)
 		.setParameter(reyeDiam)
 		.setParameter(eyeCenter)
+		.setParameter(printerOffset)
 		//.setParameter(ballJointPinSize)
 		//.setParameter(centerOfBall)
 		//.setParameter(ballJointPinSize)
