@@ -695,9 +695,9 @@ ArrayList<CSG> makeHead(){
 					panEyeLinkage,panEyeLinkage2
 					]
 	print "\nBuilding cut sheet... "
-	//def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-	//CSG cutSheet = allParts.get(0).union(allParts)
-	//returnValues.add(cutSheet)
+	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+	CSG cutSheet = allParts.get(0).union(allParts)
+	returnValues.add(cutSheet)
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
@@ -985,7 +985,6 @@ ArrayList <CSG> generateUpperHead(CSG lowerHead){
 
 	return parts
 }
-
-//CSGDatabase.clear()//set up the database to force only the default values in	
+CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return makeHead()
