@@ -8,7 +8,7 @@ import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 ArrayList<CSG> makeHead(){
 	//Set up som parameters to use
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
-	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
+	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",150,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",85,[200,50])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
@@ -206,8 +206,8 @@ ArrayList<CSG> makeHead(){
 						(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)	
 	CSG printedBolt =new Cylinder(
-						boltDiam.getMM()/2+printerOffset.getMM(),
-						boltDiam.getMM()/2+printerOffset.getMM(),
+						(boltDiam.getMM()+printerOffset.getMM())/2,
+						(boltDiam.getMM()+printerOffset.getMM())/2,
 						firstEyeBoltDistance*2,
 						(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)	
@@ -216,10 +216,12 @@ ArrayList<CSG> makeHead(){
 						wireDiam.getMM()/2
 						,firstEyeBoltDistance*2,(int)15).toCSG()
 						.movez(-firstEyeBoltDistance)		
-	CSG bolts =	printedBolt.union(
-						printedBolt
+	CSG bolts =	bolt.union(
+						bolt
 						.movey(-nutDiam.getMM()	)	)
-					
+	CSG printedBolts =	printedBolt.union(
+						printedBolt
+						.movey(-nutDiam.getMM()	)	)				
 						
 		
 	CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
@@ -239,19 +241,19 @@ ArrayList<CSG> makeHead(){
 						.toXMax()
 						.movex(-centerOfBall.getMM()+thickness.getMM()/2)
 						.toZMin()
-						
+	double eyeStockMountLocation = (eyeCenter.getMM()/2)-eyeBoltDistance+boltDiam.getMM()*1.5
 	CSG rigtStockAttach = eyeStockanchor
 						.union(
 							eyeStockAttach
 							.toYMin()
-							.movey(-eyeCenter.getMM()/2-eyeBoltDistance+boltDiam.getMM()+thickness.getMM()*2)
+							.movey(-eyeStockMountLocation)
 							)
 						.hull()
 	CSG leftStockAttach = eyeStockanchor
 						.union(
 							eyeStockAttach
 							.toYMax()
-							.movey(eyeCenter.getMM()/2+eyeBoltDistance-boltDiam.getMM()-thickness.getMM()*2)
+							.movey(eyeStockMountLocation)
 							)
 						.hull()				
 	CSG eyestockRight = ballJoint
@@ -259,7 +261,7 @@ ArrayList<CSG> makeHead(){
 				.union(rigtStockAttach)
 				.rotx(180)
 				.movex(headDiameter.getMM()/2)
-				.difference(bolts
+				.difference(printedBolts
 						.movex(firstEyeBoltDistance)
 						.movey(eyeCenter.getMM()/2-eyeBoltDistance))
 				.movez(eyeHeight)
@@ -269,7 +271,7 @@ ArrayList<CSG> makeHead(){
 				.rotx(180)
 				.movex(headDiameter.getMM()/2)
 				.difference(
-						bolts
+						printedBolts
 						.rotz(180)
 						.movex(firstEyeBoltDistance)
 						.movey(-eyeCenter.getMM()/2+eyeBoltDistance))
@@ -318,10 +320,16 @@ ArrayList<CSG> makeHead(){
 						boltDiam.getMM(),
 						thickness.getMM(),
 						(int)15).toCSG()
+	CSG mechLinkageAttach = new Cylinder(boltDiam.getMM()*1.5,
+						boltDiam.getMM()*1.5,
+						thickness.getMM(),
+						(int)15).toCSG()
 	CSG mechLinkage =mechLinkageCore
 		.movey(eyeCenter.getMM()/2)
 		.union(mechLinkageCore.movey(-eyeCenter.getMM()/2))
 		.hull()
+		.union(mechLinkageAttach.movey(eyeCenter.getMM()/2))
+		.union(mechLinkageAttach.movey(-eyeCenter.getMM()/2))
 		.difference(bolt.movey(eyeCenter.getMM()/2))
 		.difference(bolt.movey(-eyeCenter.getMM()/2))
 
@@ -359,6 +367,7 @@ ArrayList<CSG> makeHead(){
 	CSG tiltEyeLinkage  = 	mechLinkageCore
 		.union(mechLinkageCore.movex(tiltLinkagelength))
 		.hull()
+		.union(mechLinkageAttach)
 		.difference(bolt)
 		.difference(wire.movex(tiltLinkagelength))
 		.movez(tiltWheelheight+thickness.getMM())
@@ -370,6 +379,7 @@ ArrayList<CSG> makeHead(){
 	CSG panEyeLinkage  = 	mechLinkageCore
 		.union(mechLinkageCore.movex(panLinkagelength))
 		.hull()
+		.union(mechLinkageAttach)
 		.difference(bolt)
 		.difference(wire.movex(panLinkagelength))
 		.movez(panWheelheight+thickness.getMM())
@@ -695,9 +705,9 @@ ArrayList<CSG> makeHead(){
 					panEyeLinkage,panEyeLinkage2
 					]
 	print "\nBuilding cut sheet... "
-	def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-	CSG cutSheet = allParts.get(0).union(allParts)
-	returnValues.add(cutSheet)
+	//def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+	//CSG cutSheet = allParts.get(0).union(allParts)
+	//returnValues.add(cutSheet)
 	for (int i=0;i<returnValues.size();i++){
 		int index = i
 		returnValues[i] = returnValues[i]
