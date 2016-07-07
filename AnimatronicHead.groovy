@@ -229,7 +229,7 @@ ArrayList<CSG> makeHead(){
 							-centerOfBall.getMM()
 							+nutDiam.getMM()*2
 							,
-							ballJointPin.getMM()+6,
+							nutDiam.getMM()*2.5,
 							eyestockStandoffDistance-thickness.getMM()/2).toCSG()
 						.toXMax()
 						.movex(-centerOfBall.getMM()+nutDiam.getMM()/4)
