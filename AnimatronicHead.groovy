@@ -302,7 +302,7 @@ class Headmaker{
 						)
 			
 		CSG leftBallJoint =  eyestockLeft.movey(  eyeCenter.getMM()/2)
-						.setColor(javafx.scene.paint.Color.BLUE)
+						.setColor(javafx.scene.paint.Color.GREEN)
 		CSG rightBallJoint = eyestockRight.movey( -eyeCenter.getMM()/2)
 						.setColor(javafx.scene.paint.Color.BLUE)
 		BowlerStudioController.addCsg(leftBallJoint)
@@ -594,35 +594,35 @@ class Headmaker{
 					.toXMin()
 						.toYMin()
 						.rotz(90)
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*5 )	
+						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*6 )	
 						
 		})
 		tiltEyeLinkage.setManufactuing({incoming ->
 			return 	incoming.toZMin()
 					.toXMin()
 						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*10 )	
+						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*12 )	
 						
 		})
 		tiltEyeLinkage2.setManufactuing({incoming ->
 			return 	incoming.toZMin()
 					.toXMin()
 						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*13 )	
+						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*16 )	
 						
 		})
 		panEyeLinkage.setManufactuing({incoming ->
 			return 	incoming.toZMin()
 					.toXMin()
 						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*16 )	
+						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*20 )	
 						
 		})
 		panEyeLinkage2.setManufactuing({incoming ->
 			return 	incoming.toZMin()
 					.toXMin()
 						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*19 )	
+						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*25 )	
 						
 		})
 		eyePlate.setManufactuing({incoming ->
