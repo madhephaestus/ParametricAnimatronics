@@ -518,17 +518,19 @@ class Headmaker{
 					.movey(eyeCenter.getMM()/2)
 					.movex(eyeXdistance)
 					.movez(eyeHeight)
+					.setColor(javafx.scene.paint.Color.WHITE)
 					
 		CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
 					.movey(-eyeCenter.getMM()/2)
 					.movex(eyeXdistance)
 					.movez(eyeHeight)
+					.setColor(javafx.scene.paint.Color.WHITE)
 		print "Done\n"			
 		BowlerStudioController.addCsg(leftEye)
 		BowlerStudioController.addCsg(rightEye)					
 		CSG jawServoBracket = allJawServoParts.get(2)
 		CSG jawHingePin = jawHingeParts.get(0)
-		eyePlate.setColor(javafx.scene.paint.Color.WHITE)
+		eyePlate.setColor(javafx.scene.paint.Color.CYAN)
 		rightEye.setManufactuing({incoming ->
 			return 	incoming.roty(90)
 						.toZMin()
