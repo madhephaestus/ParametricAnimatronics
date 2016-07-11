@@ -9,8 +9,8 @@ class Headmaker{
 	ArrayList<CSG> makeHead(){
 		//Set up som parameters to use
 		LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
-		LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",150,[200,50])
-		LengthParameter snoutLen 		= new LengthParameter("Snout Length",85,[200,50])
+		LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
+		LengthParameter snoutLen 		= new LengthParameter("Snout Length",65,[200,50])
 		LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 		LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -19,7 +19,7 @@ class Headmaker{
 		LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 		LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
 		LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
-		LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2-thickness.getMM()*4,29])
+		LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
 		LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),10])
 		LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 		LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
@@ -706,9 +706,9 @@ class Headmaker{
 						panEyeLinkage,panEyeLinkage2
 						]
 		print "\nBuilding cut sheet... "
-		//def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-		//CSG cutSheet = allParts.get(0).union(allParts)
-		//returnValues.add(cutSheet)
+		def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+		CSG cutSheet = allParts.get(0).union(allParts)
+		returnValues.add(cutSheet)
 		for (int i=0;i<returnValues.size();i++){
 			int index = i
 			returnValues[i] = returnValues[i]
