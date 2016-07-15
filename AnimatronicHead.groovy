@@ -510,15 +510,44 @@ class Headmaker{
 								.movey(-jawAttachOffset) 	
 							)
 		ArrayList<CSG> washers = new ArrayList<CSG>()
-		for(int i=0;i<10;i++){
+		/*
+			double eyeLinkageLength = eyemechRadius.getMM()
+		double titlServoPlacement = -(eyeLinkageLength+boltDiam.getMM()*2)
+		double panServoPlacement  = (eyeLinkageLength+boltDiam.getMM()*2)
+		double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
+		double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
+		double eyeXdistance  =headDiameter.getMM()/2
+		double eyeBoltDistance =eyeCenter.getMM()/2-servoLongSideOffset+thickness.getMM()
+		*/
+		int numTiltWashers = 4;
+		int numPanWashers = 3;
+		int numExtraWashers = 3;
+		int totalWashers = numTiltWashers+numPanWashers+numExtraWashers;
+		for(int i=0;i<totalWashers;i++){
 			CSG newWash = washer();
+			if(i<numTiltWashers){
+				newWash=newWash
+						.movex(titlServoPlacement)
+						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
+						.movez(tiltWheelheight-(thickness.getMM()*(i+1)))
+						.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
+						
+			}
+			if(i>=numTiltWashers && i<totalWashers-numExtraWashers){
+				newWash=newWash
+						.movex(panServoPlacement)
+						.movey(eyeCenter.getMM()/2)
+						.movez(panWheelheight-(thickness.getMM()*(i-numTiltWashers-1)))
+						.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
+						
+			}
 			int myIndex=i;
 			newWash.setManufactuing({incoming ->
 				return 	incoming
 							.movey(-headDiameter.getMM()-upperHeadDiam.getMM() - boltDiam.getMM()*myIndex*4)
 							.movex( headDiameter.getMM()/4 + snoutLen.getMM() )
 			})
-			BowlerStudioController.addCsg(newWash.prepForManufacturing())	
+			BowlerStudioController.addCsg(newWash)	
 			washers.add(newWash)
 		}
 		def mechLinks = [mechLinkage,
