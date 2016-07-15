@@ -527,23 +527,26 @@ class Headmaker{
 			CSG newWash = washer();
 			if(i<numTiltWashers){
 				newWash=newWash
-						.movex(titlServoPlacement)
+						.movex(titlServoPlacement+eyeLinkageLength/2)
 						.movey(eyeCenter.getMM()/2+eyeLinkageLength)
-						.movez(tiltWheelheight-(thickness.getMM()*(i+1)))
+						.movez(tiltWheelheight-(thickness.getMM()*(i+1))-nutThick.getMM())
 						.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
 						
 			}
 			if(i>=numTiltWashers && i<totalWashers-numExtraWashers){
 				newWash=newWash
-						.movex(panServoPlacement)
+						.movex(panServoPlacement+eyeLinkageLength/2)
 						.movey(eyeCenter.getMM()/2)
-						.movez(panWheelheight-(thickness.getMM()*(i-numTiltWashers-1)))
+						.movez(panWheelheight-(thickness.getMM()*(i-numTiltWashers-1))-nutThick.getMM())
 						.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
 						
 			}
 			int myIndex=i;
 			newWash.setManufactuing({incoming ->
 				return 	incoming
+							.toXMin()
+							.toYMin()
+							.toZMin()
 							.movey(-headDiameter.getMM()-upperHeadDiam.getMM() - boltDiam.getMM()*myIndex*4)
 							.movex( headDiameter.getMM()/4 + snoutLen.getMM() )
 			})
