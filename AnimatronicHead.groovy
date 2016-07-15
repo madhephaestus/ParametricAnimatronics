@@ -783,7 +783,7 @@ class Headmaker{
 		CSG eye = new Sphere(diameter/2,40,20)// Spheres radius
 					.toCSG()// convert to CSG to display
 					.difference(new Cube(diameter).toCSG().toXMax().movex(-4))
-					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-8))
+					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))
 					.difference(ballJointKeepAway)
 		CSG slot = new Cylinder(
 					boltDiam.getMM(),
