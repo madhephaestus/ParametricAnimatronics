@@ -512,7 +512,18 @@ class Headmaker{
 								.rotz(90)
 								.movey(-jawAttachOffset) 	
 							)
-		
+		ArrayList<CSG> washers = new ArrayList<CSG>()
+		for(int i=0;i<10;i++){
+			CSG newWash = washer();
+			int myIndex=i;
+			newWash.setManufactuing({incoming ->
+				return 	incoming
+							.movey(-headDiameter.getMM()-upperHeadDiam.getMM() - boltDiam.getMM()*myIndex*4)
+							.movex( headDiameter.getMM()/2 + snoutLen.getMM()/2 )
+			})
+			BowlerStudioController.addCsg(newWash.prepForManufacturing())	
+			washers.add(newWash)
+		}
 			print "\nLoading eyes..."
 		CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
 					.movey(eyeCenter.getMM()/2)
@@ -525,12 +536,14 @@ class Headmaker{
 					.movex(eyeXdistance)
 					.movez(eyeHeight)
 					.setColor(javafx.scene.paint.Color.WHITE)
-		print "Done\n"			
+		print "Done with Eyes\n"			
 		BowlerStudioController.addCsg(leftEye)
 		BowlerStudioController.addCsg(rightEye)					
 		CSG jawServoBracket = allJawServoParts.get(2)
 		CSG jawHingePin = jawHingeParts.get(0)
 		eyePlate.setColor(javafx.scene.paint.Color.CYAN)
+		
+		
 		rightEye.setManufactuing({incoming ->
 			return 	incoming.roty(90)
 						.toZMin()
@@ -545,8 +558,8 @@ class Headmaker{
 						.toZMin()
 						.toXMin()
 						.toYMin()
-						.movey(-headDiameter.getMM()*1.3)
-						.movex( headDiameter.getMM()*2/3)
+						.movey(headDiameter.getMM())
+						.movex( -headDiameter.getMM())
 						
 		})
 		rightBallJoint.setManufactuing({incoming ->
@@ -554,7 +567,7 @@ class Headmaker{
 						.toZMin()
 						.toXMin()
 						.toYMin()
-						.movey(headDiameter.getMM()-reyeDiam.getMM())
+						.movey(headDiameter.getMM())
 						.movex( -headDiameter.getMM())
 						
 		})
@@ -563,8 +576,7 @@ class Headmaker{
 						.toZMin()
 						.toXMin()
 						.toYMin()
-						.movey(headDiameter.getMM()-reyeDiam.getMM() +1+16 )
-						
+						.movey(headDiameter.getMM())
 						.movex( -headDiameter.getMM())
 						
 		})
@@ -649,7 +661,7 @@ class Headmaker{
 						.rotz (90)
 						.toZMin()
 						.toXMin()
-						.movey(-jawHeight.getMM())
+						.movey(-jawHeight.getMM()-2)
 						
 		})
 		
@@ -695,22 +707,23 @@ class Headmaker{
 						jawServoBracket,
 						jawHingePin,
 						upperHeadPart, 
-						leftEye,
-						rightEye,
-						leftBallJoint,
-						rightBallJoint,
 						eyePlate,
 						//eyePan,
 						//eyeTilt,
 						eyeMechWheelTilt,eyeMechWheelPan,
 						mechLinkage,mechLinkage2,
 						tiltEyeLinkage,tiltEyeLinkage2,
-						panEyeLinkage,panEyeLinkage2
+						panEyeLinkage,panEyeLinkage2					
 						]
+			returnValues.addAll(washers)			
 		print "\nBuilding cut sheet... "
 		def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 		CSG cutSheet = allParts.get(0).union(allParts)
 		returnValues.add(cutSheet)
+		returnValues.add(leftEye)
+		returnValues.add(rightEye)
+		returnValues.add(leftBallJoint)
+		returnValues.add(rightBallJoint)
 		for (int i=0;i<returnValues.size();i++){
 			int index = i
 			returnValues[i] = returnValues[i]
@@ -906,6 +919,23 @@ class Headmaker{
 		//bracketParts.add(jawServo)	            
 	   	return bracketParts
 	}
+
+	CSG washer(){
+		LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
+		CSG bolt =new Cylinder(
+							boltDiam.getMM()/2,
+							boltDiam.getMM()/2,
+							thickness.getMM()*2,
+							(int)15).toCSG()
+		return new Cylinder(
+							boltDiam.getMM()*1.5,
+							boltDiam.getMM()*1.5,
+							thickness.getMM(),
+							(int)15).toCSG()
+							.difference(bolt)
+							.movex(-5)
+	}
 	
 	ArrayList <CSG> generateServoHinge(String servoName, double eyePlateHeight){
 		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
@@ -1007,3 +1037,4 @@ class Headmaker{
 CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return new Headmaker().makeHead()
+//return new Headmaker().washer()
