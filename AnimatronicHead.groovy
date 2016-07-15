@@ -20,7 +20,7 @@ class Headmaker{
 		LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
 		LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
 		LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
-		LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),leyeDiam.getMM()*2])
+		LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 		LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 		LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
 		LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
@@ -225,11 +225,7 @@ class Headmaker{
 							.movey(-nutDiam.getMM()	)	)				
 							
 			
-		CSG eyeStockAttach = new Cube(headDiameter.getMM()/2
-								-firstEyeBoltDistance
-								-centerOfBall.getMM()
-								+nutDiam.getMM()*2
-								,
+		CSG eyeStockAttach = new Cube(nutDiam.getMM()*1.5,
 								nutDiam.getMM()*2.5,
 								eyestockStandoffDistance-thickness.getMM()/2).toCSG()
 							.toXMax()
