@@ -445,7 +445,7 @@ class Headmaker{
 							.movex(panServoPlacement)
 		
 		CSG eyeMechWheelPan = eyeMechWheel1.union(eyeMechWheel4)	
-					.movez(panWheelheight)
+					.movez(panWheelheight+thickness.getMM()*2)
 		CSG eyeMechWheelTilt = eyeMechWheel2.union(eyeMechWheel3)	
 					.movez(tiltWheelheight)
 					
