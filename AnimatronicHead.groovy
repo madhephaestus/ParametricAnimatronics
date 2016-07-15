@@ -359,8 +359,8 @@ class Headmaker{
 					.union(mechKeepaway.movex(-headDiameter.getMM()))
 					.hull()	
 		//Eye to wheel linkage
-		double tiltLinkagelength = -titlServoPlacement +eyeXdistance - boltDiam.getMM()*2
-		double panLinkagelength = -panServoPlacement +eyeXdistance - boltDiam.getMM()*2
+		double tiltLinkagelength = -titlServoPlacement +eyeXdistance - boltDiam.getMM()*2-1
+		double panLinkagelength = -panServoPlacement +eyeXdistance - boltDiam.getMM()*2-1
 		
 		CSG tiltEyeLinkage  = 	mechLinkageCore
 			.union(mechLinkageCore.movex(tiltLinkagelength))
@@ -782,7 +782,8 @@ class Headmaker{
 							)
 		CSG eye = new Sphere(diameter/2,40,20)// Spheres radius
 					.toCSG()// convert to CSG to display
-					.difference(new Cube(diameter).toCSG().toXMax().movex(-3))
+					.difference(new Cube(diameter).toCSG().toXMax().movex(-4))
+					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))
 					.difference(ballJointKeepAway)
 		CSG slot = new Cylinder(
 					boltDiam.getMM(),
