@@ -325,6 +325,7 @@ class Headmaker{
 			.movey(eyeCenter.getMM()/2)
 			.union(mechLinkageCore.movey(-eyeCenter.getMM()/2))
 			.hull()
+			.movex(-boltDiam.getMM()*1.75)
 			.union(mechLinkageAttach.movey(eyeCenter.getMM()/2))
 			.union(mechLinkageAttach.movey(-eyeCenter.getMM()/2))
 			.difference(bolt.movey(eyeCenter.getMM()/2))
