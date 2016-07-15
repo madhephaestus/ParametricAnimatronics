@@ -521,6 +521,30 @@ class Headmaker{
 			BowlerStudioController.addCsg(newWash.prepForManufacturing())	
 			washers.add(newWash)
 		}
+		def mechLinks = [mechLinkage,
+		mechLinkage2,
+		tiltEyeLinkage,
+		tiltEyeLinkage2,
+		panEyeLinkage,
+		panEyeLinkage2,
+		]
+		for (int i=0;i<6;i++){
+			int index = i;
+		
+			mechLinks[index].setManufactuing({incoming -> 
+					CSG tmp= 	incoming.toZMin()
+									.toXMin()
+									.toYMin()
+					if(index <2){	
+						tmp=	tmp.rotz(90)
+						.movey(boltDiam.getMM()*2)
+					}
+					tmp=	tmp.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*(5.5*index) -boltDiam.getMM()*4)
+					return tmp
+				})
+			BowlerStudioController.addCsg(mechLinks[i].prepForManufacturing())			
+		}
+
 			print "\nLoading eyes..."
 		CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
 					.movey(eyeCenter.getMM()/2)
@@ -591,51 +615,7 @@ class Headmaker{
 						.movey(- headDiameter.getMM())
 						
 		})
-		mechLinkage.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-						.toXMin()
-						.toYMin()
-						.rotz(90)
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*2 )
-						
-						
-		})
-		mechLinkage2.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-					.toXMin()
-						.toYMin()
-						.rotz(90)
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*6 )	
-						
-		})
-		tiltEyeLinkage.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-					.toXMin()
-						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*12 )	
-						
-		})
-		tiltEyeLinkage2.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-					.toXMin()
-						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*16 )	
-						
-		})
-		panEyeLinkage.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-					.toXMin()
-						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*20 )	
-						
-		})
-		panEyeLinkage2.setManufactuing({incoming ->
-			return 	incoming.toZMin()
-					.toXMin()
-						.toYMin()
-						.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*25 )	
-						
-		})
+
 		eyePlate.setManufactuing({incoming ->
 			return 	incoming.toZMin()
 						.toXMax()
@@ -707,12 +687,10 @@ class Headmaker{
 						eyePlate,
 						//eyePan,
 						//eyeTilt,
-						eyeMechWheelTilt,eyeMechWheelPan,
-						mechLinkage,mechLinkage2,
-						tiltEyeLinkage,tiltEyeLinkage2,
-						panEyeLinkage,panEyeLinkage2					
+						eyeMechWheelTilt,eyeMechWheelPan,				
 						]
-			returnValues.addAll(washers)			
+		returnValues.addAll(washers)	
+		returnValues.addAll(mechLinks)
 		print "\nBuilding cut sheet... "
 		def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 		CSG cutSheet = allParts.get(0).union(allParts)
