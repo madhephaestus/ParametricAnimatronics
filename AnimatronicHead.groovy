@@ -3,13 +3,14 @@ import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 class Headmaker implements IParameterChanged{
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	HashMap<String,Double> previousValue = new HashMap<>();
-	ArrayList<CSG> allParts = null;
+	ArrayList<CSG> cachedParts = null;
 	/**
 	 * This script is used to make a parametric anamatronic creature head.
 	 * change the default values in LengthParameters to make changes perminant
 	 */
 	ArrayList<CSG> makeHead(){
-		if(allParts==null){
+		if(cachedParts==null){
+			println "All Parts was null"
 			//Set up som parameters to use
 			LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 			LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
@@ -763,10 +764,12 @@ class Headmaker implements IParameterChanged{
 			
 			BowlerStudioController.setCsg(returnValues)	
 			print "Done!\n"
-			allParts = returnValues
-			return returnValues
+			cachedParts = returnValues
+			println cachedParts
+			return cachedParts
 		}else{
-			return allParts
+			println "Returning cached Parts"
+			return cachedParts
 		}
 	}
 
@@ -786,7 +789,8 @@ class Headmaker implements IParameterChanged{
 		println "parameter "+name+" changed, regeneration forced, is "+p.getMicrons()+" was "+previousValue.get(name)
 		previousValue.put(name,p.getMicrons())
 		//new RuntimeException().printStackTrace(System.out);
-		allParts=null
+		println "All Parts was set to null"
+		cachedParts=null
 	}
 	
 	CSG tSlotTabs(){
