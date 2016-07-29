@@ -765,7 +765,7 @@ class Headmaker implements IParameterChanged{
 			BowlerStudioController.setCsg(returnValues)	
 			print "Done!\n"
 			cachedParts = returnValues
-			println cachedParts
+			//println cachedParts
 			return cachedParts
 		}else{
 			println "Returning cached Parts"
@@ -786,10 +786,10 @@ class Headmaker implements IParameterChanged{
 		}
 		//new Thread ({ CSGDatabase.removeParameterListener(name,this);}).start()
 		// if any of the parameters change, force the chace of parts to null, forcing a regenerate
-		println "parameter "+name+" changed, regeneration forced, is "+p.getMicrons()+" was "+previousValue.get(name)
+		//println "parameter "+name+" changed, regeneration forced, is "+p.getMicrons()+" was "+previousValue.get(name)
 		previousValue.put(name,p.getMicrons())
 		//new RuntimeException().printStackTrace(System.out);
-		println "All Parts was set to null"
+		//println "All Parts was set to null"
 		cachedParts=null
 	}
 	
