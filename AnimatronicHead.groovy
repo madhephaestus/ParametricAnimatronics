@@ -11,7 +11,7 @@ class Headmaker implements IParameterChanged{
 	ArrayList<CSG> makeHead(){
 		if(cachedParts==null){
 			println "All Parts was null"
-			//Set up som parameters to use
+			//Set up some parameters to use
 			LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 			LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 			LengthParameter snoutLen 		= new LengthParameter("Snout Length",65,[200,50])
