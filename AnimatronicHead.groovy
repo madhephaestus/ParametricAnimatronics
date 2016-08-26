@@ -50,14 +50,14 @@ class Headmaker implements IParameterChanged{
 		     HashMap<String, Object> shaftmap = Vitamins.getConfiguration("hobbyServoHorn","standardMicro1")
 			double hornOffset = shaftmap.get("hornThickness")
 			HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",jawServoName)
-			double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
-			double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
-			double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
-			double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
-			double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
-			double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness"))
-			double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight"))	
-			double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody"))
+			double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
+			double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
+			double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention").toString())
+			double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge").toString())
+			double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
+			double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness").toString())
+			double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight").toString())	
+			double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody").toString())
 			double jawHingeSlotScale = 1.9
 			double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 			double servoLongSideOffset = servoWidth-servoCentering
@@ -909,11 +909,11 @@ class Headmaker implements IParameterChanged{
 		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
 		LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 		HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",servoName)
-		double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
-		double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
-		double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention"))
-		double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge"))
-		double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange"))
+		double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
+		double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
+		double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention").toString())
+		double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge").toString())
+		double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
 		double leftOffset = servoCentering+thickness.getMM()*1.5+boltDiam.getMM()
 		double rightOffset = servoWidth-leftOffset+thickness.getMM()*2+boltDiam.getMM()
 		
@@ -982,7 +982,7 @@ class Headmaker implements IParameterChanged{
 		LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
 		LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[20,5])
 		HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",servoName)
-		double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness"))/2
+		double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
 		double widthOfTab = thickness.getMM()*4+boltDiam.getMM()
 		CSG pinAssembly = new Cube(	thickness.getMM(),
 								widthOfTab,
