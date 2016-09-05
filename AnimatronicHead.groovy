@@ -712,11 +712,10 @@ class Headmaker implements IParameterChanged{
 			})
 			
 			
-			def returnValues = 	[
-							mechPlate,
-							bottomJaw,
+			def returnValues = 	[bottomJaw,
 							RightSideJaw,
 							LeftSideJaw,
+							mechPlate,
 							jawServoBracket,
 							jawHingePin,
 							upperHeadPart, 
@@ -730,7 +729,7 @@ class Headmaker implements IParameterChanged{
 			print "\nBuilding cut sheet... "
 			def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 			CSG cutSheet = allParts.get(0).union(allParts)
-			returnValues.add(cutSheet)
+			
 			returnValues.add(leftEye)
 			returnValues.add(rightEye)
 			returnValues.add(leftBallJoint)
@@ -762,6 +761,7 @@ class Headmaker implements IParameterChanged{
 				}
 			}
 			
+			returnValues.add(cutSheet)
 			BowlerStudioController.setCsg(returnValues)	
 			print "Done!\n"
 			cachedParts = returnValues
