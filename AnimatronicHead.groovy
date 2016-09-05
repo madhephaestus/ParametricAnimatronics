@@ -58,7 +58,7 @@ class Headmaker implements IParameterChanged{
 			double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness").toString())
 			double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight").toString())	
 			double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody").toString())
-			double jawHingeSlotScale = 1.9
+			double jawHingeSlotScale = 8
 			double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 			double servoLongSideOffset = servoWidth-servoCentering
 			CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
@@ -145,8 +145,15 @@ class Headmaker implements IParameterChanged{
 		                        .movey(jawAttachOffset-thickness.getMM()/2+hornOffset/2)
 							.setColor(javafx.scene.paint.Color.CYAN)
 				} 
-		
+			double servoBraceRad = JawSideWidth.getMM()
+			CSG servoBrace = new Cylinder(	JawSideWidth.getMM(),
+										servoBraceRad,
+										thickness.getMM(),(int)30).toCSG()
+						.rotx(90)
+						.movey(-thickness.getMM()/2)
+						.movez(jawHeight.getMM() +servoBraceRad/2)
 			CSG LeftSideJaw =sideJaw
+					.union(servoBrace)
 					.movey(jawAttachOffset) 
 					.difference(
 						allJawServoParts
@@ -497,7 +504,11 @@ class Headmaker implements IParameterChanged{
 							.difference(jawHingeParts)
 			BowlerStudioController.addCsg(eyePlate)	
 			mechPlate = mechPlate
-						.difference(LeftSideJaw.scalex(jawHingeSlotScale),RightSideJaw.scalex(jawHingeSlotScale))// scale forrro for the jaw to move
+						.difference(	LeftSideJaw.movex(jawHingeSlotScale),
+									LeftSideJaw.movex(-jawHingeSlotScale),
+									RightSideJaw.movex(jawHingeSlotScale),
+									RightSideJaw.movex(-jawHingeSlotScale)
+									)// scale forrro for the jaw to move
 						.difference(allJawServoParts)
 						.difference(jawHingeParts)
 						.difference(upperHead)
