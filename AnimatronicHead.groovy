@@ -695,6 +695,7 @@ class Headmaker implements IParameterChanged{
 							.rotz (90)
 							.toZMin()
 							.toXMin()
+							.toYMin()
 							.movex(snoutLen.getMM()+JawSideWidth.getMM()+6)
 							
 			})
