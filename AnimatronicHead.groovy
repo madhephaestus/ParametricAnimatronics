@@ -926,20 +926,20 @@ class Headmaker implements IParameterChanged{
 		double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention").toString())
 		double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge").toString())
 		double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
-		double leftOffset = servoCentering+thickness.getMM()*1.5+boltDiam.getMM()
-		double rightOffset = servoWidth-leftOffset+thickness.getMM()*2+boltDiam.getMM()
+		double leftOffset = servoCentering+thickness.getMM()*3+boltDiam.getMM()*2
+		double rightOffset = servoWidth-leftOffset+thickness.getMM()*5+boltDiam.getMM()*2
 		
 		CSG jawServo = Vitamins.get("hobbyServo",servoName)
 	                        .toZMax()
 	                        .roty(90)
 	                        .rotz(90)
-	     CSG bracket =  new Cube(servoWidth+thickness.getMM()*6+boltDiam.getMM()*4,
+	     CSG bracket =  new Cube(servoWidth+thickness.getMM()*9+boltDiam.getMM()*4,
 							thickness.getMM(),
-							servoHeightFromMechPlate*2+thickness.getMM()
+							servoHeightFromMechPlate*2+thickness.getMM()*3
 							).toCSG()
 							.toZMin()
 							.toXMax()
-							.movex(servoCentering+thickness.getMM()*4+boltDiam.getMM()*2)	
+							.movex(servoCentering+thickness.getMM()*6+boltDiam.getMM()*2)	
 							.movez(thickness.getMM())
 		bracket=tSlotPunch(bracket
 				.movex(rightOffset)
