@@ -230,7 +230,7 @@ class Headmaker implements IParameterChanged{
 								,firstEyeBoltDistance*2,(int)15).toCSG()
 								.movez(-firstEyeBoltDistance)	
 			double boltDistance = 	nutDiam.getMM();
-			double attachmentOffset = nutDiam.getMM()*3
+			double attachmentOffset = nutDiam.getMM()*2
 			CSG bolts =	bolt.union(
 								bolt
 								.movey(-boltDistance	)	)
@@ -262,7 +262,7 @@ class Headmaker implements IParameterChanged{
 									.movex(firstEyeBoltDistance)
 									.movey(( eyeCenter.getMM()/2)-eyeBoltDistance)
 									.movex(-boltDistance)
-									.movey(boltDistance)
+									.movey(boltDistance*2/3)
 									)
 								.hull()
 			CSG leftStockAttach = eyeStockanchor
@@ -274,7 +274,7 @@ class Headmaker implements IParameterChanged{
 									.movex(firstEyeBoltDistance)
 									.movey(-( eyeCenter.getMM()/2)+eyeBoltDistance)
 									.movex(-boltDistance)
-									.movey(-boltDistance)
+									.movey(-boltDistance*2/3)
 									)
 								.hull()				
 			CSG eyestockRight = ballJoint
