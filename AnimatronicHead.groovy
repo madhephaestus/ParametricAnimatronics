@@ -14,7 +14,7 @@ class Headmaker implements IParameterChanged{
 			//Set up some parameters to use
 			LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 			LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-			LengthParameter snoutLen 		= new LengthParameter("Snout Length",65,[200,50])
+			LengthParameter snoutLen 		= new LengthParameter("Snout Length",63,[200,50])
 			LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 			LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 			LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -31,6 +31,7 @@ class Headmaker implements IParameterChanged{
 			LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
 			LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 			LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
+			StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 		
 			
 			ballJointPin.setMM(4)
@@ -42,7 +43,7 @@ class Headmaker implements IParameterChanged{
 		     CSG ballJoint = ballJointParts.get(0)
 		     CSG ballJointKeepAway = ballJointParts.get(1)
 		     
-			String jawServoName = "towerProMG91"
+			String jawServoName = servoSizeParam.getStrValue()
 			
 			double jawAttachOffset =  (headDiameter.getMM()/2
 						-thickness.getMM()/2 
@@ -227,62 +228,81 @@ class Headmaker implements IParameterChanged{
 			CSG wire = new Cylinder(wireDiam.getMM()/2,
 								wireDiam.getMM()/2
 								,firstEyeBoltDistance*2,(int)15).toCSG()
-								.movez(-firstEyeBoltDistance)		
+								.movez(-firstEyeBoltDistance)	
+			double boltDistance = 	nutDiam.getMM();
+			double attachmentOffset = nutDiam.getMM()*3
 			CSG bolts =	bolt.union(
 								bolt
-								.movey(-nutDiam.getMM()	)	)
+								.movey(-boltDistance	)	)
 			CSG printedBolts =	printedBolt.union(
 								printedBolt
-								.movey(-nutDiam.getMM()	)	)				
+								.movey(-boltDistance	)	)				
 								
 				
 			CSG eyeStockAttach = new Cube(nutDiam.getMM()*1.5,
-									nutDiam.getMM()*2.5,
+									attachmentOffset,
 									eyestockStandoffDistance-thickness.getMM()/2).toCSG()
 								.toXMax()
-								.movex(-centerOfBall.getMM()+nutDiam.getMM()/4)
-								.toZMin()
+								//.movex(-centerOfBall.getMM()+nutDiam.getMM()/4)
+								.toZMax()
 								.movex(boltDiam.getMM()*2)
 			CSG eyeStockanchor = new Cube(thickness.getMM(),
 									ballJointPin.getMM()*2,
 									eyeStockThickness).toCSG()
 								.toXMax()
 								.movex(-centerOfBall.getMM()+thickness.getMM()/2)
-								.toZMin()
+								.toZMax()
 			double eyeStockMountLocation = (eyeCenter.getMM()/2)-eyeBoltDistance+boltDiam.getMM()*1.5
 			CSG rigtStockAttach = eyeStockanchor
-								.union(
-									eyeStockAttach
-									.toYMin()
-									.movey(-eyeStockMountLocation)
-									)
-								.hull()
-			CSG leftStockAttach = eyeStockanchor
+								.movex(headDiameter.getMM()/2)
 								.union(
 									eyeStockAttach
 									.toYMax()
-									.movey(eyeStockMountLocation)
+									.toXMin()
+									.movex(firstEyeBoltDistance)
+									.movey(( eyeCenter.getMM()/2)-eyeBoltDistance)
+									.movex(-boltDistance)
+									.movey(boltDistance)
+									)
+								.hull()
+			CSG leftStockAttach = eyeStockanchor
+								.movex(headDiameter.getMM()/2)
+								.union(
+									eyeStockAttach
+									.toYMin()
+									.toXMin()
+									.movex(firstEyeBoltDistance)
+									.movey(-( eyeCenter.getMM()/2)+eyeBoltDistance)
+									.movex(-boltDistance)
+									.movey(-boltDistance)
 									)
 								.hull()				
 			CSG eyestockRight = ballJoint
-						.rotz(180)
-						.union(rigtStockAttach)
-						.rotx(180)
+							.rotz(180)
+							.rotx(180)
 						.movex(headDiameter.getMM()/2)
+						
+						
+						.union(rigtStockAttach)
+						//change back to difference
 						.difference(printedBolts
 								.movex(firstEyeBoltDistance)
-								.movey(eyeCenter.getMM()/2-eyeBoltDistance))
+								.movey(( eyeCenter.getMM()/2)-eyeBoltDistance)
+								)
 						.movez(eyeHeight)
+			
 			CSG eyestockLeft = ballJoint
 						.rotz(180)
-						.union(leftStockAttach)
 						.rotx(180)
 						.movex(headDiameter.getMM()/2)
+						.union(leftStockAttach)
+						//change back to difference
 						.difference(
 								printedBolts
 								.rotz(180)
 								.movex(firstEyeBoltDistance)
-								.movey(-eyeCenter.getMM()/2+eyeBoltDistance))
+								.movey(-( eyeCenter.getMM()/2)+eyeBoltDistance)
+								)
 						.movez(eyeHeight)
 			
 		
@@ -746,6 +766,9 @@ class Headmaker implements IParameterChanged{
 			returnValues.add(rightEye)
 			returnValues.add(leftBallJoint)
 			returnValues.add(rightBallJoint)
+			returnValues.add(eyePan)
+			returnValues.add(eyeTilt)
+			
 			for (int i=0;i<returnValues.size();i++){
 				int index = i
 				returnValues[i] = returnValues[i]
@@ -761,6 +784,8 @@ class Headmaker implements IParameterChanged{
 				.setParameter(reyeDiam)
 				.setParameter(eyeCenter)
 				.setParameter(printerOffset)
+				.setParameter(servoSizeParam)
+				
 				//.setParameter(ballJointPinSize)
 				//.setParameter(centerOfBall)
 				//.setParameter(ballJointPinSize)
@@ -792,14 +817,6 @@ class Headmaker implements IParameterChanged{
 	 */
 	 
 	public void parameterChanged(String name, Parameter p){
-		//
-		if(previousValue.get(name)==p.getMicrons()){
-			return;
-		}
-		//new Thread ({ CSGDatabase.removeParameterListener(name,this);}).start()
-		// if any of the parameters change, force the chace of parts to null, forcing a regenerate
-		//println "parameter "+name+" changed, regeneration forced, is "+p.getMicrons()+" was "+previousValue.get(name)
-		previousValue.put(name,p.getMicrons())
 		//new RuntimeException().printStackTrace(System.out);
 		//println "All Parts was set to null"
 		cachedParts=null
