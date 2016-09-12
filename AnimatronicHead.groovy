@@ -32,7 +32,17 @@ class Headmaker implements IParameterChanged{
 			LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 			LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 			StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
-		
+			StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
+
+			HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
+			HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+			println boltMeasurments.toString() +" and "+nutMeasurments.toString()
+			double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
+			double nutDimeMeasurment = nutMeasurments.get("width")
+			double nutThickMeasurment = nutMeasurments.get("height")
+			boltDiam.setMM(boltDimeMeasurment)
+			nutDiam.setMM(nutDimeMeasurment)
+			nutThick.setMM(nutThickMeasurment)
 			
 			ballJointPin.setMM(4)
 			ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
@@ -771,27 +781,28 @@ class Headmaker implements IParameterChanged{
 			
 			for (int i=0;i<returnValues.size();i++){
 				int index = i
+				returnValues[i].getMapOfparametrics().clear()
 				returnValues[i] = returnValues[i]
 				.setParameter(thickness)
 				.setParameter(headDiameter)
 				.setParameter(snoutLen)
 				.setParameter(jawHeight)
-				.setParameter(boltDiam)
-				.setParameter(nutDiam)
-				.setParameter(nutThick)
+				//.setParameter(boltDiam)
+				//.setParameter(nutDiam)
+				//.setParameter(nutThick)
 				.setParameter(upperHeadDiam)
 				.setParameter(leyeDiam)
 				.setParameter(reyeDiam)
 				.setParameter(eyeCenter)
 				.setParameter(printerOffset)
 				.setParameter(servoSizeParam)
-				
+				.setParameter(boltSizeParam)
 				//.setParameter(ballJointPinSize)
 				//.setParameter(centerOfBall)
 				//.setParameter(ballJointPinSize)
 				.setParameter(boltLength)
 				//.setParameter(eyemechRadius)
-				.setParameter(eyemechWheelHoleDiam)
+				//.setParameter(eyemechWheelHoleDiam)
 				.setRegenerate({ makeHead().get(index)})			
 				for(String p:returnValues[i] .getParameters()){
 					CSGDatabase.addParameterListener(p,this);
@@ -1104,7 +1115,7 @@ class Headmaker implements IParameterChanged{
 	}
 	
 }
-CSGDatabase.clear()//set up the database to force only the default values in	
+//CSGDatabase.clear()//set up the database to force only the default values in	
 //return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
 return new Headmaker().makeHead()
 //return new Headmaker().washer()
