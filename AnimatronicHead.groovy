@@ -963,7 +963,7 @@ class Headmaker implements IParameterChanged{
 	                        .rotz(90)
 	     CSG bracket =  new Cube(servoWidth+thickness.getMM()*9+boltDiam.getMM()*4,
 							thickness.getMM(),
-							servoHeightFromMechPlate*2+thickness.getMM()*3
+							servoHeightFromMechPlate*2+9
 							).toCSG()
 							.toZMin()
 							.toXMax()
