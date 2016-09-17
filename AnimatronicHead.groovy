@@ -714,8 +714,9 @@ class Headmaker implements IParameterChanged{
 							.roty(90)
 							.rotz (90)
 							.toZMin()
-							.toXMin()
-							.movey(-jawHeight.getMM()-2)
+							.toXMin()						
+							.movey(-jawHeight.getMM()-2)							
+							.movex((- headDiameter.getMM()*3/2)-2)	
 							
 			})
 			
