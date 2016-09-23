@@ -495,7 +495,7 @@ class Headmaker implements IParameterChanged{
 			// Cut the slot for the eye mec from the upper head
 			upperHeadPart = upperHeadPart
 						.difference(eyePlate
-						.movex(-headDiameter.getMM()/2))
+						.movex(-headDiameter.getMM()*2/3))
 						.difference(mechKeepaway)
 			BowlerStudioController.addCsg(upperHeadPart)		
 			CSG eyePan = smallServo
@@ -770,8 +770,8 @@ class Headmaker implements IParameterChanged{
 			returnValues.addAll(washers)	
 			returnValues.addAll(mechLinks)
 			print "\nBuilding cut sheet... "
-			//def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-			//CSG cutSheet = allParts.get(0).union(allParts)
+			def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+			CSG cutSheet = allParts.get(0).union(allParts)
 			
 			returnValues.add(leftEye)
 			returnValues.add(rightEye)
@@ -810,7 +810,7 @@ class Headmaker implements IParameterChanged{
 				}
 			}
 			
-			//returnValues.add(cutSheet)
+			returnValues.add(cutSheet)
 			BowlerStudioController.setCsg(returnValues)	
 			print "Done!\n"
 			cachedParts = returnValues
