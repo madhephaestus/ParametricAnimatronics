@@ -515,6 +515,20 @@ class Headmaker implements IParameterChanged{
 						                        .movey(-jawAttachOffset+thickness.getMM()/2)
 											.setColor(javafx.scene.paint.Color.BLUE)
 									}
+			double supportBracketDistance= eyeBoltDistance+nutDimeMeasurment*3
+			def leftSupport =generateServoHinge(jawServoName,eyePlateHeight-jawHeight.getMM()).collect { 
+										it  .movez(	jawHeight.getMM() )
+										    .rotz(180)
+						                        .movex(firstEyeBoltDistance - nutDimeMeasurment*2)
+										    .movey(supportBracketDistance)
+										    .setColor(javafx.scene.paint.Color.GREEN)
+									}
+			def rightSupport =generateServoHinge(jawServoName,eyePlateHeight-jawHeight.getMM()).collect { 
+										it	.movez(	jawHeight.getMM() )
+					                        		.movex(firstEyeBoltDistance-nutDimeMeasurment*2)
+											.movey(-supportBracketDistance)
+											.setColor(javafx.scene.paint.Color.GREEN)
+									}					
 			/**			
 			 * 			Building the main plates
 			 * 			
@@ -532,6 +546,8 @@ class Headmaker implements IParameterChanged{
 										.movez(eyeHeight))
 							.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
 							.difference(jawHingeParts)
+							.difference(leftSupport)
+							.difference(rightSupport)
 			BowlerStudioController.addCsg(eyePlate)	
 			mechPlate = mechPlate
 						.difference(	LeftSideJaw.movex(jawHingeSlotScale),
@@ -541,6 +557,8 @@ class Headmaker implements IParameterChanged{
 									)// scale forrro for the jaw to move
 						.difference(allJawServoParts)
 						.difference(jawHingeParts)
+						.difference(leftSupport)
+						.difference(rightSupport)
 						.difference(upperHead)
 						.difference(eyePan,eyeTilt)
 			BowlerStudioController.addCsg(mechPlate)	
@@ -639,6 +657,8 @@ class Headmaker implements IParameterChanged{
 			BowlerStudioController.addCsg(rightEye)					
 			CSG jawServoBracket = allJawServoParts.get(2)
 			CSG jawHingePin = jawHingeParts.get(0)
+			CSG leftSupportPin =  leftSupport.get(0)
+			CSG rightSupportPin =  rightSupport.get(0)
 			eyePlate.setColor(javafx.scene.paint.Color.CYAN)
 			
 			
@@ -719,6 +739,26 @@ class Headmaker implements IParameterChanged{
 							.movex((- headDiameter.getMM()*3/2)-thickness.getMM()*2)	
 							
 			})
+			leftSupportPin.setManufactuing({incoming ->
+				return 	incoming
+							.roty(90)
+							.rotz (90)
+							.toZMin()
+							.toXMin()						
+							.movey(jawHeight.getMM()+2)							
+							.movex((- headDiameter.getMM()*3/2)-thickness.getMM()*2)	
+							
+			})
+			rightSupportPin.setManufactuing({incoming ->
+				return 	incoming
+							.roty(90)
+							.rotz (90)
+							.toZMin()
+							.toXMin()						
+							.movey(jawHeight.getMM()*2+4)							
+							.movex((- headDiameter.getMM()*3/2)-thickness.getMM()*2)	
+							
+			})
 			
 			jawServoBracket.setManufactuing({incoming ->
 				return 	incoming
@@ -763,6 +803,8 @@ class Headmaker implements IParameterChanged{
 							eyePlate,
 							jawServoBracket,
 							jawHingePin,
+							leftSupportPin,
+							rightSupportPin,
 							//eyePan,
 							//eyeTilt,
 							eyeMechWheelTilt,eyeMechWheelPan,				
