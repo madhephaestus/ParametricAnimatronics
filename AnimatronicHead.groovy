@@ -1,6 +1,7 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 class Headmaker implements IParameterChanged{
+
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	HashMap<String,Double> previousValue = new HashMap<>();
 	ArrayList<CSG> cachedParts = null;
@@ -8,13 +9,13 @@ class Headmaker implements IParameterChanged{
 	 * This script is used to make a parametric anamatronic creature head.
 	 * change the default values in LengthParameters to make changes perminant
 	 */
-	ArrayList<CSG> makeHead(){
+	ArrayList<CSG> makeHead(boolean makeCutSheet){
 		if(cachedParts==null){
 			println "All Parts was null"
 			//Set up some parameters to use
 			LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 			LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-			LengthParameter snoutLen 		= new LengthParameter("Snout Length",63,[200,50])
+			LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.63,[200,50])
 			LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 			LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 			LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -218,6 +219,10 @@ class Headmaker implements IParameterChanged{
 			double eyeLinkageLength = eyemechRadius.getMM()
 			double titlServoPlacement = -(eyeLinkageLength+boltDiam.getMM()*2)
 			double panServoPlacement  = (eyeLinkageLength+boltDiam.getMM()*2)
+			if(headDiameter.getMM()>190){
+				titlServoPlacement = -(eyeLinkageLength*4+boltDiam.getMM()*2)
+				panServoPlacement  = -(eyeLinkageLength+boltDiam.getMM()*2)
+			}
 			double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
 			double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
 			double eyeXdistance  =headDiameter.getMM()/2
@@ -811,10 +816,12 @@ class Headmaker implements IParameterChanged{
 							]
 			returnValues.addAll(washers)	
 			returnValues.addAll(mechLinks)
-			print "\nBuilding cut sheet... "
-			def allParts = 	returnValues.collect { it.prepForManufacturing() } 
-			CSG cutSheet = allParts.get(0).union(allParts)
-			
+			CSG cutSheet;
+			if(makeCutSheet){
+				print "\nBuilding cut sheet... "
+				def allParts = 	returnValues.collect { it.prepForManufacturing() } 
+				cutSheet = allParts.get(0).union(allParts)
+			}
 			returnValues.add(leftEye)
 			returnValues.add(rightEye)
 			returnValues.add(leftBallJoint)
@@ -851,8 +858,8 @@ class Headmaker implements IParameterChanged{
 					CSGDatabase.addParameterListener(p,this);
 				}
 			}
-			
-			returnValues.add(cutSheet)
+			if(makeCutSheet)
+				returnValues.add(cutSheet)
 			BowlerStudioController.setCsg(returnValues)	
 			print "Done!\n"
 			cachedParts = returnValues
@@ -1158,7 +1165,8 @@ class Headmaker implements IParameterChanged{
 	}
 	
 }
-//CSGDatabase.clear()//set up the database to force only the default values in	
-//return  makeHead().collect { it.prepForManufacturing() } //generate the cuttable file
-return new Headmaker().makeHead()
+if(args!=null)
+	return new Headmaker().makeHead(args.get(0))
+CSGDatabase.clear()//set up the database to force only the default values in
+return new Headmaker().makeHead(true)	
 //return new Headmaker().washer()
