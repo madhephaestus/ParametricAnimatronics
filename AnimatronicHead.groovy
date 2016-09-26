@@ -1156,9 +1156,19 @@ class Headmaker implements IParameterChanged{
 							.toXMin()
 							.movez(attachlevel)
 		
-		CSG plate =lring.scaley(1.1).scalez(1.1)
-					.union(rring.scaley(1.1).scalez(1.1))
-					.hull()
+		CSG plate =lring
+					.scaley(1.1)
+					.scalez(1.1)
+					.union(attach
+								.movez(-attachlevel))
+								.hull()
+					.union(rring
+							.scaley(1.1)
+							.scalez(1.1)
+							.union(attach
+								.movez(-attachlevel))
+								.hull())
+					
 		plate=plate
 				.union(
 					attach.movey(-cheeckAttach)
