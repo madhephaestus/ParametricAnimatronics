@@ -645,7 +645,7 @@ class Headmaker implements IParameterChanged{
 							tmp=	tmp.rotz(90)
 							.movey(boltDiam.getMM()*2)
 						}
-						tmp=	tmp.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*(5.5*index) -boltDiam.getMM()*4)
+						tmp=	tmp.movey(-headDiameter.getMM()-upperHeadDiam.getMM()-boltDiam.getMM()*(5.5*index) -boltDiam.getMM()*4-thickness.getMM()*2 )
 						return tmp
 					})
 				BowlerStudioController.addCsg(mechLinks[i].prepForManufacturing())			
@@ -1275,6 +1275,5 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-CSGDatabase.clear()//set up the database to force only the default values in
+//CSGDatabase.clear()//set up the database to force only the default values in
 return new Headmaker().makeHead(true)	
-//return new Headmaker().washer()
