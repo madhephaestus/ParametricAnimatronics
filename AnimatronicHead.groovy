@@ -213,7 +213,7 @@ class Headmaker implements IParameterChanged{
 			double eyestockStandoffDistance= bottomOfFlangeToTopOfBody+thickness.getMM()/2
 			eyeHeight +=eyestockStandoffDistance
 			double eyeStockThickness = ballJointPin.getMM()
-			double maxRad = Math.sqrt(Math.pow(headDiameter.getMM()/2,2)+Math.pow(eyeCenter.getMM()/2,2))
+			double maxRad = Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
 			double firstEyeBoltDistance = (maxRad
 									-centerOfBall.getMM()
 									+eyemechRadius.getMM()
@@ -226,7 +226,7 @@ class Headmaker implements IParameterChanged{
 			if(headDiameter.getMM()>190){
 				//titlServoPlacement = -(eyeLinkageLength*4+boltDiam.getMM()*2)
 				//panServoPlacement  = -(eyeLinkageLength+boltDiam.getMM()*2)
-				titlServoPlacement =-maxRad +eyeLinkageLength
+				titlServoPlacement =-maxRad +eyeLinkageLength*2
 				panServoPlacement=titlServoPlacement+eyeLinkageLength*3+boltDiam.getMM()*2
 			}
 			double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
@@ -1275,6 +1275,6 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-//CSGDatabase.clear()//set up the database to force only the default values in
+CSGDatabase.clear()//set up the database to force only the default values in
 return new Headmaker().makeHead(true)	
 //return new Headmaker().washer()
