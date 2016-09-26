@@ -1,5 +1,6 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import eu.mihosoft.vrl.v3d.Transform;
 class Headmaker implements IParameterChanged{
 	boolean makeCutsheetStorage = false
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
@@ -674,7 +675,15 @@ class Headmaker implements IParameterChanged{
 			upperHeadPart=upperHeadPart
 						.difference(eyeRings)
 			CSG eyeRingPlate = eyeRings.get(0)
-						
+			eyeRingPlate.setManufactuing({incoming ->
+				return 	incoming.roty(90)
+							.toZMin()
+							.toXMin()
+							.toYMin()
+							.movey(headDiameter.getMM())
+							.movex( -headDiameter.getMM()*5/4)
+							
+			})			
 			rightEye.setManufactuing({incoming ->
 				return 	incoming.roty(90)
 							.toZMin()
@@ -1115,6 +1124,9 @@ class Headmaker implements IParameterChanged{
 	}
 
 	ArrayList <CSG> generateEyeRings(CSG upperHead,double xdist,double height){
+		double cheecWidth = headDiameter.getMM()/6
+		double cheeckAttach = eyeCenter.getMM()/2 -cheecWidth/2
+		double attachlevel =jawHeight.getMM()+thickness.getMM()-height
 		CSG lring =new Cylinder(leyeDiam.getMM()/2,leyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
 					.movey(eyeCenter.getMM()/2)
 					.toZMin()
@@ -1123,14 +1135,64 @@ class Headmaker implements IParameterChanged{
 					.movey(-eyeCenter.getMM()/2)
 					.toZMin()
 					.roty(-90)
+		CSG attach = new Cube(	thickness.getMM(),// X dimention
+							cheecWidth,// Y dimention
+							boltLength.getMM()+thickness.getMM()//  Z dimention
+							).toCSG()
+							.toZMin()
+							.toXMin()
+							.movez(attachlevel)
 		
 		CSG plate =lring.scaley(1.1).scalez(1.1)
 					.union(rring.scaley(1.1).scalez(1.1))
 					.hull()
-					.movez(height)
-					.movex(xdist)			
-					
-		return [plate]
+		plate=plate
+				.union(
+					attach.movey(-cheeckAttach)
+						.union(rring)
+						.hull()
+					)
+		plate=plate
+				.union(
+					attach.movey(cheeckAttach)
+						.union(lring)
+						.hull()
+					)
+		plate=plate.difference(lring.makeKeepaway(0.5))
+		plate=plate.difference(rring.makeKeepaway(0.5))
+		
+		def lcheekLoc =  new Transform().translate(thickness.getMM()/2, 
+											cheeckAttach,
+											attachlevel-thickness.getMM())
+		def rcheekLoc =  new Transform().translate(thickness.getMM()/2, 
+											-cheeckAttach,
+											attachlevel-thickness.getMM())
+		plate=plate
+				.difference(	tSlotKeepAway()
+							.transformed(lcheekLoc),
+						tSlotNutAssembly()
+							.transformed(lcheekLoc))
+				.union(tSlotTabs()
+						.transformed(lcheekLoc))
+		plate=plate
+				.difference( tSlotKeepAway()
+							.transformed(rcheekLoc),
+						tSlotNutAssembly()
+							.transformed(rcheekLoc))
+				.union(tSlotTabs()
+						.transformed(rcheekLoc))
+		CSG plateKeepaway = plate
+				.union(tSlotTabsWithHole()
+						.transformed(rcheekLoc))
+				.union(tSlotTabsWithHole()
+						.transformed(lcheekLoc))
+		
+		plate=plate.movex(xdist)	
+				.movez(height)		
+		plateKeepaway=plateKeepaway.movex(xdist)	
+				.movez(height)	
+				
+		return [plate,plateKeepaway]
 	}
 	
 	ArrayList <CSG> generateUpperHead(CSG lowerHead){
