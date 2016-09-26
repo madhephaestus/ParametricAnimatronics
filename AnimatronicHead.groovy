@@ -213,18 +213,21 @@ class Headmaker implements IParameterChanged{
 			double eyestockStandoffDistance= bottomOfFlangeToTopOfBody+thickness.getMM()/2
 			eyeHeight +=eyestockStandoffDistance
 			double eyeStockThickness = ballJointPin.getMM()
-			
-			double firstEyeBoltDistance = (Math.sqrt(Math.pow(headDiameter.getMM()/2,2)-Math.pow(eyeCenter.getMM()/2,2))
+			double maxRad = Math.sqrt(Math.pow(headDiameter.getMM()/2,2)+Math.pow(eyeCenter.getMM()/2,2))
+			double firstEyeBoltDistance = (maxRad
 									-centerOfBall.getMM()
 									+eyemechRadius.getMM()
 									)
 			
 			double eyeLinkageLength = eyemechRadius.getMM()
+			
 			double titlServoPlacement = -(eyeLinkageLength+boltDiam.getMM()*2)
 			double panServoPlacement  = (eyeLinkageLength+boltDiam.getMM()*2)
 			if(headDiameter.getMM()>190){
-				titlServoPlacement = -(eyeLinkageLength*4+boltDiam.getMM()*2)
-				panServoPlacement  = -(eyeLinkageLength+boltDiam.getMM()*2)
+				//titlServoPlacement = -(eyeLinkageLength*4+boltDiam.getMM()*2)
+				//panServoPlacement  = -(eyeLinkageLength+boltDiam.getMM()*2)
+				titlServoPlacement =-maxRad +eyeLinkageLength
+				panServoPlacement=titlServoPlacement+eyeLinkageLength*3+boltDiam.getMM()*2
 			}
 			double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
 			double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
@@ -673,7 +676,14 @@ class Headmaker implements IParameterChanged{
 			mechPlate = mechPlate
 						.difference(eyeRings)
 			upperHeadPart=upperHeadPart
-						.difference(eyeRings)
+						.difference(eyeRings.collect{
+							CSG slice = upperHeadPart.intersect(it)
+							if(slice. getPolygons().size()>0)
+								return slice.union(
+									slice.movez(upperHeadDiam.getMM())
+									).hull()
+							return it
+						})
 			CSG eyeRingPlate = eyeRings.get(0)
 			eyeRingPlate.setManufactuing({incoming ->
 				return 	incoming.roty(90)
@@ -1155,7 +1165,11 @@ class Headmaker implements IParameterChanged{
 							.toZMin()
 							.toXMin()
 							.movez(attachlevel)
-		
+		CSG nose = attach
+					.union(attach
+							.toZMax()
+							.movez(reyeDiam.getMM()/2))
+					.movez(-attachlevel)
 		CSG plate =lring
 					.scaley(1.1)
 					.scalez(1.1)
@@ -1261,6 +1275,6 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-CSGDatabase.clear()//set up the database to force only the default values in
+//CSGDatabase.clear()//set up the database to force only the default values in
 return new Headmaker().makeHead(true)	
 //return new Headmaker().washer()
