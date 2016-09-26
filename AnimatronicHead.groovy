@@ -1,42 +1,44 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 class Headmaker implements IParameterChanged{
-
+	boolean makeCutsheetStorage = false
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	HashMap<String,Double> previousValue = new HashMap<>();
 	ArrayList<CSG> cachedParts = null;
+	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
+	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.63,[200,50])
+	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
+	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
+	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
+	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
+	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
+	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
+	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
+	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
+	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
+	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
+	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
+
+	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
+	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
 	/**
 	 * This script is used to make a parametric anamatronic creature head.
 	 * change the default values in LengthParameters to make changes perminant
 	 */
 	ArrayList<CSG> makeHead(boolean makeCutSheet){
+		makeCutsheetStorage= makeCutSheet
 		if(cachedParts==null){
 			println "All Parts was null"
 			//Set up some parameters to use
-			LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
-			LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-			LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.63,[200,50])
-			LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
-			LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
-			LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
-			LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
-			LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
-			LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
-			LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
-			LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
-			LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
-			LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
-			LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
-			LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
-			LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-			LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
-			LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
-			LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
-			StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
-			StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
-
-			HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
-			HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+			
 			println boltMeasurments.toString() +" and "+nutMeasurments.toString()
 			double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
 			double nutDimeMeasurment = nutMeasurments.get("width")
@@ -665,8 +667,14 @@ class Headmaker implements IParameterChanged{
 			CSG leftSupportPin =  leftSupport.get(0)
 			CSG rightSupportPin =  rightSupport.get(0)
 			eyePlate.setColor(javafx.scene.paint.Color.CYAN)
-			
-			
+
+			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance,eyeHeight)
+			mechPlate = mechPlate
+						.difference(eyeRings)
+			upperHeadPart=upperHeadPart
+						.difference(eyeRings)
+			CSG eyeRingPlate = eyeRings.get(0)
+						
 			rightEye.setManufactuing({incoming ->
 				return 	incoming.roty(90)
 							.toZMin()
@@ -806,6 +814,7 @@ class Headmaker implements IParameterChanged{
 							mechPlate,
 							upperHeadPart, 							
 							eyePlate,
+							eyeRingPlate,
 							jawServoBracket,
 							jawHingePin,
 							leftSupportPin,
@@ -853,7 +862,7 @@ class Headmaker implements IParameterChanged{
 				.setParameter(boltLength)
 				//.setParameter(eyemechRadius)
 				//.setParameter(eyemechWheelHoleDiam)
-				.setRegenerate({ makeHead().get(index)})			
+				.setRegenerate({ makeHead(makeCutsheetStorage).get(index)})			
 				for(String p:returnValues[i] .getParameters()){
 					CSGDatabase.addParameterListener(p,this);
 				}
@@ -1103,6 +1112,25 @@ class Headmaker implements IParameterChanged{
 							)]
 	
 		return parts
+	}
+
+	ArrayList <CSG> generateEyeRings(CSG upperHead,double xdist,double height){
+		CSG lring =new Cylinder(leyeDiam.getMM()/2,leyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
+					.movey(eyeCenter.getMM()/2)
+					.toZMin()
+					.roty(-90)
+		CSG rring =new Cylinder(reyeDiam.getMM()/2,reyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
+					.movey(-eyeCenter.getMM()/2)
+					.toZMin()
+					.roty(-90)
+		
+		CSG plate =lring.scaley(1.1).scalez(1.1)
+					.union(rring.scaley(1.1).scalez(1.1))
+					.hull()
+					.movez(height)
+					.movex(xdist)			
+					
+		return [plate]
 	}
 	
 	ArrayList <CSG> generateUpperHead(CSG lowerHead){
