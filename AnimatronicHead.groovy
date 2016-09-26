@@ -1012,6 +1012,19 @@ class Headmaker implements IParameterChanged{
 				
 		
 	}
+	ArrayList <CSG> tSlotPunchLocaton(ArrayList <CSG> allignedIncoming,Transform location){
+		CSG part = allignedIncoming.get(0)
+					.difference(tSlotKeepAway().transformed(location),
+						tSlotNutAssembly().transformed(location))
+					.union(tSlotTabs().transformed(location))
+		CSG keepaway = allignedIncoming.get(1)
+						.union(
+						tSlotTabsWithHole()
+						.transformed(location))
+					
+		return [part,keepaway]
+		
+	}
 	
 	ArrayList <CSG> generateServoBracket(String servoName){
 		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
@@ -1167,32 +1180,13 @@ class Headmaker implements IParameterChanged{
 		def rcheekLoc =  new Transform().translate(thickness.getMM()/2, 
 											-cheeckAttach,
 											attachlevel-thickness.getMM())
-		plate=plate
-				.difference(	tSlotKeepAway()
-							.transformed(lcheekLoc),
-						tSlotNutAssembly()
-							.transformed(lcheekLoc))
-				.union(tSlotTabs()
-						.transformed(lcheekLoc))
-		plate=plate
-				.difference( tSlotKeepAway()
-							.transformed(rcheekLoc),
-						tSlotNutAssembly()
-							.transformed(rcheekLoc))
-				.union(tSlotTabs()
-						.transformed(rcheekLoc))
-		CSG plateKeepaway = plate
-				.union(tSlotTabsWithHole()
-						.transformed(rcheekLoc))
-				.union(tSlotTabsWithHole()
-						.transformed(lcheekLoc))
-		
-		plate=plate.movex(xdist)	
-				.movez(height)		
-		plateKeepaway=plateKeepaway.movex(xdist)	
+		def parts = tSlotPunchLocaton([plate,plate.clone()],lcheekLoc)
+		parts = tSlotPunchLocaton(parts,rcheekLoc)
+
+		return parts.collect{
+			it.movex(xdist)	
 				.movez(height)	
-				
-		return [plate,plateKeepaway]
+		}
 	}
 	
 	ArrayList <CSG> generateUpperHead(CSG lowerHead){
