@@ -6,6 +6,8 @@ class Headmaker implements IParameterChanged{
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	HashMap<String,Double> previousValue = new HashMap<>();
 	ArrayList<CSG> cachedParts = null;
+	double eyeGearSpacing = 6
+	double eyeLidPinDiam = 3
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
 	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.63,[200,50])
@@ -687,7 +689,7 @@ class Headmaker implements IParameterChanged{
 						})
 			
 			CSG eyeRingPlate = eyeRings.get(0)
-
+			def eyeLids = [eyeLid(leyeDiam.getMM())]
 			
 			
 			eyeRingPlate.setManufactuing({incoming ->
@@ -861,7 +863,7 @@ class Headmaker implements IParameterChanged{
 			returnValues.add(rightBallJoint)
 			returnValues.add(eyePan)
 			returnValues.add(eyeTilt)
-			
+			returnValues.addAll(eyeLids)
 			for (int i=0;i<returnValues.size();i++){
 				int index = i
 				returnValues[i].getMapOfparametrics().clear()
@@ -1276,8 +1278,69 @@ class Headmaker implements IParameterChanged{
 	
 		return parts
 	}
-	CSG eyeLid(){
-		 
+	/**
+	 * This function generated the eyelid
+	 * Side effect is to set the pin distance between the rotation pins
+	 */
+	CSG eyeLid(double diameter){
+		double lidThickness = 4
+		eyeLidPinDiam = (thickness.getMM()+2)*Math.sqrt(2)
+		eyeGearSpacing= eyeLidPinDiam*3/2
+		double lidMaxAngle =55
+		CSG lid  = new Sphere(diameter/2.0+lidThickness,40,20)
+					.toCSG()
+					.difference(new Sphere(diameter/2+1,40,20).toCSG())
+					.difference(new Cube(diameter+lidThickness*2).toCSG()
+								.toXMax()
+								.movex(eyeGearSpacing)
+								)
+					
+					.difference(new Cube(diameter+lidThickness*2).toCSG().toZMax())
+		CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,thickness.getMM()*2+lidThickness/2,(int)30).toCSG()
+					.difference(new Cube(thickness.getMM(),thickness.getMM(),thickness.getMM()*4+lidThickness).toCSG())
+					.rotx(90)
+					.movez(eyeGearSpacing/2)
+					.movex(eyeGearSpacing)
+		CSG loverlap = pin.toYMax()
+					.movey(diameter/2)
+					.intersect(lid)
+					
+		loverlap=loverlap.movey(lidThickness/3)
+					.union(loverlap
+							.toYMax()
+							.movey((diameter/2)+lidThickness)
+							)
+					.hull()
+		CSG roverlap = pin.toYMin()
+					.movey(-diameter/2)
+					.intersect(lid)
+					
+		roverlap=roverlap.movey(-lidThickness/3)
+					.union(loverlap
+							.toYMin()
+							.movey(-((diameter/2)+lidThickness))
+							)
+					.hull()
+					.movey(-lidThickness/3)
+		lid=lid.union(pin
+					.toYMin()
+					.movey(diameter/2))
+			   .union(loverlap)
+			   .union(roverlap)
+			   .union(pin
+					.toYMax()
+					.movey(-diameter/2))
+			   .movez(-eyeGearSpacing/2)
+			   .movex(-eyeGearSpacing)
+			   .roty(lidMaxAngle)
+			   .difference(new Cube(diameter+lidThickness*4+thickness.getMM()*4).toCSG()
+								.toXMax()
+								.movex(-eyeLidPinDiam/4)
+								)
+			   .movez(eyeGearSpacing/2)
+			   .movex(eyeGearSpacing)
+		BowlerStudioController.addCsg(lid)
+		return lid
 	}
 }
 if(args!=null)
