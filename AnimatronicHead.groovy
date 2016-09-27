@@ -20,7 +20,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM(),[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
@@ -655,16 +655,18 @@ class Headmaker implements IParameterChanged{
 			
 	
 				print "\nLoading eyes..."
+			Transform lEyeLocation = new Transform().translate(eyeXdistance,
+													eyeCenter.getMM()/2,
+													eyeHeight)
+			Transform rEyeLocation=	new Transform().translate(eyeXdistance,
+													-eyeCenter.getMM()/2,
+													eyeHeight)								
 			CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
-						.movey(eyeCenter.getMM()/2)
-						.movex(eyeXdistance)
-						.movez(eyeHeight)
+						.transformed(lEyeLocation)
 						.setColor(javafx.scene.paint.Color.WHITE)
 						
 			CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
-						.movey(-eyeCenter.getMM()/2)
-						.movex(eyeXdistance)
-						.movez(eyeHeight)
+						.transformed(rEyeLocation)
 						.setColor(javafx.scene.paint.Color.WHITE)
 			print "Done with Eyes\n"			
 			BowlerStudioController.addCsg(leftEye)
@@ -689,7 +691,17 @@ class Headmaker implements IParameterChanged{
 						})
 			
 			CSG eyeRingPlate = eyeRings.get(0)
-			def eyeLids = [eyeLid(leyeDiam.getMM())]
+			
+			def eyeLids = [eyeLid(leyeDiam.getMM())
+						.transformed(lEyeLocation),
+						eyeLid(leyeDiam.getMM())
+						.rotx(180)
+						.transformed(lEyeLocation),
+						eyeLid(reyeDiam.getMM())
+						.transformed(rEyeLocation),
+						eyeLid(reyeDiam.getMM())
+						.rotx(180)
+						.transformed(rEyeLocation)]
 			
 			
 			eyeRingPlate.setManufactuing({incoming ->
@@ -1286,7 +1298,7 @@ class Headmaker implements IParameterChanged{
 		double lidThickness = 4
 		eyeLidPinDiam = (thickness.getMM()+2)*Math.sqrt(2)
 		eyeGearSpacing= eyeLidPinDiam*3/2
-		double lidMaxAngle =55
+		double lidMaxAngle =90
 		CSG lid  = new Sphere(diameter/2.0+lidThickness,40,20)
 					.toCSG()
 					.difference(new Sphere(diameter/2+1,40,20).toCSG())
@@ -1297,7 +1309,6 @@ class Headmaker implements IParameterChanged{
 					
 					.difference(new Cube(diameter+lidThickness*2).toCSG().toZMax())
 		CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,thickness.getMM()*2+lidThickness/2,(int)30).toCSG()
-					.difference(new Cube(thickness.getMM(),thickness.getMM(),thickness.getMM()*4+lidThickness).toCSG())
 					.rotx(90)
 					.movez(eyeGearSpacing/2)
 					.movex(eyeGearSpacing)
@@ -1305,23 +1316,28 @@ class Headmaker implements IParameterChanged{
 					.movey(diameter/2)
 					.intersect(lid)
 					
-		loverlap=loverlap.movey(lidThickness/3)
+		loverlap=loverlap.movey(lidThickness)
 					.union(loverlap
 							.toYMax()
-							.movey((diameter/2)+lidThickness)
+							.movey((diameter/2)+lidThickness*2)
 							)
 					.hull()
 		CSG roverlap = pin.toYMin()
 					.movey(-diameter/2)
 					.intersect(lid)
 					
-		roverlap=roverlap.movey(-lidThickness/3)
-					.union(loverlap
+		roverlap=roverlap.movey(-lidThickness)
+					.union(roverlap
 							.toYMin()
-							.movey(-((diameter/2)+lidThickness))
+							.movey(-((diameter/2)+lidThickness*2))
 							)
 					.hull()
-					.movey(-lidThickness/3)
+		CSG pinInterface =new Cube(thickness.getMM()+printerOffset.getMM(),
+									thickness.getMM()+printerOffset.getMM(),
+									thickness.getMM()*4+lidThickness).toCSG()
+					.rotx(90)
+					.movez(eyeGearSpacing/2)
+					.movex(eyeGearSpacing)
 		lid=lid.union(pin
 					.toYMin()
 					.movey(diameter/2))
@@ -1339,11 +1355,17 @@ class Headmaker implements IParameterChanged{
 								)
 			   .movez(eyeGearSpacing/2)
 			   .movex(eyeGearSpacing)
+			   .difference(pinInterface
+			   		.toYMin()
+					.movey(diameter/2))
+			   .difference(pinInterface
+			   		.toYMax()
+					.movey(-diameter/2))
 		BowlerStudioController.addCsg(lid)
 		return lid
 	}
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-//CSGDatabase.clear()//set up the database to force only the default values in
+CSGDatabase.clear()//set up the database to force only the default values in
 return new Headmaker().makeHead(true)	
