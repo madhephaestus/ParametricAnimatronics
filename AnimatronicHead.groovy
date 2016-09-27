@@ -650,6 +650,7 @@ class Headmaker implements IParameterChanged{
 					})
 				BowlerStudioController.addCsg(mechLinks[i].prepForManufacturing())			
 			}
+			
 	
 				print "\nLoading eyes..."
 			CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
@@ -684,7 +685,11 @@ class Headmaker implements IParameterChanged{
 									).hull()
 							return it
 						})
+			
 			CSG eyeRingPlate = eyeRings.get(0)
+
+			
+			
 			eyeRingPlate.setManufactuing({incoming ->
 				return 	incoming.roty(90)
 							.toZMin()
@@ -1271,7 +1276,9 @@ class Headmaker implements IParameterChanged{
 	
 		return parts
 	}
-	
+	CSG eyeLid(){
+		 
+	}
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
