@@ -1306,13 +1306,14 @@ class Headmaker implements IParameterChanged{
 	 * This function generated the eyelid
 	 * Side effect is to set the pin distance between the rotation pins
 	 */
-	CSG eyeLid(double diameter){
+	ArrayList <CSG> eyeLid(double diameter){
 		double lidThickness = 4
 		
 		eyeGearSpacing= eyeLidPinDiam*3/2
 		double lidMaxAngle =60
 		double outerDiameter = diameter/2.0+lidThickness
 		double pinLength = thickness.getMM()*2+lidThickness/2
+		double cutCubeSize = diameter*2+lidThickness*4+thickness.getMM()*4
 		CSG lid  = new Sphere(diameter/2.0+lidThickness,40,20)
 					.toCSG()
 					.difference(new Sphere(diameter/2+1,40,20).toCSG())
@@ -1321,15 +1322,21 @@ class Headmaker implements IParameterChanged{
 								//.movex(eyeGearSpacing)
 								)
 					.difference(new Cube(diameter+lidThickness*2).toCSG().toZMax())
+					.difference(new Cylinder(lidThickness/4,lidThickness/4,pinLength,(int)30).toCSG()
+							.movex(outerDiameter-lidThickness/2)
+					)
 		CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,pinLength,(int)30).toCSG()
 					.toZMin()
 					
 					.rotx(90)
 					
 					//.movex(eyeGearSpacing)
+		CSG ring = new Cylinder(eyeLidPinDiam,eyeLidPinDiam,pinLength/2,(int)30).toCSG()
+					.toZMin()
+					.rotx(90)
+					.difference(pin.makeKeepaway(printerOffset.getMM()))
 		
-		
-		lid=lid.union(pin
+		CSG upperlid=lid.union(pin
 					.toYMin()
 					.movey(outerDiameter-lidThickness/2))
 			   .union(pin
@@ -1341,8 +1348,48 @@ class Headmaker implements IParameterChanged{
 								.movex(-eyeLidPinDiam/4)
 								)
 		
-		BowlerStudioController.addCsg(lid)
-		return lid
+		BowlerStudioController.addCsg(upperlid)
+		CSG brace = new Cylinder(eyeLidPinDiam,eyeLidPinDiam,pinLength/2+eyeLidPinDiam/2,(int)30).toCSG()
+							.rotx(90)
+				   			.toXMin()
+				   			.toZMin()
+				   			.movex(-eyeLidPinDiam/2)
+				   			.difference(pin.makeKeepaway(printerOffset.getMM()))
+		CSG lowerlid=lid
+				  .difference(new Cube(cutCubeSize).toCSG()
+									.toZMax()
+									.movez(eyeLidPinDiam/2)
+									)
+				   .union(ring
+						.toYMin()
+						.movey(outerDiameter))
+				   .union(ring
+						.toYMax()
+						.movey(-outerDiameter))
+				   .roty(lidMaxAngle)
+				   .union(brace
+				   		.toYMin()
+						.movey(outerDiameter-lidThickness/2)
+				   )	
+				    .union(brace
+						.toYMax()
+						.movey(-outerDiameter+lidThickness/2))
+				   .difference(new Cube(cutCubeSize).toCSG()
+									.toXMax()
+									.movex(-eyeLidPinDiam/4)
+									)
+				   .rotx(180)
+				   .difference(upperlid
+				   				.roty(-lidMaxAngle*2)
+				   				.makeKeepaway(printerOffset.getMM()),
+				   			upperlid
+				   				.roty(-lidMaxAngle*2+5)
+				   				.makeKeepaway(printerOffset.getMM())	
+				   				)
+		
+		BowlerStudioController.addCsg(lowerlid)
+		
+		return [upperlid,lowerlid]
 	}
 }
 if(args!=null)
