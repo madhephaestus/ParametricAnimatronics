@@ -20,7 +20,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
 	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM(),[headDiameter.getMM(),leyeDiam.getMM()*1.5])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM()*2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
@@ -677,7 +677,7 @@ class Headmaker implements IParameterChanged{
 			CSG rightSupportPin =  rightSupport.get(0)
 			
 
-			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance-eyeLidPinDiam,eyeHeight)
+			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance-eyeLidPinDiam*3/2,eyeHeight)
 			mechPlate = mechPlate
 						.difference(eyeRings)
 			eyePlate = eyePlate
@@ -1310,7 +1310,9 @@ class Headmaker implements IParameterChanged{
 		double lidThickness = 4
 		
 		eyeGearSpacing= eyeLidPinDiam*3/2
-		double lidMaxAngle =70
+		double lidMaxAngle =60
+		double outerDiameter = diameter/2.0+lidThickness
+		double pinLength = thickness.getMM()*2+lidThickness/2
 		CSG lid  = new Sphere(diameter/2.0+lidThickness,40,20)
 					.toCSG()
 					.difference(new Sphere(diameter/2+1,40,20).toCSG())
@@ -1319,65 +1321,32 @@ class Headmaker implements IParameterChanged{
 								//.movex(eyeGearSpacing)
 								)
 					.difference(new Cube(diameter+lidThickness*2).toCSG().toZMax())
-	/*	CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,thickness.getMM()*2+lidThickness/2,(int)30).toCSG()
+		CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,pinLength,(int)30).toCSG()
+					.toZMin()
+					
 					.rotx(90)
-					.movez(eyeGearSpacing/2)
+					
 					//.movex(eyeGearSpacing)
-		CSG loverlap = pin.toYMax()
-					.movey(diameter/2)
-					.intersect(lid)
-					
-		loverlap=loverlap.movey(lidThickness)
-					.union(loverlap
-							.toYMax()
-							.movey((diameter/2)+lidThickness*2)
-							)
-					.hull()
-		CSG roverlap = pin.toYMin()
-					.movey(-diameter/2)
-					.intersect(lid)
-					
-		roverlap=roverlap.movey(-lidThickness)
-					.union(roverlap
-							.toYMin()
-							.movey(-((diameter/2)+lidThickness*2))
-							)
-					.hull()
-		CSG pinInterface =new Cube(thickness.getMM()+printerOffset.getMM(),
-									thickness.getMM()+printerOffset.getMM(),
-									thickness.getMM()*4+lidThickness).toCSG()
-					.rotx(90)
-					.movez(eyeGearSpacing/2)
-					.movex(eyeGearSpacing)
+		
+		
 		lid=lid.union(pin
 					.toYMin()
-					.movey(diameter/2))
-			   .union(loverlap)
-			   .union(roverlap)
+					.movey(outerDiameter-lidThickness/2))
 			   .union(pin
 					.toYMax()
-					.movey(-diameter/2))
-			   .movez(-eyeGearSpacing/2)
-			   .movex(-eyeGearSpacing)
+					.movey(-outerDiameter+lidThickness/2))
 			   .roty(lidMaxAngle)
 			   .difference(new Cube(diameter+lidThickness*4+thickness.getMM()*4).toCSG()
 								.toXMax()
-								//.movex(-eyeLidPinDiam/4)
+								.movex(-eyeLidPinDiam/4)
 								)
-			   .movez(eyeGearSpacing/2)
-			   .movex(eyeGearSpacing)
-			   .difference(pinInterface
-			   		.toYMin()
-					.movey(diameter/2))
-			   .difference(pinInterface
-			   		.toYMax()
-					.movey(-diameter/2))
-		*/
+		
 		BowlerStudioController.addCsg(lid)
 		return lid
 	}
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-CSGDatabase.clear()//set up the database to force only the default values in
-return new Headmaker().makeHead(true)	
+//CSGDatabase.clear()//set up the database to force only the default values in
+//return new Headmaker().makeHead(true)	
+return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
