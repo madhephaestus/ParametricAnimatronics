@@ -170,8 +170,8 @@ class Headmaker implements IParameterChanged{
 							.setColor(javafx.scene.paint.Color.CYAN)
 				} 
 			double servoBraceRad = JawSideWidth.getMM()
-			CSG servoBrace = new Cylinder(	JawSideWidth.getMM(),
-										servoBraceRad,
+			CSG servoBrace = new Cylinder(	-horn.getMinX()+thickness.getMM(),
+										-horn.getMinX()+thickness.getMM(),
 										thickness.getMM(),(int)30).toCSG()
 						.rotx(90)
 						.movey(-thickness.getMM()/2)
