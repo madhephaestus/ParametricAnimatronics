@@ -1189,6 +1189,7 @@ class Headmaker implements IParameterChanged{
 		double cheecWidth = headDiameter.getMM()/6
 		double cheeckAttach = eyeCenter.getMM()/2 -cheecWidth/2
 		double attachlevel =jawHeight.getMM()+thickness.getMM()-height
+		
 		CSG lring =new Cylinder(leyeDiam.getMM()/2,leyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
 					.movey(eyeCenter.getMM()/2)
 					.toZMin()
@@ -1197,6 +1198,18 @@ class Headmaker implements IParameterChanged{
 					.movey(-eyeCenter.getMM()/2)
 					.toZMin()
 					.roty(-90)
+		//boltDiam			
+		CSG lug =new Cylinder(boltDiam.getMM(),boltDiam.getMM(),thickness.getMM(),(int)30).toCSG() // a one line Cylinder
+					.toZMin()
+					.roty(-90)
+
+		CSG llug = lug
+					.movez(leyeDiam.getMM()/2)
+					.movey(eyeCenter.getMM()/2)
+		CSG rlug = lug
+					.movez(reyeDiam.getMM()/2)
+					.movey(-eyeCenter.getMM()/2)
+					
 		CSG attach = new Cube(	thickness.getMM(),// X dimention
 							cheecWidth,// Y dimention
 							boltLength.getMM()+thickness.getMM()//  Z dimention
@@ -1211,13 +1224,13 @@ class Headmaker implements IParameterChanged{
 					.movez(-attachlevel)
 		CSG plate =lring
 					.scaley(1.1)
-					.scalez(1.1)
+					.scalez(1.3)
 					.union(attach
 								.movez(-attachlevel))
 								.hull()
 					.union(rring
 							.scaley(1.1)
-							.scalez(1.1)
+							.scalez(1.3)
 							.union(attach
 								.movez(-attachlevel))
 								.hull())
@@ -1225,13 +1238,13 @@ class Headmaker implements IParameterChanged{
 		plate=plate
 				.union(
 					attach.movey(-cheeckAttach)
-						.union(rring)
+						.union(rring,rlug)
 						.hull()
 					)
 		plate=plate
 				.union(
 					attach.movey(cheeckAttach)
-						.union(lring)
+						.union(lring,llug)
 						.hull()
 					)
 		plate=plate.difference(lring.makeKeepaway(0.5))
