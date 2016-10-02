@@ -28,6 +28,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
+	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
 
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
@@ -64,7 +65,7 @@ class Headmaker implements IParameterChanged{
 			double jawAttachOffset =  (headDiameter.getMM()/2
 						-thickness.getMM()/2 
 						-thickness.getMM()*2)
-		     HashMap<String, Object> shaftmap = Vitamins.getConfiguration("hobbyServoHorn","standardMicro1")
+		     HashMap<String, Object> shaftmap = Vitamins.getConfiguration("hobbyServoHorn",hornSizeParam.getStrValue())
 			double hornOffset = shaftmap.get("hornThickness")
 			HashMap<String,Object> jawServoConfig = Vitamins.getConfiguration("hobbyServo",jawServoName)
 			double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
@@ -78,7 +79,7 @@ class Headmaker implements IParameterChanged{
 			double jawHingeSlotScale = 8
 			double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 			double servoLongSideOffset = servoWidth-servoCentering
-			CSG horn = Vitamins.get("hobbyServoHorn","standardMicro1")	
+			CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
 			CSG jawServo = Vitamins.get("hobbyServo",jawServoName)
 		                        .toZMax()
 		                        .roty(90)
@@ -152,6 +153,12 @@ class Headmaker implements IParameterChanged{
 					.rotz(-90)
 					
 					.movey(-thickness.getMM()/2)
+
+			horn = horn
+					.union(horn
+							.movey(thickness.getMM())
+					)
+					.hull()
 			def servoBrackets  =generateServoBracket(jawServoName)
 			
 			def allJawServoParts = [horn,jawServo,servoBrackets.get(0),servoBrackets.get(1)].collect { 
@@ -906,6 +913,7 @@ class Headmaker implements IParameterChanged{
 				.setParameter(printerOffset)
 				.setParameter(servoSizeParam)
 				.setParameter(boltSizeParam)
+				.setParameter(hornSizeParam)
 				//.setParameter(ballJointPinSize)
 				//.setParameter(centerOfBall)
 				//.setParameter(ballJointPinSize)
@@ -1306,7 +1314,7 @@ class Headmaker implements IParameterChanged{
 	 * This function generated the eyelid
 	 * Side effect is to set the pin distance between the rotation pins
 	 */
-	ArrayList <CSG> eyeLid(double diameter){
+	CSG eyeLid(double diameter){
 		double lidThickness = 4
 		
 		eyeGearSpacing= eyeLidPinDiam*3/2
@@ -1389,11 +1397,11 @@ class Headmaker implements IParameterChanged{
 		
 		BowlerStudioController.addCsg(lowerlid)
 		
-		return [upperlid,lowerlid]
+		return upperlid
 	}
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
 //CSGDatabase.clear()//set up the database to force only the default values in
-//return new Headmaker().makeHead(true)	
-return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
+return new Headmaker().makeHead(true)	
+//return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
