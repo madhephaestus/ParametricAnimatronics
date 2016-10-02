@@ -41,7 +41,7 @@ class Headmaker implements IParameterChanged{
 		if(cachedParts==null){
 			println "All Parts was null"
 			//Set up some parameters to use
-			
+			eyeLidPinDiam = (thickness.getMM()+2)*Math.sqrt(2)
 			println boltMeasurments.toString() +" and "+nutMeasurments.toString()
 			double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
 			double nutDimeMeasurment = nutMeasurments.get("width")
@@ -675,11 +675,23 @@ class Headmaker implements IParameterChanged{
 			CSG jawHingePin = jawHingeParts.get(0)
 			CSG leftSupportPin =  leftSupport.get(0)
 			CSG rightSupportPin =  rightSupport.get(0)
-			eyePlate.setColor(javafx.scene.paint.Color.CYAN)
+			
 
-			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance,eyeHeight)
+			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance-eyeLidPinDiam,eyeHeight)
 			mechPlate = mechPlate
 						.difference(eyeRings)
+			eyePlate = eyePlate
+						.difference(eyeRings.collect{
+							CSG slice = eyePlate.intersect(it)
+							if(slice. getPolygons().size()>0)
+								return slice.union(
+									slice.movez(thickness.getMM()),
+									slice.movez(-thickness.getMM())
+									).hull()
+							return it
+						})
+									
+			eyePlate.setColor(javafx.scene.paint.Color.CYAN)
 			upperHeadPart=upperHeadPart
 						.difference(eyeRings.collect{
 							CSG slice = upperHeadPart.intersect(it)
@@ -1296,22 +1308,21 @@ class Headmaker implements IParameterChanged{
 	 */
 	CSG eyeLid(double diameter){
 		double lidThickness = 4
-		eyeLidPinDiam = (thickness.getMM()+2)*Math.sqrt(2)
+		
 		eyeGearSpacing= eyeLidPinDiam*3/2
-		double lidMaxAngle =90
+		double lidMaxAngle =70
 		CSG lid  = new Sphere(diameter/2.0+lidThickness,40,20)
 					.toCSG()
 					.difference(new Sphere(diameter/2+1,40,20).toCSG())
 					.difference(new Cube(diameter+lidThickness*2).toCSG()
 								.toXMax()
-								.movex(eyeGearSpacing)
+								//.movex(eyeGearSpacing)
 								)
-					
 					.difference(new Cube(diameter+lidThickness*2).toCSG().toZMax())
-		CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,thickness.getMM()*2+lidThickness/2,(int)30).toCSG()
+	/*	CSG pin = new Cylinder(eyeLidPinDiam/2,eyeLidPinDiam/2,thickness.getMM()*2+lidThickness/2,(int)30).toCSG()
 					.rotx(90)
 					.movez(eyeGearSpacing/2)
-					.movex(eyeGearSpacing)
+					//.movex(eyeGearSpacing)
 		CSG loverlap = pin.toYMax()
 					.movey(diameter/2)
 					.intersect(lid)
@@ -1351,7 +1362,7 @@ class Headmaker implements IParameterChanged{
 			   .roty(lidMaxAngle)
 			   .difference(new Cube(diameter+lidThickness*4+thickness.getMM()*4).toCSG()
 								.toXMax()
-								.movex(-eyeLidPinDiam/4)
+								//.movex(-eyeLidPinDiam/4)
 								)
 			   .movez(eyeGearSpacing/2)
 			   .movex(eyeGearSpacing)
@@ -1361,6 +1372,7 @@ class Headmaker implements IParameterChanged{
 			   .difference(pinInterface
 			   		.toYMax()
 					.movey(-diameter/2))
+		*/
 		BowlerStudioController.addCsg(lid)
 		return lid
 	}
