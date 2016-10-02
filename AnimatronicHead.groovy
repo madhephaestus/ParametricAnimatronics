@@ -132,7 +132,7 @@ class Headmaker implements IParameterChanged{
 			
 			
 			CSG sideJaw = new Cube(
-					JawSideWidth.getMM(),
+					JawSideWidth.getMM()+thickness.getMM(),
 					thickness.getMM(),
 					jawHeight.getMM()+thickness.getMM()
 					+servoHeightFromMechPlate
