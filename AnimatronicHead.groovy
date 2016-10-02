@@ -255,8 +255,8 @@ class Headmaker implements IParameterChanged{
 								(int)15).toCSG()
 								.movez(-firstEyeBoltDistance)	
 								
-			CSG wire = new Cylinder(wireDiam.getMM()/2,
-								wireDiam.getMM()/2
+			CSG wire = new Cylinder(wireDiam.getMM()/2+0.25,
+								wireDiam.getMM()/2+0.25
 								,firstEyeBoltDistance*2,(int)15).toCSG()
 								.movez(-firstEyeBoltDistance)	
 			double boltDistance = 	nutDiam.getMM();
