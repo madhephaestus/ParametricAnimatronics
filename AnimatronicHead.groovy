@@ -1247,8 +1247,8 @@ class Headmaker implements IParameterChanged{
 						.union(lring,llug)
 						.hull()
 					)
-		plate=plate.difference(lring.makeKeepaway(0.5))
-		plate=plate.difference(rring.makeKeepaway(0.5))
+		plate=plate.difference(lring.makeKeepaway(4))
+		plate=plate.difference(rring.makeKeepaway(4))
 		
 		def lcheekLoc =  new Transform().translate(thickness.getMM()/2, 
 											cheeckAttach,
