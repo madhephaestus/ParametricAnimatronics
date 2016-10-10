@@ -1415,6 +1415,6 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-//CSGDatabase.clear()//set up the database to force only the default values in
+CSGDatabase.clear()//set up the database to force only the default values in
 return new Headmaker().makeHead(true)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
