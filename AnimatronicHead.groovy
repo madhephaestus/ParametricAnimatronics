@@ -9,8 +9,8 @@ class Headmaker implements IParameterChanged{
 	double eyeGearSpacing = 6
 	double eyeLidPinDiam = 3
 	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
-	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",100,[200,50])
-	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.63,[200,50])
+	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",140,[200,140])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.55,[headDiameter.getMM()*2,headDiameter.getMM()/2])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -18,18 +18,18 @@ class Headmaker implements IParameterChanged{
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",35,[headDiameter.getMM()/2,29])
-	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",35,[headDiameter.getMM()/2,29])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",56,[headDiameter.getMM()/2,56])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",56,[headDiameter.getMM()/2,56])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM()*2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",16,[20,5])
 	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
+	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","8#32",Vitamins.listVitaminSizes("capScrew"))
 
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
 	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
@@ -228,7 +228,7 @@ class Headmaker implements IParameterChanged{
 									+eyemechRadius.getMM()
 									)
 			
-			double eyeLinkageLength = eyemechRadius.getMM()
+			double eyeLinkageLength = eyemechRadius.getMM()+(boltDiam.getMM()/2)
 			
 			double titlServoPlacement = -(eyeLinkageLength+boltDiam.getMM()*2)
 			double panServoPlacement  = (eyeLinkageLength+boltDiam.getMM()*2)
@@ -239,6 +239,7 @@ class Headmaker implements IParameterChanged{
 				panServoPlacement=titlServoPlacement+eyeLinkageLength*3+boltDiam.getMM()*2
 			}
 			double tiltWheelheight = eyePlateHeight+smallServo.getMaxZ()+	thickness.getMM()
+			double tiltLinkageHeight = eyeHeight+eyemechRadius.getMM();
 			double panWheelheight = eyePlateHeight+smallServo.getMaxZ()-	flangeThickness - thickness.getMM()
 			double eyeXdistance  =headDiameter.getMM()/2
 			double eyeBoltDistance =eyeCenter.getMM()/2-servoLongSideOffset+thickness.getMM()
@@ -429,24 +430,37 @@ class Headmaker implements IParameterChanged{
 				.union(mechLinkageAttach)
 				.difference(bolt)
 				.difference(wire.movex(tiltLinkagelength))
-				.movez(tiltWheelheight+thickness.getMM())
+				.movez(tiltLinkageHeight)
 				.movex(titlServoPlacement)
 				.movey(-eyeCenter.getMM()/2)
 			CSG tiltEyeLinkage2 = tiltEyeLinkage
 				.movey(eyeCenter.getMM())
-		
-			CSG panEyeLinkage  = 	mechLinkageCore
+			
+			CSG panEyeLinkageBase  = 	mechLinkageCore
 				.union(mechLinkageCore.movex(panLinkagelength))
 				.hull()
 				.union(mechLinkageAttach)
 				.difference(bolt)
 				.difference(wire.movex(panLinkagelength))
-				.movez(panWheelheight+thickness.getMM())
+			CSG panEyeLinkageKeepaway = panEyeLinkageBase
+									.hull()
+									.makeKeepaway(printerOffset.getMM())
+									.movez(eyeHeight-thickness.getMM()/2)
+									.movex(panServoPlacement)
+									.movey(-eyeCenter.getMM()/2-eyeLinkageLength)
+			panEyeLinkageKeepaway=panEyeLinkageKeepaway
+								.union(
+									panEyeLinkageKeepaway
+										.movey(eyeCenter.getMM()+eyeLinkageLength*2)
+								)
+			CSG panEyeLinkage=	panEyeLinkageBase
+				.movez(eyeHeight-thickness.getMM()/2)
 				.movex(panServoPlacement)
 				.movey(-eyeCenter.getMM()/2-eyeLinkageLength)
 			CSG panEyeLinkage2 = panEyeLinkage
 				.movey(eyeCenter.getMM()+eyeLinkageLength*2)
-				
+			
+			
 			BowlerStudioController.addCsg(mechLinkage)
 			BowlerStudioController.addCsg(mechLinkage2)
 			BowlerStudioController.addCsg(tiltEyeLinkage)
@@ -565,13 +579,18 @@ class Headmaker implements IParameterChanged{
 										.movey(eyeBoltDistance)
 										.movez(eyeHeight))
 							.difference(eyePan,eyeTilt,eyeBoltPan1,eyeBoltPan2,eyeKeepAway)
+							//.union(eyeBoltPan1,eyeBoltPan2)
 							.difference(jawHingeParts)
 							.difference(leftSupport)
 							.difference(rightSupport)
 			BowlerStudioController.addCsg(eyePlate)	
 			mechPlate = mechPlate
-						.difference(	LeftSideJaw.movex(jawHingeSlotScale),
-									LeftSideJaw.movex(-jawHingeSlotScale),
+						.difference(	LeftSideJaw.movex(0.5)
+											 .movez(-thickness.getMM()*2)
+											 .hull(),
+									LeftSideJaw.movex(-0.5)
+											 .movez(-thickness.getMM()*2)
+											 .hull(),
 									RightSideJaw.movex(jawHingeSlotScale),
 									RightSideJaw.movex(-jawHingeSlotScale)
 									)// scale forrro for the jaw to move
@@ -610,7 +629,7 @@ class Headmaker implements IParameterChanged{
 				CSG newWash = washer();
 				if(i<numTiltWashers){
 					newWash=newWash
-							.movex(titlServoPlacement+eyeLinkageLength/2)
+							.movex(titlServoPlacement)
 							.movey(eyeCenter.getMM()/2+eyeLinkageLength)
 							.movez(tiltWheelheight-(thickness.getMM()*(i+1))-nutThick.getMM())
 							.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
@@ -618,7 +637,7 @@ class Headmaker implements IParameterChanged{
 				}
 				if(i>=numTiltWashers && i<totalWashers-numExtraWashers){
 					newWash=newWash
-							.movex(panServoPlacement+eyeLinkageLength/2)
+							.movex(panServoPlacement)
 							.movey(eyeCenter.getMM()/2)
 							.movez(panWheelheight-(thickness.getMM()*(i-numTiltWashers-1))-nutThick.getMM())
 							.setColor(javafx.scene.paint.Color.color(i%2?1:0,1,1))
@@ -667,7 +686,16 @@ class Headmaker implements IParameterChanged{
 													eyeHeight)
 			Transform rEyeLocation=	new Transform().translate(eyeXdistance,
 													-eyeCenter.getMM()/2,
-													eyeHeight)								
+													eyeHeight)	
+										// creating the ball socket cup	
+			CSG cup = getEyeLinkageCup()
+						.roty(180)
+			//eyeLinkageLength = eyemechRadius.getMM()+(boltDiam.getMM()/2)
+			CSG outerLeftCup = cup
+							.transformed(lEyeLocation)
+							.movey(eyeLinkageLength)	
+							.difference(panEyeLinkageKeepaway)	
+			BowlerStudioController.addCsg(outerLeftCup)					
 			CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
 						.transformed(lEyeLocation)
 						.setColor(javafx.scene.paint.Color.WHITE)
@@ -710,7 +738,7 @@ class Headmaker implements IParameterChanged{
 						})
 			
 			CSG eyeRingPlate = eyeRings.get(0)
-			
+			/*
 			def eyeLids = [eyeLid(leyeDiam.getMM())
 						.transformed(lEyeLocation),
 						eyeLid(leyeDiam.getMM())
@@ -721,8 +749,13 @@ class Headmaker implements IParameterChanged{
 						eyeLid(reyeDiam.getMM())
 						.rotx(180)
 						.transformed(rEyeLocation)]
-			
-			
+			*/
+			outerLeftCup.setManufactuing({incoming ->
+				return 	incoming.toZMin()
+							.toXMin()
+							.toYMin()
+							
+			})	
 			eyeRingPlate.setManufactuing({incoming ->
 				return 	incoming.roty(90)
 							.toZMin()
@@ -771,15 +804,17 @@ class Headmaker implements IParameterChanged{
 			eyeMechWheelPan.setManufactuing({incoming ->
 				return 	incoming.toZMin()
 							.toXMax()
+							.toYMin()
 							.movex( -headDiameter.getMM()+eyeLinkageLength)
-							.movey(- headDiameter.getMM())
+							.movey(- headDiameter.getMM()*2)
 							
 			})
 			eyeMechWheelTilt.setManufactuing({incoming ->
 				return 	incoming.toZMin()
 							.toXMin()
+							.toYMin()
 							.movex( -headDiameter.getMM()+eyeLinkageLength+1)
-							.movey(- headDiameter.getMM())
+							.movey(- headDiameter.getMM()*2)
 							
 			})
 	
@@ -894,7 +929,8 @@ class Headmaker implements IParameterChanged{
 			returnValues.add(rightBallJoint)
 			returnValues.add(eyePan)
 			returnValues.add(eyeTilt)
-			returnValues.addAll(eyeLids)
+			returnValues.add(outerLeftCup)
+			//returnValues.addAll(eyeLids)
 			for (int i=0;i<returnValues.size();i++){
 				int index = i
 				returnValues[i].getMapOfparametrics().clear()
@@ -982,15 +1018,35 @@ class Headmaker implements IParameterChanged{
 	CSG tSlotKeepAway(){
 		return tSlotTabs().hull()
 	}
-	
+	CSG getEyeLinkageCup(){
+		CSG cup = new Sphere((boltDiam.getMM()*2.2 )-
+						printerOffset.getMM()
+		).toCSG()
+		CSG pin = new Sphere((boltDiam.getMM()*1.5)+
+						printerOffset.getMM(),30,15).toCSG()
+		
+		CSG ringBox =new Cube(	boltDiam.getMM()*4,// X dimention
+			boltDiam.getMM()*4,// Y dimention
+			thickness.getMM()*2//  Z dimention
+			).toCSG()// 
+			.movex(boltDiam.getMM()*4/3)
+		CSG linkage =new Cube(	boltDiam.getMM()*3,// X dimention
+			boltDiam.getMM()*3,// Y dimention
+			thickness.getMM()*2//  Z dimention
+			).toCSG()// 
+			.toXMin()
+			.movex(boltDiam.getMM())
+		cup = cup.intersect(ringBox)
+				.union(linkage)
+				.difference(pin)
+		return cup
+	}
 	CSG getEye(double diameter,CSG ballJointKeepAway){
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
 		}
-		LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
-		LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",2.5,[8,2])
-		LengthParameter thickness 		= new LengthParameter("Material Thickness",3.5,[10,1])
+		double cupOffset = 4
 		ballJointKeepAway= ballJointKeepAway
 						.union(
 							ballJointKeepAway
@@ -1001,35 +1057,39 @@ class Headmaker implements IParameterChanged{
 							.toZMin()
 							)
 							)
-		CSG eye = new Sphere(diameter/2,40,20)// Spheres radius
+		CSG eye = new Sphere(diameter/2,30,15)// Spheres radius
 					.toCSG()// convert to CSG to display
-					.difference(new Cube(diameter).toCSG().toXMax().movex(-4))
+					.difference(new Cube(diameter).toCSG().toXMax().movex(-cupOffset))
 					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))
 					.difference(ballJointKeepAway)
-		CSG slot = new Cylinder(
-					boltDiam.getMM(),
-					boltDiam.getMM(),
-					thickness.getMM(),
-					(int)15).toCSG()
-					.difference(new Cylinder(
-					boltDiam.getMM()/2,
-					boltDiam.getMM()/2,
-					thickness.getMM(),
-					(int)15).toCSG())
-					.movez(-thickness.getMM()/2)
-					.roty(90)
-					.rotz(90)
-					.toXMax()
-					
-		for (int i=0;i<4;i++){
+		
+		CSG slot = new Sphere(boltDiam.getMM()*2.2,30,15).toCSG()
+		
+		CSG pin = new Sphere(boltDiam.getMM()*1.5,30,15).toCSG()
+				.union(
+					new Cylinder(	boltDiam.getMM()/1.5,
+								boltDiam.getMM()/1.5,,
+								boltDiam.getMM()*4,(int)15)
+					.toCSG() 
+					.roty(-90)
+					)
+		
+		slot = slot.movex(-cupOffset)
+				.union(slot)
+				.hull()
+		slot=slot.difference(pin)
+		for (int i=1;i<5;i++){
 			eye=eye
 			.difference(
 				slot
-				.rotx(-90*i)
-				.movez(
-					eyemechRadius.getMM()+boltDiam.getMM()/2)
-					.rotx(90*i))
+				.movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
+				.rotx(90*i)
 		}
+		/*
+		eye=eye.union( getEyeLinkageCup()
+					.roty(180)
+					.movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
+		*/			
 		eyeCache.put(diameter,eye)
 		return eye			
 	}
@@ -1144,7 +1204,7 @@ class Headmaker implements IParameterChanged{
 							thickness.getMM(),
 							(int)15).toCSG()
 							.difference(bolt)
-							.movex(-5)
+							//.movex(-5)
 	}
 	
 	ArrayList <CSG> generateServoHinge(String servoName, double eyePlateHeight){
@@ -1190,14 +1250,26 @@ class Headmaker implements IParameterChanged{
 		double cheeckAttach = eyeCenter.getMM()/2 -cheecWidth/2
 		double attachlevel =jawHeight.getMM()+thickness.getMM()-height
 		
-		CSG lring =new Cylinder(leyeDiam.getMM()/2,leyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
-					.movey(eyeCenter.getMM()/2)
+		CSG lring =new Cylinder(leyeDiam.getMM()/2,leyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinde
 					.toZMin()
 					.roty(-90)
 		CSG rring =new Cylinder(reyeDiam.getMM()/2,reyeDiam.getMM()/2,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
-					.movey(-eyeCenter.getMM()/2)
 					.toZMin()
 					.roty(-90)
+		double scale = 1.4
+		CSG rKeepaway= rring
+					.scaley(scale)
+					.scalez(scale)
+					.movey(-eyeCenter.getMM()/2)
+		rring=rring
+				.movey(-eyeCenter.getMM()/2)
+		CSG lKeepaway= lring
+					.scaley(scale)
+					.scalez(scale)
+					.movey(eyeCenter.getMM()/2)
+		lring=lring
+				.movey(eyeCenter.getMM()/2)		
+		
 		//boltDiam			
 		CSG lug =new Cylinder(boltDiam.getMM(),boltDiam.getMM(),thickness.getMM(),(int)30).toCSG() // a one line Cylinder
 					.toZMin()
@@ -1222,15 +1294,11 @@ class Headmaker implements IParameterChanged{
 							.toZMax()
 							.movez(reyeDiam.getMM()/2))
 					.movez(-attachlevel)
-		CSG plate =lring
-					.scaley(1.1)
-					.scalez(1.3)
+		CSG plate =lKeepaway
 					.union(attach
 								.movez(-attachlevel))
 								.hull()
-					.union(rring
-							.scaley(1.1)
-							.scalez(1.3)
+					.union(rKeepaway
 							.union(attach
 								.movez(-attachlevel))
 								.hull())
@@ -1247,8 +1315,8 @@ class Headmaker implements IParameterChanged{
 						.union(lring,llug)
 						.hull()
 					)
-		plate=plate.difference(lring.makeKeepaway(4))
-		plate=plate.difference(rring.makeKeepaway(4))
+		plate=plate.difference(lring.makeKeepaway(7))
+		plate=plate.difference(rring.makeKeepaway(7))
 		
 		def lcheekLoc =  new Transform().translate(thickness.getMM()/2, 
 											cheeckAttach,
@@ -1416,5 +1484,15 @@ class Headmaker implements IParameterChanged{
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
 CSGDatabase.clear()//set up the database to force only the default values in
+ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
+		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
+			                              "ballJointBall.groovy" , // file to load
+			                              null// no parameters (see next tutorial)
+		                        )
+CSG ballJoint = ballJointParts.get(0)
+CSG ballJointKeepAway = ballJointParts.get(1)
+//return new Headmaker().getEye(46,ballJointKeepAway)
+//return new Headmaker().getEyeLinkageCup()
+//
 return new Headmaker().makeHead(true)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
