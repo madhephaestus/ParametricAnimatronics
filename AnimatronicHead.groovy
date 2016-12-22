@@ -567,7 +567,21 @@ class Headmaker implements IParameterChanged{
 			 * 			Building the main plates
 			 * 			
 			 */
-			//cut a matching slot from the eye plate 					
+			//cut a matching slot from the eye plate 	
+			def jawKeepaway = [	LeftSideJaw.movex(0.5)
+											 .movez(-thickness.getMM()*2)
+											.union(
+												LeftSideJaw.movex(-0.5)
+											 		.movez(-thickness.getMM()*2)
+												)
+											 .hull(),
+									RightSideJaw.movex(jawHingeSlotScale),
+									RightSideJaw.movex(-jawHingeSlotScale)	
+											 	].collect{
+											 		return it.movez(thickness.getMM()*4)
+											 				.union(it)
+											 				.hull()
+											 	}
 			eyePlate = eyePlate	.difference(upperHeadPart,upperHeadPart.movex(10))
 							.difference(bolts
 										.movex(firstEyeBoltDistance)
@@ -583,17 +597,10 @@ class Headmaker implements IParameterChanged{
 							.difference(jawHingeParts)
 							.difference(leftSupport)
 							.difference(rightSupport)
+							.difference(jawKeepaway)
 			BowlerStudioController.addCsg(eyePlate)	
 			mechPlate = mechPlate
-						.difference(	LeftSideJaw.movex(0.5)
-											 .movez(-thickness.getMM()*2)
-											 .hull(),
-									LeftSideJaw.movex(-0.5)
-											 .movez(-thickness.getMM()*2)
-											 .hull(),
-									RightSideJaw.movex(jawHingeSlotScale),
-									RightSideJaw.movex(-jawHingeSlotScale)
-									)// scale forrro for the jaw to move
+						.difference(jawKeepaway)// scale forrro for the jaw to move
 						.difference(allJawServoParts)
 						.difference(jawHingeParts)
 						.difference(leftSupport)
