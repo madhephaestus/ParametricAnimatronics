@@ -599,14 +599,16 @@ class Headmaker implements IParameterChanged{
 							.difference(rightSupport)
 							.difference(jawKeepaway)
 			BowlerStudioController.addCsg(eyePlate)	
-			mechPlate = mechPlate
-						.difference(jawKeepaway)// scale forrro for the jaw to move
-						.difference(allJawServoParts)
-						.difference(jawHingeParts)
-						.difference(leftSupport)
-						.difference(rightSupport)
-						.difference(upperHead)
-						.difference(eyePan,eyeTilt)
+			mechPlate = mechPlate.difference(jawKeepaway)// scale forrro for the jaw to move
+			mechPlate = mechPlate.difference(allJawServoParts)
+			mechPlate = mechPlate.difference(jawHingeParts)
+			mechPlate = mechPlate.difference(leftSupport)
+			mechPlate = mechPlate.difference(rightSupport)
+			mechPlate = mechPlate.difference(upperHead)
+			if(mechPlate.touching(eyePan))
+				mechPlate = mechPlate.difference(eyePan)
+			if(mechPlate.touching(eyeTilt))
+				mechPlate = mechPlate.difference(eyeTilt)
 			BowlerStudioController.addCsg(mechPlate)	
 			bottomJaw = bottomJaw.difference(
 								LeftSideJaw,
@@ -1490,7 +1492,7 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-CSGDatabase.clear()//set up the database to force only the default values in
+//CSGDatabase.clear()//set up the database to force only the default values in
 ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
 		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 			                              "ballJointBall.groovy" , // file to load
@@ -1501,5 +1503,5 @@ CSG ballJointKeepAway = ballJointParts.get(1)
 //return new Headmaker().getEye(46,ballJointKeepAway)
 //return new Headmaker().getEyeLinkageCup()
 //
-return new Headmaker().makeHead(true)	
+return new Headmaker().makeHead(false)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
