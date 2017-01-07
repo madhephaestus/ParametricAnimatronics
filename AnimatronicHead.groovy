@@ -1492,7 +1492,7 @@ class Headmaker implements IParameterChanged{
 }
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
-//CSGDatabase.clear()//set up the database to force only the default values in
+CSGDatabase.clear()//set up the database to force only the default values in
 ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
 		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 			                              "ballJointBall.groovy" , // file to load
