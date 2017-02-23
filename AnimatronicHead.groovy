@@ -337,14 +337,14 @@ class Headmaker implements IParameterChanged{
 						.movez(eyeHeight)
 			
 		
-			CSG eyeKeepAwayr =new Sphere(reyeDiam.getMM()/2+1)// Spheres radius
+			CSG eyeKeepAwayr =new Sphere(reyeDiam.getMM()/2+6)// Spheres radius
 							.toCSG()
 						.movey(-eyeCenter.getMM()/2)		
 						.movex(headDiameter.getMM()/2)
 						.movez(eyePlateHeight-thickness.getMM())
 			eyeKeepAwayr= eyeKeepAwayr.union(eyeKeepAwayr.movez(	thickness.getMM()*2)).hull()
 		
-			CSG eyeKeepAwayl =new Sphere(leyeDiam.getMM()/2+1)// Spheres radius
+			CSG eyeKeepAwayl =new Sphere(leyeDiam.getMM()/2+6)// Spheres radius
 							.toCSG()
 						.movey(eyeCenter.getMM()/2)		
 						.movex(headDiameter.getMM()/2)
