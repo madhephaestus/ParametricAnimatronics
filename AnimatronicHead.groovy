@@ -1,6 +1,12 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import eu.mihosoft.vrl.v3d.Transform;
+		CSG.setProgressMoniter(new ICSGProgress() {
+					public void progressUpdate(int currentIndex, int finalIndex, String type, CSG intermediateShape) {
+						println type+" "+currentIndex+" of "+ finalIndex
+						
+					}
+				});
 class Headmaker implements IParameterChanged{
 	boolean makeCutsheetStorage = false
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
@@ -929,8 +935,16 @@ class Headmaker implements IParameterChanged{
 			CSG cutSheet;
 			if(makeCutSheet){
 				print "\nBuilding cut sheet... "
+				ICSGProgress  oldUpdater = CSG.getProgressMoniter()
+				CSG.setProgressMoniter(new ICSGProgress() {
+					public void progressUpdate(int currentIndex, int finalIndex, String type, CSG intermediateShape) {
+						println type+" "+currentIndex+" of "+ finalIndex
+						BowlerStudioController.addCsg(intermediateShape);
+					}
+				});
 				def allParts = 	returnValues.collect { it.prepForManufacturing() } 
 				cutSheet = allParts.get(0).union(allParts)
+				CSG.setProgressMoniter(oldUpdater);
 			}
 			returnValues.add(leftEye)
 			returnValues.add(rightEye)
