@@ -1,12 +1,7 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import eu.mihosoft.vrl.v3d.Transform;
-		CSG.setProgressMoniter(new ICSGProgress() {
-					public void progressUpdate(int currentIndex, int finalIndex, String type, CSG intermediateShape) {
-						println type+" "+currentIndex+" of "+ finalIndex
-						
-					}
-				});
+
 class Headmaker implements IParameterChanged{
 	boolean makeCutsheetStorage = false
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
