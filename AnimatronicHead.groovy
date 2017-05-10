@@ -14,9 +14,14 @@ class Headmaker implements IParameterChanged{
 	ArrayList<CSG> cachedParts = null;
 	double eyeGearSpacing = 6
 	double eyeLidPinDiam = 3
-	LengthParameter thickness 		= new LengthParameter("Material Thickness",3.15,[10,1])
-	LengthParameter headDiameter 		= new LengthParameter("Head Dimeter",140,[200,140])
-	LengthParameter snoutLen 		= new LengthParameter("Snout Length",headDiameter.getMM()*0.55,[headDiameter.getMM()*2,headDiameter.getMM()/2])
+
+	LengthParameter thickness 		= new LengthParameter(	"Material Thickness",
+													3.2,
+													[10,1])
+	LengthParameter headDiameter 		= new LengthParameter(	"Head Dimeter",
+													165,
+													[200,140])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",150,[headDiameter.getMM()*2,headDiameter.getMM()/2])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -24,8 +29,8 @@ class Headmaker implements IParameterChanged{
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",56,[headDiameter.getMM()/2,56])
-	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",56,[headDiameter.getMM()/2,56])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",85,[headDiameter.getMM()/2,56])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",65,[headDiameter.getMM()/2,56])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM()*2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
@@ -36,6 +41,8 @@ class Headmaker implements IParameterChanged{
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","8#32",Vitamins.listVitaminSizes("capScrew"))
+
+
 
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
 	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
@@ -732,24 +739,13 @@ class Headmaker implements IParameterChanged{
 						.difference(eyeRings)
 			eyePlate = eyePlate
 						.difference(eyeRings.collect{
-							CSG slice = eyePlate.intersect(it)
-							if(slice. getPolygons().size()>0)
-								return slice.union(
-									slice.movez(thickness.getMM()),
-									slice.movez(-thickness.getMM())
-									).hull()
-							return it
+							return aSlidesIntoB(it,eyePlate)
 						})
 									
 			eyePlate.setColor(javafx.scene.paint.Color.CYAN)
 			upperHeadPart=upperHeadPart
 						.difference(eyeRings.collect{
-							CSG slice = upperHeadPart.intersect(it)
-							if(slice. getPolygons().size()>0)
-								return slice.union(
-									slice.movez(upperHeadDiam.getMM())
-									).hull()
-							return it
+							return aSlidesIntoB(it,upperHeadPart)
 						})
 			
 			CSG eyeRingPlate = eyeRings.get(0)
@@ -996,6 +992,27 @@ class Headmaker implements IParameterChanged{
 			return cachedParts
 		}
 	}
+	private CSG aSlidesIntoB(CSG a, CSG b){
+		CSG slice = b.hull().intersect(a)
+		int step = 0
+		def steps = [slice]
+		while(slice. getPolygons().size()>0){
+			steps.add(slice)
+			slice = b.hull().intersect(a.movez(thickness.getMM()*step))
+			step +=1
+		}
+		if(step>0)
+			return CSG.unionAll(steps.collect{
+					it.union([
+						it.movey(thickness.getMM()),
+						it.movey(-thickness.getMM())
+						]).hull()
+				
+			})
+		else
+			return a
+			
+	}
 
 	/**
 	 * This is a listener for a parameter changing
@@ -1065,6 +1082,7 @@ class Headmaker implements IParameterChanged{
 		return cup
 	}
 	CSG getEye(double diameter,CSG ballJointKeepAway){
+		return new Cube(diameter/2).toCSG()
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
