@@ -79,11 +79,13 @@ class Headmaker implements IParameterChanged{
 			double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
 			double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
 			double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention").toString())
-			double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge").toString())
 			double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
 			double flangeThickness =  Double.parseDouble(jawServoConfig.get("flangeThickness").toString())
 			double servoShaftSideHeight =  Double.parseDouble(jawServoConfig.get("servoShaftSideHeight").toString())	
 			double bottomOfFlangeToTopOfBody =  Double.parseDouble(jawServoConfig.get("bottomOfFlangeToTopOfBody").toString())
+			
+			double totalFlangLen = (jawServoConfig.flangeLongDimention-jawServoConfig.servoThickDimentionThickness)/2
+			double servoCentering  =jawServoConfig.shaftToShortSideDistance+totalFlangLen
 			double jawHingeSlotScale = 8
 			double thicknessHoleRadius =  Math.sqrt(2*(thickness.getMM()/2)* (thickness.getMM()/2))
 			double servoLongSideOffset = servoWidth-servoCentering
@@ -1178,7 +1180,8 @@ class Headmaker implements IParameterChanged{
 		double servoHeightFromMechPlate = Double.parseDouble(jawServoConfig.get("servoThinDimentionThickness").toString())/2
 		double servoJawMountPlateOffset = Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
 		double servoWidth = Double.parseDouble(jawServoConfig.get("flangeLongDimention").toString())
-		double servoCentering  = Double.parseDouble(jawServoConfig.get("shaftToShortSideFlandgeEdge").toString())
+		double totalFlangLen = (jawServoConfig.flangeLongDimention-jawServoConfig.servoThickDimentionThickness)/2
+		double servoCentering  =jawServoConfig.shaftToShortSideDistance+totalFlangLen
 		double flangeMountOffset =  Double.parseDouble(jawServoConfig.get("tipOfShaftToBottomOfFlange").toString())
 		double leftOffset = servoCentering+thickness.getMM()*3+boltDiam.getMM()*2
 		double rightOffset = servoWidth-leftOffset+thickness.getMM()*5+boltDiam.getMM()*2
