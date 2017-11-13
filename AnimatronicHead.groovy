@@ -1079,7 +1079,7 @@ class Headmaker implements IParameterChanged{
 		return cup
 	}
 	CSG getEye(double diameter,CSG ballJointKeepAway){
-		//return new Cube(diameter/2).toCSG()
+		
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
