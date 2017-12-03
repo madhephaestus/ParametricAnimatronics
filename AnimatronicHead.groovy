@@ -925,6 +925,13 @@ class Headmaker implements IParameterChanged{
 							]
 			returnValues.addAll(washers)	
 			returnValues.addAll(mechLinks)
+			int[] version = com.neuronrobotics.javacad.JavaCadBuildInfo.getBuildInfo();
+			if(version[0]>0 || version[1]>=12){
+				println "MFG Format API found"
+				for(CSG part:returnValues){
+					returnValues.addExportFormat("svg"
+				}
+			}
 			CSG cutSheet;
 			if(makeCutSheet){
 				print "\nBuilding cut sheet... "
