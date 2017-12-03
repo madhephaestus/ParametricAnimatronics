@@ -24,7 +24,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",85,[headDiameter.getMM()/2,56])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",65,[headDiameter.getMM()/2,56])
 	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",65,[headDiameter.getMM()/2,56])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM()*2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
@@ -929,7 +929,7 @@ class Headmaker implements IParameterChanged{
 			if(version[0]>0 || version[1]>=12){
 				println "MFG Format API found"
 				for(CSG part:returnValues){
-					returnValues.addExportFormat("svg")
+					part.addExportFormat("svg")
 				}
 			}
 			CSG cutSheet;
