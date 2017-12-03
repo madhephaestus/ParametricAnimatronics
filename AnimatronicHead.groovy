@@ -929,7 +929,7 @@ class Headmaker implements IParameterChanged{
 			if(version[0]>0 || version[1]>=12){
 				println "MFG Format API found"
 				for(CSG part:returnValues){
-					returnValues.addExportFormat("svg"
+					returnValues.addExportFormat("svg")
 				}
 			}
 			CSG cutSheet;
