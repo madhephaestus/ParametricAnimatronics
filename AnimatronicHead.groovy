@@ -14,7 +14,7 @@ class Headmaker implements IParameterChanged{
 													5.1,
 													[10,1])
 	LengthParameter headDiameter 		= new LengthParameter(	"Head Dimeter",
-													140,
+													150,
 													[200,140])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",120,[headDiameter.getMM()*2,headDiameter.getMM()/2])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
@@ -735,7 +735,7 @@ class Headmaker implements IParameterChanged{
 			CSG rightSupportPin =  rightSupport.get(0)
 			
 
-			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance-eyeLidPinDiam*3/2,eyeHeight)
+			def eyeRings  = generateEyeRings(upperHeadPart,eyeXdistance-eyeLidPinDiam*3/2+5,eyeHeight)
 			mechPlate = mechPlate
 						.difference(eyeRings)
 			eyePlate = eyePlate
