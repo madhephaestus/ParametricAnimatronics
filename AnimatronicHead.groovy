@@ -1085,15 +1085,15 @@ class Headmaker implements IParameterChanged{
 						printerOffset.getMM()
 		).toCSG()
 		CSG pin = new Sphere(ballSize,30,15).toCSG()
-		
+		double overallThickness = 3.5*2//  Z dimention
 		CSG ringBox =new Cube(	3*4,// X dimention
 			3*4,// Y dimention
-			3.2*2//  Z dimention
+			overallThickness//  Z dimention
 			).toCSG()// 
 			.movex(3*4/3)
 		CSG linkage =new Cube(	3*3,// X dimention
-			3*3,// Y dimention
-			3.2*2//  Z dimention
+			thickness.getMM()*1.75,// Y dimention
+			overallThickness//  Z dimention
 			).toCSG()// 
 			.toXMin()
 			.movex(3)
