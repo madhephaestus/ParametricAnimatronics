@@ -11,7 +11,7 @@ class Headmaker implements IParameterChanged{
 	double eyeLidPinDiam = 3
 
 	LengthParameter thickness 		= new LengthParameter(	"Material Thickness",
-													3.2,
+													5.1,
 													[10,1])
 	LengthParameter headDiameter 		= new LengthParameter(	"Head Dimeter",
 													165,
@@ -712,12 +712,12 @@ class Headmaker implements IParameterChanged{
 													eyeHeight)	
 										// creating the ball socket cup	
 			CSG cup = getEyeLinkageCup()
-						.roty(180)
+						
 			//eyeLinkageLength = eyemechRadius.getMM()+(boltDiam.getMM()/2)
 			CSG outerLeftCup = cup
 							.transformed(lEyeLocation)
 							.movey(eyeLinkageLength)	
-							.difference(panEyeLinkageKeepaway)	
+							//.difference(panEyeLinkageKeepaway)	
 			BowlerStudioController.addCsg(outerLeftCup)					
 			CSG leftEye = getEye(leyeDiam.getMM())
 						.transformed(lEyeLocation)
@@ -1067,27 +1067,41 @@ class Headmaker implements IParameterChanged{
 		return tSlotTabs().hull()
 	}
 	CSG getEyeLinkageCup(){
+		double ballSize  = 5+printerOffset.getMM()/2
+		
+		CSG mechLinkageCore = new Cylinder(boltDiam.getMM(),
+								boltDiam.getMM(),
+								thickness.getMM(),
+								(int)15).toCSG()
+								.toXMin()
+								.movex(ballSize)
+								.movez(-3.2/2)
+		CSG Link = CSG.unionAll([mechLinkageCore,
+							mechLinkageCore.movex(10)
+		]).hull()
+		Link=Link.union(Link.rotx(90))
+		
 		CSG cup = new Sphere((3*2.2 )-
 						printerOffset.getMM()
 		).toCSG()
-		CSG pin = new Sphere((3*1.5)+
-						printerOffset.getMM()/2,30,15).toCSG()
+		CSG pin = new Sphere(ballSize,30,15).toCSG()
 		
 		CSG ringBox =new Cube(	3*4,// X dimention
-			boltDiam.getMM()*4,// Y dimention
-			thickness.getMM()*2//  Z dimention
+			3*4,// Y dimention
+			3.2*2//  Z dimention
 			).toCSG()// 
-			.movex(boltDiam.getMM()*4/3)
+			.movex(3*4/3)
 		CSG linkage =new Cube(	3*3,// X dimention
 			3*3,// Y dimention
-			thickness.getMM()*2//  Z dimention
+			3.2*2//  Z dimention
 			).toCSG()// 
 			.toXMin()
 			.movex(3)
 		cup = cup.intersect(ringBox)
 				.union(linkage)
 				.difference(pin)
-		return cup
+				.difference(Link)
+		return cup.rotz(180)
 	}
 	CSG getEye(double diameter){
 		
@@ -1542,8 +1556,8 @@ if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
 CSGDatabase.clear()//set up the database to force only the default values in
 
-return new Headmaker().getEye(65)
-//return new Headmaker().getEyeLinkageCup()
+Headmaker hm= new Headmaker()
+return [hm.getEyeLinkageCup()]
 //
 return new Headmaker().makeHead(false)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
