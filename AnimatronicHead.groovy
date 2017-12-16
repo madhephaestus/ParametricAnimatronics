@@ -1067,6 +1067,13 @@ class Headmaker implements IParameterChanged{
 		return tSlotTabs().hull()
 	}
 	CSG getEyeLinkageCup(){
+		println boltMeasurments.toString() +" and "+nutMeasurments.toString()
+		double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
+		double nutDimeMeasurment = nutMeasurments.get("width")
+		double nutThickMeasurment = nutMeasurments.get("height")
+		boltDiam.setMM(boltDimeMeasurment)
+		nutDiam.setMM(nutDimeMeasurment)
+		nutThick.setMM(nutThickMeasurment)
 		double ballSize  = 5+printerOffset.getMM()/2
 		
 		CSG mechLinkageCore = new Cylinder(boltDiam.getMM(),
@@ -1085,14 +1092,14 @@ class Headmaker implements IParameterChanged{
 						printerOffset.getMM()
 		).toCSG()
 		CSG pin = new Sphere(ballSize,30,15).toCSG()
-		double overallThickness = 3.5*2//  Z dimention
+		double overallThickness = 3.2*2//  Z dimention
 		CSG ringBox =new Cube(	3*4,// X dimention
 			3*4,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
 			.movex(3*4/3)
 		CSG linkage =new Cube(	3*3,// X dimention
-			thickness.getMM()*1.75,// Y dimention
+			boltDimeMeasurment*2.5,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
 			.toXMin()
@@ -1564,6 +1571,6 @@ CSGDatabase.clear()//set up the database to force only the default values in
 
 Headmaker hm= new Headmaker()
 //return [hm.getEye(53)]
-//
+//return [hm.getEyeLinkageCup()]
 return hm.makeHead(false)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
