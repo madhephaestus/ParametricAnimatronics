@@ -14,7 +14,7 @@ class Headmaker implements IParameterChanged{
 													5.1,
 													[10,1])
 	LengthParameter headDiameter 		= new LengthParameter(	"Head Dimeter",
-													130,
+													140,
 													[200,140])
 	LengthParameter snoutLen 		= new LengthParameter("Snout Length",120,[headDiameter.getMM()*2,headDiameter.getMM()/2])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
@@ -30,7 +30,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",10,[20,5])
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",15,[20,5])
 	LengthParameter eyemechWheelHoleDiam	= new LengthParameter("Eye Mech Wheel Center Hole Diam",7.25,[8,3])
 	LengthParameter wireDiam			= new LengthParameter("Connection Wire Diameter",1.6,[boltDiam.getMM(),1])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
