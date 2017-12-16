@@ -14,9 +14,9 @@ class Headmaker implements IParameterChanged{
 													5.1,
 													[10,1])
 	LengthParameter headDiameter 		= new LengthParameter(	"Head Dimeter",
-													165,
+													145,
 													[200,140])
-	LengthParameter snoutLen 		= new LengthParameter("Snout Length",150,[headDiameter.getMM()*2,headDiameter.getMM()/2])
+	LengthParameter snoutLen 		= new LengthParameter("Snout Length",120,[headDiameter.getMM()*2,headDiameter.getMM()/2])
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
@@ -24,8 +24,8 @@ class Headmaker implements IParameterChanged{
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
-	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",65,[headDiameter.getMM()/2,56])
-	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",65,[headDiameter.getMM()/2,56])
+	LengthParameter leyeDiam 		= new LengthParameter("Left Eye Diameter",53,[headDiameter.getMM()/2,56])
+	LengthParameter reyeDiam 		= new LengthParameter("Right Eye Diameter",53,[headDiameter.getMM()/2,56])
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",headDiameter.getMM()/2+thickness.getMM()*2,[headDiameter.getMM(),leyeDiam.getMM()*1.5])
 	LengthParameter ballJointPin		= new LengthParameter("Ball Joint Pin Size",8,[50,8])
 	LengthParameter centerOfBall 		= new LengthParameter("Center Of Ball",18.5,[50,8])
@@ -1075,7 +1075,7 @@ class Headmaker implements IParameterChanged{
 								(int)15).toCSG()
 								.toXMin()
 								.movex(ballSize)
-								.movez(-3.2/2)
+								.movez(-thickness.getMM()/2)
 		CSG Link = CSG.unionAll([mechLinkageCore,
 							mechLinkageCore.movex(10)
 		]).hull()
@@ -1129,8 +1129,13 @@ class Headmaker implements IParameterChanged{
 		//return eye
 		
 		CSG slot = new Sphere(8,30,7).toCSG()
-		CSG pinSupport = new Cube(10,2.5,12).toCSG()
+		CSG pinSupport = new RoundedCube(5,2.5,6)
+						.cornerRadius(1)
+						.toCSG()
 						.toZMax()
+						.movez(-5)
+						.toXMin()
+						.movex(-4.5)
 						
 		CSG pin = new Sphere(5,30,15).toCSG()
 					.union(
@@ -1161,7 +1166,7 @@ class Headmaker implements IParameterChanged{
 					.movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
 		*/			
 		eyeCache.put(diameter,eye)
-		return eye			
+		return eye.union(getEyeLinkageCup().movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
 	}
 	
 	CSG tSlotNutAssembly(){
@@ -1557,7 +1562,7 @@ if(args!=null)
 CSGDatabase.clear()//set up the database to force only the default values in
 
 Headmaker hm= new Headmaker()
-return [hm.getEyeLinkageCup()]
+return [hm.getEye(53)]
 //
-return new Headmaker().makeHead(false)	
+return hm.makeHead(false)	
 //return new Headmaker().eyeLid(new LengthParameter("Left Eye Diameter",35,[200,29]).getMM())
