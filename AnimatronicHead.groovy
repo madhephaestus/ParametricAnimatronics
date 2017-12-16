@@ -41,6 +41,14 @@ class Headmaker implements IParameterChanged{
 
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
 	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
+		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
+			                              "ballJointBall.groovy" , // file to load
+			                              null// no parameters (see next tutorial)
+		                        )
+	
+	CSG ballJoint = ballJointParts.get(0)
+	CSG ballJointKeepAway = ballJointParts.get(1)	
 	/**
 	 * This script is used to make a parametric anamatronic creature head.
 	 * change the default values in LengthParameters to make changes perminant
@@ -60,13 +68,9 @@ class Headmaker implements IParameterChanged{
 			nutThick.setMM(nutThickMeasurment)
 			
 			ballJointPin.setMM(4)
-			ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
-		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
-			                              "ballJointBall.groovy" , // file to load
-			                              null// no parameters (see next tutorial)
-		                        )
-		     CSG ballJoint = ballJointParts.get(0)
-		     CSG ballJointKeepAway = ballJointParts.get(1)
+
+		     //CSG ballJoint = ballJointParts.get(0)
+		     //CSG ballJointKeepAway = ballJointParts.get(1)
 		     
 			String jawServoName = servoSizeParam.getStrValue()
 			
@@ -715,11 +719,11 @@ class Headmaker implements IParameterChanged{
 							.movey(eyeLinkageLength)	
 							.difference(panEyeLinkageKeepaway)	
 			BowlerStudioController.addCsg(outerLeftCup)					
-			CSG leftEye = getEye(leyeDiam.getMM(),ballJointKeepAway)
+			CSG leftEye = getEye(leyeDiam.getMM())
 						.transformed(lEyeLocation)
 						.setColor(javafx.scene.paint.Color.WHITE)
 						
-			CSG rightEye = getEye(reyeDiam.getMM(),ballJointKeepAway)	
+			CSG rightEye = getEye(reyeDiam.getMM())	
 						.transformed(rEyeLocation)
 						.setColor(javafx.scene.paint.Color.WHITE)
 			print "Done with Eyes\n"			
@@ -1063,35 +1067,36 @@ class Headmaker implements IParameterChanged{
 		return tSlotTabs().hull()
 	}
 	CSG getEyeLinkageCup(){
-		CSG cup = new Sphere((boltDiam.getMM()*2.2 )-
+		CSG cup = new Sphere((3*2.2 )-
 						printerOffset.getMM()
 		).toCSG()
-		CSG pin = new Sphere((boltDiam.getMM()*1.5)+
+		CSG pin = new Sphere((3*1.5)+
 						printerOffset.getMM()/2,30,15).toCSG()
 		
-		CSG ringBox =new Cube(	boltDiam.getMM()*4,// X dimention
+		CSG ringBox =new Cube(	3*4,// X dimention
 			boltDiam.getMM()*4,// Y dimention
 			thickness.getMM()*2//  Z dimention
 			).toCSG()// 
 			.movex(boltDiam.getMM()*4/3)
-		CSG linkage =new Cube(	boltDiam.getMM()*3,// X dimention
-			boltDiam.getMM()*3,// Y dimention
+		CSG linkage =new Cube(	3*3,// X dimention
+			3*3,// Y dimention
 			thickness.getMM()*2//  Z dimention
 			).toCSG()// 
 			.toXMin()
-			.movex(boltDiam.getMM())
+			.movex(3)
 		cup = cup.intersect(ringBox)
 				.union(linkage)
 				.difference(pin)
 		return cup
 	}
-	CSG getEye(double diameter,CSG ballJointKeepAway){
+	CSG getEye(double diameter){
 		
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
 		}
 		double cupOffset = 4
+		
 		ballJointKeepAway= ballJointKeepAway
 						.union(
 							ballJointKeepAway
@@ -1107,28 +1112,34 @@ class Headmaker implements IParameterChanged{
 					.difference(new Cube(diameter).toCSG().toXMax().movex(-cupOffset))
 					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))
 					.difference(ballJointKeepAway)
+		//return eye
 		
-		CSG slot = new Sphere(boltDiam.getMM()*2.2,30,15).toCSG()
-		
-		CSG pin = new Sphere(boltDiam.getMM()*1.5,30,15).toCSG()
-				.union(
-					new Cylinder(	boltDiam.getMM()/1.5,
-								boltDiam.getMM()/1.5,,
-								boltDiam.getMM()*4,(int)15)
+		CSG slot = new Sphere(8,30,7).toCSG()
+		CSG pinSupport = new Cube(10,2.5,12).toCSG()
+						.toZMax()
+						
+		CSG pin = new Sphere(5,30,15).toCSG()
+					.union(
+					new Cylinder(	2.5,
+								2.5,
+								12,(int)15)
 					.toCSG() 
-					.roty(-90)
+					.toZMax()
 					)
+					.union(pinSupport)
 		
 		slot = slot.movex(-cupOffset)
 				.union(slot)
 				.hull()
 		slot=slot.difference(pin)
-		for (int i=1;i<5;i++){
+		for (int i=0;i<3;i++){
+			
 			eye=eye
 			.difference(
 				slot
-				.movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
-				.rotx(90*i)
+				.movez(eyemechRadius.getMM()+boltDiam.getMM()/2)
+				.rotx(90*i-90))
+				
 		}
 		/*
 		eye=eye.union( getEyeLinkageCup()
@@ -1530,14 +1541,8 @@ class Headmaker implements IParameterChanged{
 if(args!=null)
 	return new Headmaker().makeHead(args.get(0))
 CSGDatabase.clear()//set up the database to force only the default values in
-ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
-		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
-			                              "ballJointBall.groovy" , // file to load
-			                              null// no parameters (see next tutorial)
-		                        )
-CSG ballJoint = ballJointParts.get(0)
-CSG ballJointKeepAway = ballJointParts.get(1)
-//return new Headmaker().getEye(46,ballJointKeepAway)
+
+return new Headmaker().getEye(65)
 //return new Headmaker().getEyeLinkageCup()
 //
 return new Headmaker().makeHead(false)	
