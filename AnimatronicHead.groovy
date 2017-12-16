@@ -20,7 +20,7 @@ class Headmaker implements IParameterChanged{
 	LengthParameter jawHeight 		= new LengthParameter("Jaw Height",32,[200,10])
 	LengthParameter JawSideWidth 		= new LengthParameter("Jaw Side Width",20,[40,10])
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
-	LengthParameter boltLength		= new LengthParameter("Bolt Length",10,[18,10])
+	LengthParameter boltLength		= new LengthParameter("Bolt Length",14,[18,10])
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
 	LengthParameter upperHeadDiam 	= new LengthParameter("Upper Head Height",20,[300,0])
@@ -1235,13 +1235,13 @@ class Headmaker implements IParameterChanged{
 	                        .toZMax()
 	                        .roty(90)
 	                        .rotz(90)
-	     CSG bracket =  new Cube(servoWidth+thickness.getMM()*9+boltDiam.getMM()*4,
+	     CSG bracket =  new Cube(servoWidth+thickness.getMM()*9+boltDiam.getMM()*4 -2,
 							thickness.getMM(),
 							servoHeightFromMechPlate*2+9
 							).toCSG()
 							.toZMin()
 							.toXMax()
-							.movex(servoCentering+thickness.getMM()*6+boltDiam.getMM()*2)	
+							.movex(servoCentering+thickness.getMM()*6+boltDiam.getMM()*2-2)	
 							.movez(thickness.getMM())
 		bracket=tSlotPunch(bracket
 				.movex(rightOffset)
