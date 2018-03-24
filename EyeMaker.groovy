@@ -1,10 +1,13 @@
 //Your code here
+boolean devMode = false
 if (args==null){
 	args=[38]
 	CSGDatabase.clear()
+	devMode = true
+	println "Development mode for eyes"
 }
 class EyeMakerClass{
-
+	ArrayList<CSG> ballJointParts=null
 	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","8#32",Vitamins.listVitaminSizes("capScrew"))
 	
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
@@ -19,6 +22,8 @@ class EyeMakerClass{
 													5.1,
 													[10,1])
 	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
+	CSG ballJoint=null
+	CSG ballJointKeepAway =null
 	double ballRadius = 4
 	CSG getEyeLinkageCup(){
 		double overallThickness = 1.28*ballRadius//  Z dimention
@@ -58,7 +63,7 @@ class EyeMakerClass{
 	
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
-			return eyeCache.get(diameter).clone()
+			return [eyeCache.get(diameter).clone(),ballJoint.rotz(180),ballJointKeepAway]
 		}
 		ballJointPinSize.setMM(ballRadius)
 		ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
@@ -66,8 +71,8 @@ class EyeMakerClass{
 		                              "ballJointBall.groovy" , // file to load
 		                              null// no parameters (see next tutorial)
 	                        )
-	     CSG ballJoint = ballJointParts.get(0)
-		CSG ballJointKeepAway = ballJointParts.get(1)                   
+	     ballJoint = ballJointParts.get(0)
+		ballJointKeepAway = ballJointParts.get(1)                   
 		double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
 		double nutDimeMeasurment = nutMeasurments.get("width")
 		double nutThickMeasurment = nutMeasurments.get("height")
@@ -87,7 +92,7 @@ class EyeMakerClass{
 		CSG eye = new Sphere(diameter/2,30,15)// Spheres radius
 					.toCSG()// convert to CSG to display
 					.difference(new Cube(diameter).toCSG().toXMax().movex(-cupOffset))
-					//.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
+					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
 					.difference(ballJointKeepAway)
 		//return eye
 		
@@ -133,7 +138,8 @@ class EyeMakerClass{
 					.toCSG() 
 					.toZMax()
 					)
-					.union(pinSupport)
+					//.union(pinSupport)
+		return pin
 	}
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	List<CSG> make(double size){
@@ -142,4 +148,7 @@ class EyeMakerClass{
 		return parts
 	}
 }
-return new EyeMakerClass().make(args.get(0))
+if(devMode)
+	return new EyeMakerClass().make(args.get(0))
+else
+	return new EyeMakerClass()
