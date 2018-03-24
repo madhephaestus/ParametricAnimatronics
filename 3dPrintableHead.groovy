@@ -11,15 +11,14 @@ class HeadMakerClass{
 		
 		CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 					.toZMax()
-					.union(horn.roty(180).rotz(180).movez(1.5))
+					.union(horn.roty(180).rotz(180+45).movez(1.5))
 		CSG tiltServo = servo
 					.movex(-eyemechRadius.getMM()*2)
 					.movez(eyemechRadius.getMM())
 					.movey(eyemechRadius.getMM())
 		CSG panServo = servo
 					//.roty(180)
-					.toXMax()
-					.movex(tiltServo.getMinX()-2)
+					.movex(-eyemechRadius.getMM()*3)
 					
 		def eyePartsMaker= ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
@@ -31,11 +30,20 @@ class HeadMakerClass{
 		CSG eye = eyeParts.get(0)
 	    	CSG eyeMount = eyeParts.get(1)
 		CSG cup =  eyeParts.get(3)
+		CSG cupPan = cup.rotx(-90)
+		double cupThick = cup.getTotalZ()
 		CSG linkPin =  eyeParts.get(4)
-
+						.movez(-eyemechRadius.getMM())
+		linkPin=linkPin
+				.intersect(linkPin.getBoundingBox().toZMin().movez(-cupThick/2))
 		
-		
-		return [tiltServo,panServo,eye,eyeMount,cup]
+		CSG linkPinTilt =linkPin
+				.movex(-eyemechRadius.getMM()*2)
+				.movez(eyemechRadius.getMM())
+		CSG linkPinPan =linkPin
+				.movex(-eyemechRadius.getMM()*3)
+				.movey(-eyemechRadius.getMM())
+		return [tiltServo,panServo,eye,eyeMount,cup,linkPinTilt,linkPinPan,cupPan]
 	}
 }
 
