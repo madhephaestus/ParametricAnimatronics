@@ -54,13 +54,13 @@ class EyeMakerClass{
 				//.difference(Link)
 		return cup.rotz(180).movez(eyemechRadius.getMM())
 	}
-	CSG getEye(double diameter){
+	List<CSG>  getEye(double diameter){
 	
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
 		}
-		ballJointPinSize.setMM(4)
+		ballJointPinSize.setMM(ballRadius)
 		ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 		                              "ballJointBall.groovy" , // file to load
@@ -92,23 +92,7 @@ class EyeMakerClass{
 		//return eye
 		
 		CSG slot = new Sphere(1.6*ballRadius,30,7).toCSG()
-		CSG pinSupport = new RoundedCube(5,2.5,6)
-						.cornerRadius(1)
-						.toCSG()
-						.toZMax()
-						.movez(-5)
-						.toXMin()
-						.movex(-4.5)
-						
-		CSG pin = new Sphere(ballRadius,30,15).toCSG()
-					.union(
-					new Cylinder(	2.5,
-								2.5,
-								12,(int)15)
-					.toCSG() 
-					.toZMax()
-					)
-					.union(pinSupport)
+		CSG pin = linkPin()
 		
 		slot = slot.movex(-cupOffset)
 				.union(slot)
@@ -130,11 +114,32 @@ class EyeMakerClass{
 		*/			
 		eyeCache.put(diameter,eye)
 		//return eye.union(getEyeLinkageCup().movez(eyemechRadius.getMM()+boltDiam.getMM()/2))
-		return eye
+		return [eye,ballJoint.rotz(180),ballJointKeepAway]
+	}
+	CSG linkPin(){
+		CSG pinSupport = new RoundedCube(5,2.5,6)
+						.cornerRadius(1)
+						.toCSG()
+						.toZMax()
+						.movez(-5)
+						.toXMin()
+						.movex(-4.5)
+						
+		CSG pin = new Sphere(ballRadius,30,15).toCSG()
+					.union(
+					new Cylinder(	2.5,
+								2.5,
+								12,(int)15)
+					.toCSG() 
+					.toZMax()
+					)
+					.union(pinSupport)
 	}
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
 	List<CSG> make(double size){
-		return [getEye(size),getEyeLinkageCup()]
+		def parts=getEye(size)
+		parts.addAll([getEyeLinkageCup(),linkPin().movez(eyemechRadius.getMM())])
+		return parts
 	}
 }
 return new EyeMakerClass().make(args.get(0))
