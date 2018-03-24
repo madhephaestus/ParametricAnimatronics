@@ -1,51 +1,49 @@
 //Your code here
-if (args==null)
-	args=[20]
+if (args==null){
+	args=[38]
+	CSGDatabase.clear()
+}
 class EyeMakerClass{
-	ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
-		                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
-			                              "ballJointBall.groovy" , // file to load
-			                              null// no parameters (see next tutorial)
-		                        )
+
+	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","8#32",Vitamins.listVitaminSizes("capScrew"))
 	
-	CSG ballJoint = ballJointParts.get(0)
-	CSG ballJointKeepAway = ballJointParts.get(1)
-	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",15,[20,5])
-	
+	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
+	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+
+	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
+	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
+	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
+	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+	LengthParameter thickness 		= new LengthParameter(	"Material Thickness",
+													5.1,
+													[10,1])
+	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
+	double ballRadius = 4
 	CSG getEyeLinkageCup(){
-		println boltMeasurments.toString() +" and "+nutMeasurments.toString()
+		double overallThickness = 1.28*ballRadius//  Z dimention
+		//println boltMeasurments.toString() +" and "+nutMeasurments.toString()
 		double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
 		double nutDimeMeasurment = nutMeasurments.get("width")
 		double nutThickMeasurment = nutMeasurments.get("height")
 		boltDiam.setMM(boltDimeMeasurment)
 		nutDiam.setMM(nutDimeMeasurment)
 		nutThick.setMM(nutThickMeasurment)
-		double ballSize  = 5+printerOffset.getMM()/2
+		double ballSize  = ballRadius+printerOffset.getMM()/2
 		
-		CSG mechLinkageCore = new Cylinder(boltDiam.getMM(),
-								boltDiam.getMM(),
-								thickness.getMM(),
-								(int)15).toCSG()
-								.toXMin()
-								.movex(ballSize)
-								.movez(-thickness.getMM()/2)
-		CSG Link = CSG.unionAll([mechLinkageCore,
-							mechLinkageCore.movex(10)
-		]).hull()
-		Link=Link.union(Link.rotx(90))
-		
-		CSG cup = new Sphere((3*2.2 )-
+
+		CSG cup = new Sphere((1.32*ballSize )-
 						printerOffset.getMM()
 		).toCSG()
 		CSG pin = new Sphere(ballSize,30,15).toCSG()
-		double overallThickness = 3.2*2//  Z dimention
+		
 		CSG ringBox =new Cube(	3*4,// X dimention
 			3*4,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
 			.movex(3*4/3)
 		CSG linkage =new Cube(	3*3,// X dimention
-			boltDimeMeasurment*2.5,// Y dimention
+			ballRadius,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
 			.toXMin()
@@ -53,17 +51,28 @@ class EyeMakerClass{
 		cup = cup.intersect(ringBox)
 				.union(linkage)
 				.difference(pin)
-				.difference(Link)
-		return cup.rotz(180)
+				//.difference(Link)
+		return cup.rotz(180).movez(eyemechRadius.getMM())
 	}
 	CSG getEye(double diameter){
-		
+	
 		if(eyeCache.get(diameter)!=null){
 			println "getting Eye cached"
 			return eyeCache.get(diameter).clone()
 		}
-		
-		double cupOffset = 4
+		ballJointPinSize.setMM(4)
+		ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
+	                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
+		                              "ballJointBall.groovy" , // file to load
+		                              null// no parameters (see next tutorial)
+	                        )
+	     CSG ballJoint = ballJointParts.get(0)
+		CSG ballJointKeepAway = ballJointParts.get(1)                   
+		double boltDimeMeasurment = boltMeasurments.get("outerDiameter")
+		double nutDimeMeasurment = nutMeasurments.get("width")
+		double nutThickMeasurment = nutMeasurments.get("height")
+		boltDiam.setMM(boltDimeMeasurment)
+		double cupOffset = ballRadius/2
 		
 		ballJointKeepAway= ballJointKeepAway
 						.union(
@@ -78,11 +87,11 @@ class EyeMakerClass{
 		CSG eye = new Sphere(diameter/2,30,15)// Spheres radius
 					.toCSG()// convert to CSG to display
 					.difference(new Cube(diameter).toCSG().toXMax().movex(-cupOffset))
-					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))
+					//.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
 					.difference(ballJointKeepAway)
 		//return eye
 		
-		CSG slot = new Sphere(8,30,7).toCSG()
+		CSG slot = new Sphere(1.6*ballRadius,30,7).toCSG()
 		CSG pinSupport = new RoundedCube(5,2.5,6)
 						.cornerRadius(1)
 						.toCSG()
@@ -91,7 +100,7 @@ class EyeMakerClass{
 						.toXMin()
 						.movex(-4.5)
 						
-		CSG pin = new Sphere(5,30,15).toCSG()
+		CSG pin = new Sphere(ballRadius,30,15).toCSG()
 					.union(
 					new Cylinder(	2.5,
 								2.5,
@@ -110,7 +119,7 @@ class EyeMakerClass{
 			eye=eye
 			.difference(
 				slot
-				.movez(eyemechRadius.getMM()+boltDiam.getMM()/2)
+				.movez(eyemechRadius.getMM())
 				.rotx(90*i-90))
 				
 		}
