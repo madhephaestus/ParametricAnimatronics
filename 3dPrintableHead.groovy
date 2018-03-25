@@ -8,17 +8,23 @@ class HeadMakerClass{
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	List<CSG> make(){
 		CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
-		
+					.roty(180).rotz(180+45).movez(1.5)
 		CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 					.toZMax()
-					.union(horn.roty(180).rotz(180+45).movez(1.5))
+					//.union(horn)
+		Transform tiltServoLocation = new Transform()
+								.translate(-eyemechRadius.getMM()*2,
+								eyemechRadius.getMM(),
+								eyemechRadius.getMM())
+		Transform panServoLocation = new Transform()
+								.translate(-eyemechRadius.getMM()*3,
+								0,
+								0)
 		CSG tiltServo = servo
-					.movex(-eyemechRadius.getMM()*2)
-					.movez(eyemechRadius.getMM())
-					.movey(eyemechRadius.getMM())
+					.transformed(tiltServoLocation)
 		CSG panServo = servo
 					//.roty(180)
-					.movex(-eyemechRadius.getMM()*3)
+					.transformed(panServoLocation)
 					
 		def eyePartsMaker= ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
@@ -30,26 +36,56 @@ class HeadMakerClass{
 		CSG eye = eyeParts.get(0)
 	    	CSG eyeMount = eyeParts.get(1)
 		CSG cup =  eyeParts.get(3)
-		CSG cupPan = cup.rotx(-90)
-		CSG cupTiltSrv = cup
-					.rotz(180)
-					.movex(-eyemechRadius.getMM()*2)
-		CSG cupPanSrv	=cupTiltSrv
-					.rotx(-90)
-					.movex(-eyemechRadius.getMM())		
+		CSG cupPan =  eyeParts.get(3)
+				.movez(-eyemechRadius.getMM())	
+				.movey(-eyemechRadius.getMM())					
+		CSG linkCup = cup.rotz(180)
+					.movey(-eyemechRadius.getMM())
+					.movez(-eyemechRadius.getMM())						
+		CSG cupTiltSrv = linkCup
+					.transformed(tiltServoLocation)
+		CSG cupPanSrv	=linkCup
+					.transformed(panServoLocation)
+			
 		double cupThick = cup.getTotalZ()
 		CSG linkPin =  eyeParts.get(4)
 						.movez(-eyemechRadius.getMM())
-		linkPin=linkPin
-				.intersect(linkPin.getBoundingBox().toZMin().movez(-cupThick/2))
-		
-		CSG linkPinTilt =linkPin
-				.movex(-eyemechRadius.getMM()*2)
-				.movez(eyemechRadius.getMM())
-		CSG linkPinPan =linkPin
-				.movex(-eyemechRadius.getMM()*3)
+		CSG servolinkPin=linkPin
+				.roty(-90)
+		servolinkPin=servolinkPin
+				.intersect(servolinkPin.getBoundingBox().movez(1))
+		CSG slaveLink=eyeParts.get(4)
+					.rotx(90)
+					.movex(-eyemechRadius.getMM())
+		servolinkPin=servolinkPin.union(	slaveLink
+										.intersect(slaveLink.getBoundingBox().movez(1)))
 				.movey(-eyemechRadius.getMM())
-		return [tiltServo,panServo,eye,eyeMount,cup,linkPinTilt,linkPinPan,cupPan,cupPanSrv,cupTiltSrv]
+		CSG servolinkBlank= servolinkPin
+				.union(horn)
+				.hull()
+				.toolOffset(2)
+		CSG linkKeepaway  = new Sphere(7,30,7).toCSG()
+		servolinkBlank=servolinkBlank.intersect(servolinkBlank.getBoundingBox().toZMin().movez(servolinkPin.getMinZ()))	
+						.difference(linkKeepaway.movey(-eyemechRadius.getMM()))
+						.difference(linkKeepaway.movex(-eyemechRadius.getMM()))
+						.union(servolinkPin)
+		CSG servoHornLinkage=servolinkBlank
+						.difference(horn)
+						.difference(horn.movez(1.5))
+						
+		CSG linkPinTilt =servoHornLinkage
+				.transformed(tiltServoLocation)
+		CSG linkPinPan =servoHornLinkage
+				.transformed(panServoLocation)
+		CSG panLinkage = makeLinkage(cupPanSrv,cupPan)
+		CSG tiltLinkage = makeLinkage(cupTiltSrv,cup)
+		return [tiltServo,panServo,eye,eyeMount,tiltLinkage,linkPinTilt,linkPinPan,panLinkage]
+	}
+	CSG makeLinkage(CSG a, CSG b){
+		CSG aSlice = a.intersect(a.getBoundingBox().toXMin().movex(a.getMaxX()-1))
+		CSG bSlice = b.intersect(b.getBoundingBox().toXMax().movex(b.getMinX()+1))
+		CSG bar =aSlice.union(bSlice).hull()
+		return CSG.unionAll([a,b,bar])
 	}
 }
 
