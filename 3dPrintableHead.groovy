@@ -7,7 +7,7 @@ class HeadMakerClass{
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",38,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
-	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",50,[100,50])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	double servoSweep = 60
@@ -16,7 +16,7 @@ class HeadMakerClass{
 					.toZMax()
 					
 		CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
-					.roty(180).rotz(180+45).movez(1.5)
+					.roty(180).rotz(180+45).movez(1)
 		CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 					.toZMax()
 					//.union(horn)
@@ -90,8 +90,9 @@ class HeadMakerClass{
 				.union(horn)
 				.hull()
 				.toolOffset(2)
-		CSG linkKeepaway  = new Sphere(6,30,7).toCSG()
+		CSG linkKeepaway  = new Sphere(5,30,7).toCSG()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(servoSweep/-2)).hull()
+		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(-servoSweep/-2)).hull()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.movez(5)).hull()
 		servolinkBlank=servolinkBlank.intersect(servolinkBlank.getBoundingBox().toZMin().movez(servolinkPin.getMinZ()))	
 						.difference(linkKeepaway.movey(-eyemechRadius.getMM()))
@@ -100,6 +101,7 @@ class HeadMakerClass{
 		CSG servoHornLinkage=servolinkBlank
 						.difference(horn)
 						.difference(horn.movez(1.5))
+						.difference(horn.movez(2.5))
 		CSG linkageKeepaway = CSG.unionAll(
 		Extrude.revolve(servolinkBlank.getBoundingBox().toolOffset(1),
 		(double)0, // rotation center radius, if 0 it is a circle, larger is a donut. Note it can be negative too
