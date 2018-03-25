@@ -108,6 +108,7 @@ class EyeMakerClass{
 			eye=eye
 			.difference(
 				slot
+				.rotx(-(90*i-90))
 				.movez(eyemechRadius.getMM())
 				.rotx(90*i-90))
 				

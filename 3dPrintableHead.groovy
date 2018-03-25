@@ -31,6 +31,12 @@ class HeadMakerClass{
 	    	CSG eyeMount = eyeParts.get(1)
 		CSG cup =  eyeParts.get(3)
 		CSG cupPan = cup.rotx(-90)
+		CSG cupTiltSrv = cup
+					.rotz(180)
+					.movex(-eyemechRadius.getMM()*2)
+		CSG cupPanSrv	=cupTiltSrv
+					.rotx(-90)
+					.movex(-eyemechRadius.getMM())		
 		double cupThick = cup.getTotalZ()
 		CSG linkPin =  eyeParts.get(4)
 						.movez(-eyemechRadius.getMM())
@@ -43,7 +49,7 @@ class HeadMakerClass{
 		CSG linkPinPan =linkPin
 				.movex(-eyemechRadius.getMM()*3)
 				.movey(-eyemechRadius.getMM())
-		return [tiltServo,panServo,eye,eyeMount,cup,linkPinTilt,linkPinPan,cupPan]
+		return [tiltServo,panServo,eye,eyeMount,cup,linkPinTilt,linkPinPan,cupPan,cupPanSrv,cupTiltSrv]
 	}
 }
 
