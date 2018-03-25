@@ -90,7 +90,7 @@ class HeadMakerClass{
 				.union(horn)
 				.hull()
 				.toolOffset(2)
-		CSG linkKeepaway  = new Sphere(5,30,7).toCSG()
+		CSG linkKeepaway  = new Sphere(5.5,30,7).toCSG()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(servoSweep/-2)).hull()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(-servoSweep/-2)).hull()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.movez(5)).hull()
@@ -271,7 +271,7 @@ class HeadMakerClass{
 		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM())
 		return [
 		//tiltServo,panServo,
-		eye,eyeMount,
+		eye,eye.movey(eyeCenter.getMM()),
 		tiltLinkage,linkPinTilt,
 		linkPinPan,panLinkage,
 		linkPinTiltBearing,linkPinPanBearing,
