@@ -138,7 +138,7 @@ class HeadMakerClass{
 							]).hull()
 		CSG panKeepaway = panLinkage.getBoundingBox()
 				.movex(eyemechRadius.getMM()*2)
-				.movey(-eyemechRadius.getMM()*0.75)
+				.movey(-eyemechRadius.getMM()*0.85)
 		CSG panlinkageKeepaway=CSG.unionAll([panKeepaway.toolOffset(1),
 							panKeepaway.toolOffset(1)
 							.move(Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
@@ -246,7 +246,7 @@ class HeadMakerClass{
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					])	
 		println headBack.getTotalY()
-		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),4).toCSG()
+		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
 						.movex(-eyemechRadius.getMM())
 		CSG eyeStockShaft = new RoundedCube(backBaseX,
@@ -262,7 +262,9 @@ class HeadMakerClass{
 		CSG eyestockPinLower = eyestockPin.intersect(box.toZMin())
 		
 		CSG eyestockPinUpperS = eyestockPinUpper.intersect(head).union(eyeMount.rotx(180))
+										.difference(tiltServo.movey(-2))
 		CSG eyestockPinLowerS = eyestockPinLower.intersect(head).union(eyeMount)
+										.difference(tiltServo.movey(-2))
 		CSG eyestockPinUpperB = eyestockPinUpper.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.rotx(180).movey(eyeCenter.getMM()))
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
 		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM())
