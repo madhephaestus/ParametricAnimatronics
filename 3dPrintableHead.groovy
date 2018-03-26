@@ -18,19 +18,20 @@ class HeadMakerClass{
 		double bearingHoleDiam = 8
 		double washerSize = boltData.headDiameter/2+2
 		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
-		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite).toCSG()
+		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
 					.movez(bite)
 		CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),boltData.headHeight).toCSG()
-					.movez(boltLength)
+					.movez(boltLength+1)
 		CSG bolt = CSG.unionAll([bitePart,loosePart,headBolt])
 					.roty(180)
-					.movez(bite)
+					.movez(bite+1)
 		CSG washerHole =new Cylinder(bearingHoleDiam/2,boltLength-bite+1).toCSG()
 		CSG washer =new Cylinder(washerSize,1).toCSG()
 		CSG bearingAss = CSG.unionAll([washerHole,washer])
-					.difference(bolt)
 					.toZMax()
 					.movez(1)
+					.difference(bolt)
+					
 		CSG bearingKeepawy= CSG.unionAll([washerHole.toolOffset(printerOffset.getMM()),new Cylinder(washerSize+1,100).toCSG().toZMax().movez(1)])
 						.toZMax()
 						.movez(1)
@@ -293,25 +294,157 @@ class HeadMakerClass{
 		
 		CSG eyestockPinUpperS = eyestockPinUpper.intersect(head).union(eyeMount.rotx(180))
 										.difference(tiltServo.movey(-2))
+										.difference(servoSupport)
 		CSG eyestockPinLowerS = eyestockPinLower.intersect(head).union(eyeMount)
 										.difference(tiltServo.movey(-2))
 		CSG eyestockPinUpperB = eyestockPinUpper.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.rotx(180).movey(eyeCenter.getMM()))
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
 		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM())
 		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM())
+		CSG lEye = eye.movey(eyeCenter.getMM())
+		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
+		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
+		
+		eye.setManufacturing({ toMfg ->
+			return toMfg
+					.roty(90)// fix the orentation
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		lEye.setManufacturing({ toMfg ->
+			return toMfg
+					.roty(90)// fix the orentation
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		eyestockPinUpperS.setManufacturing({ toMfg ->
+			return toMfg
+					.rotx(-180)// fix the orentation
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		eyestockPinLowerS.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		eyestockPinUpperB.setManufacturing({ toMfg ->
+			return toMfg
+					.rotx(-180)// fix the orentation
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		eyestockPinLowerB.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		ltiltLinkage.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		llinkPinTilt.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		head.setManufacturing({ toMfg ->
+			return toMfg
+					.roty(90)
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		headBack.setManufacturing({ toMfg ->
+			return toMfg
+					.roty(-90)
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		tiltLinkage.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		panLinkage.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		linkPinTilt.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		linkPinPan.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		
+		linkPinTiltBearing.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		linkPinPanBearing.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		slaveLinkagePan.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		slaveLinkageTilt.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		tiltBearingPart.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
+		panBearingPart.setManufacturing({ toMfg ->
+			return toMfg
+					.toZMin()//move it down to the flat surface
+					.toXMin()
+					.toYMin()
+		})
 		return [
 		//tiltServo,panServo,
-		eye,eye.movey(eyeCenter.getMM()),
-		tiltLinkage,linkPinTilt,
-		linkPinPan,panLinkage,
+		eye,lEye,
+		tiltLinkage,panLinkage,
+		linkPinTilt,linkPinPan,
 		linkPinTiltBearing,linkPinPanBearing,
 		slaveLinkagePan,slaveLinkageTilt,
 		tiltBearingPart,panBearingPart,
 		//panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
-		panBolt,tiltBolt
-		]
+		ltiltLinkage,llinkPinTilt
+		]//.collect{it.prepForManufacturing()}
 	}
 	CSG makeLinkage(CSG a, CSG b){
 		CSG aSlice = a.intersect(a.getBoundingBox().toXMin().movex(a.getMaxX()-1))
