@@ -8,12 +8,36 @@ class HeadMakerClass{
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",50,[100,50])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",38,[100,50])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
+	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
 	double servoSweep = 60
 	List<CSG> make(){
-		CSG bearing = Vitamins.get("ballBearing",bearingSizeParam.getStrValue())
+		double boltLength = 12
+		double bite = boltLength/2
+		double bearingHoleDiam = 8
+		double washerSize = boltData.headDiameter/2+2
+		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
+		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite).toCSG()
+					.movez(bite)
+		CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),boltData.headHeight).toCSG()
+					.movez(boltLength)
+		CSG bolt = CSG.unionAll([bitePart,loosePart,headBolt])
+					.roty(180)
+					.movez(bite)
+		CSG washerHole =new Cylinder(bearingHoleDiam/2,boltLength-bite+1).toCSG()
+		CSG washer =new Cylinder(washerSize,1).toCSG()
+		CSG bearingAss = CSG.unionAll([washerHole,washer])
+					.difference(bolt)
 					.toZMax()
+					.movez(1)
+		CSG bearingKeepawy= CSG.unionAll([washerHole.toolOffset(printerOffset.getMM()),new Cylinder(washerSize+1,100).toCSG().toZMax().movez(1)])
+						.toZMax()
+						.movez(1)
+								
+		//return [bearingAss,bolt]
+		
+		CSG bearing = bearingKeepawy
 					
 		CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
 					.roty(180).rotz(180+45).movez(1)
@@ -117,6 +141,7 @@ class HeadMakerClass{
 		eyeKeepaway=eyeKeepaway.union(eyeKeepaway.rotx(90))
 			.intersect(new Sphere(eyeDiam.getMM()/2+1).toCSG())
 		CSG beringLinkage = 	servolinkBlank		
+							.difference(bolt)
 		CSG aSlice = slaveCup.intersect(slaveCup.getBoundingBox().toXMax().movex(slaveCup.getMinX()+cupThick))
 		CSG bar = aSlice.union(aSlice.movey(eyeCenter.getMM())).hull()
 					.movex(-2)
@@ -159,10 +184,14 @@ class HeadMakerClass{
 					
 		])
 		bearing=bearing.movez(linkageKeepaway.getMinZ())
-
+		bolt=bolt.movez(linkageKeepaway.getMinZ())
+		bearingAss=bearingAss.movez(linkageKeepaway.getMinZ())
 		// Allign the linkages
 		CSG panTotalLinkageKeepaway =	linkageKeepaway.transformed(panServoLocation)
 		CSG tiltTotalLinkageKeepaway =	linkageKeepaway.transformed(tiltServoLocation)
+		
+		CSG panBolt =	bolt.transformed(panBearingLocation)
+		CSG tiltBolt =	bolt.transformed(tiltBearingLocation)
 		
 		CSG slaveLinkagePan = slaveLinkage.transformed(panServoLocation)
 		CSG slaveLinkageTilt = slaveLinkage.transformed(tiltServoLocation)
@@ -176,7 +205,8 @@ class HeadMakerClass{
 				.transformed(panServoLocation)
 		
 		
-		
+		CSG panBearingPart = bearingAss.transformed(panBearingLocation)	
+		CSG tiltBearingPart = bearingAss.transformed(tiltBearingLocation)
 		CSG panBearing = bearing.transformed(panBearingLocation)	
 		CSG tiltBearing = bearing.transformed(tiltBearingLocation)	
 		
@@ -242,7 +272,7 @@ class HeadMakerClass{
 					eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,
-					panBearing.union(panBearing.movex(bearing.getTotalY())).hull(),
+					panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					])	
 		println headBack.getTotalY()
@@ -276,10 +306,11 @@ class HeadMakerClass{
 		linkPinPan,panLinkage,
 		linkPinTiltBearing,linkPinPanBearing,
 		slaveLinkagePan,slaveLinkageTilt,
-		//tiltBearing,panBearing,
+		tiltBearingPart,panBearingPart,
 		//panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 		head,headBack,
-		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB
+		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
+		panBolt,tiltBolt
 		]
 	}
 	CSG makeLinkage(CSG a, CSG b){
