@@ -35,7 +35,7 @@ class HeadMakerClass{
 		CSG bearingKeepawy= CSG.unionAll([washerHole.toolOffset(printerOffset.getMM()),new Cylinder(washerSize+1,100).toCSG().toZMax().movez(1)])
 						.toZMax()
 						.movez(1)
-								
+		bolt=bolt.movez(-2)						
 		//return [bearingAss,bolt]
 		
 		CSG bearing = bearingKeepawy
