@@ -15,7 +15,7 @@ class HeadMakerClass{
 	List<CSG> make(){
 		double boltLength = 12
 		double bite = boltLength/2
-		double bearingHoleDiam = 8
+		double bearingHoleDiam = 7
 		double washerSize = boltData.headDiameter/2+2
 		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
 		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
@@ -359,14 +359,14 @@ class HeadMakerClass{
 		})
 		head.setManufacturing({ toMfg ->
 			return toMfg
-					.roty(90)
+					.roty(-90)
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
 		})
 		headBack.setManufacturing({ toMfg ->
 			return toMfg
-					.roty(-90)
+					.roty(90)
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
