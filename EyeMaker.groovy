@@ -46,7 +46,7 @@ class EyeMakerClass{
 			3*4,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
-			.movex(3*4/3)
+			.movex(3.5)
 		CSG linkage =new Cube(	3*3,// X dimention
 			ballRadius,// Y dimention
 			overallThickness//  Z dimention
