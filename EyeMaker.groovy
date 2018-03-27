@@ -34,11 +34,10 @@ class EyeMakerClass{
 		boltDiam.setMM(boltDimeMeasurment)
 		nutDiam.setMM(nutDimeMeasurment)
 		nutThick.setMM(nutThickMeasurment)
-		double ballSize  = ballRadius+printerOffset.getMM()/2
+		double ballSize  = ballRadius+printerOffset.getMM()
 		
 
-		CSG cup = new Sphere((1.32*ballSize )-
-						printerOffset.getMM()
+		CSG cup = new Sphere((1.32*ballSize )
 		).toCSG()
 		CSG pin = new Sphere(ballSize,30,15).toCSG()
 		
@@ -77,7 +76,7 @@ class EyeMakerClass{
 		double nutDimeMeasurment = nutMeasurments.get("width")
 		double nutThickMeasurment = nutMeasurments.get("height")
 		boltDiam.setMM(boltDimeMeasurment)
-		double cupOffset = ballRadius/2
+		double cupOffset = ballRadius*0.75
 		
 		ballJointKeepAway= ballJointKeepAway
 						.union(
@@ -89,14 +88,15 @@ class EyeMakerClass{
 							.toZMin()
 							)
 							)
+		CSG backOfEyeCutter =new Cube(diameter).toCSG().toXMax().movex(-cupOffset)
 		CSG eye = new Sphere(diameter/2,30,15)// Spheres radius
 					.toCSG()// convert to CSG to display
-					.difference(new Cube(diameter).toCSG().toXMax().movex(-cupOffset))
+					.difference(backOfEyeCutter)// back of the eye
 					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
 					.difference(ballJointKeepAway)
 		//return eye
 		
-		CSG slot = new Sphere(1.6*ballRadius,30,7).toCSG()
+		CSG slot = new Sphere(1.6*ballRadius+printerOffset.getMM()/2,30,7).toCSG()
 		CSG pin = linkPin()
 		
 		slot = slot.movex(-cupOffset)
@@ -133,9 +133,8 @@ class EyeMakerClass{
 						
 		CSG pin = new Sphere(ballRadius,30,15).toCSG()
 					.union(
-					new Cylinder(	2.5,
-								2.5,
-								12,(int)15)
+					new Cylinder(	1.75,
+								12)
 					.toCSG() 
 					.toZMax()
 					)
