@@ -253,6 +253,12 @@ class HeadMakerClass{
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX())
 							.movey(frontBase.getMaxY())
+		CSG attachmentBolt = bolt
+						.movez(5)
+						.roty(-90)
+						.movey(eyeCenter.getMM()/2+bolt.getMaxY()*1.5)
+						.movex(frontBase.getMinX())	
+						.movez(frontBase.getMinZ()/2)				
 		println "Making head"
 		CSG head = frontBase
 					.union(servoSupport)
@@ -263,6 +269,7 @@ class HeadMakerClass{
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+					attachmentBolt
 					])					
 		CSG headBack = backtBase
 					.union(bearingSupport)
@@ -276,6 +283,7 @@ class HeadMakerClass{
 					tiltBearing,
 					panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+					attachmentBolt
 					])	
 		println headBack.getTotalY()
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
@@ -444,7 +452,8 @@ class HeadMakerClass{
 		//panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
-		ltiltLinkage,llinkPinTilt
+		ltiltLinkage,llinkPinTilt,
+		//attachmentBolt
 		]//.collect{it.prepForManufacturing()}
 	}
 	CSG makeLinkage(CSG a, CSG b){
