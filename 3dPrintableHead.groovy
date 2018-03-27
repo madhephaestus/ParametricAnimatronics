@@ -212,41 +212,43 @@ class HeadMakerClass{
 		CSG tiltBearing = bearing.transformed(tiltBearingLocation)	
 		
 		// Begin building head base
-		CSG frontBase = new Cube(eyeDiam.getMM()/2+2,
+		CSG frontBase = new RoundedCube(eyeDiam.getMM()/2,
 							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMax()
 							.toXMin()
 							.toYMin()
 							.movez(linkageKeepaway.getMinZ()+eyemechRadius.getMM())
 							.movex(-eyemechRadius.getMM()*2-servoThickness)
 							.movey(-eyeDiam.getMM()/2-bearing.getTotalY()/4)
-		CSG servoSupport = new Cube(servoSeperation,
+		CSG servoSupport = new RoundedCube(servoSeperation+4,
 							18,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() 
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
 							.movez(frontBase.getMinZ())
-							.movex(frontBase.getMinX())
+							.movex(frontBase.getMinX()+4)
 							.movey(frontBase.getMinY())
-		double backBaseX =eyeDiam.getMM()*0.75
-		CSG backtBase = new Cube(backBaseX,
+		double backBaseX =eyeDiam.getMM()*0.75+4
+		CSG backtBase = new RoundedCube(backBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ()
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX())
 							.movey(frontBase.getMinY())
-		CSG bearingSupport = new Cube(backBaseX,
+		CSG bearingSupport = new RoundedCube(backBaseX,
 							bearing.getTotalY()+2,	
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
-							).toCSG()
+							)
+							.cornerRadius(2)
+							.toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMax()
@@ -279,7 +281,9 @@ class HeadMakerClass{
 					])					
 		CSG headBack = backtBase
 					.union(bearingSupport)
+					.movex(4)
 					.difference([
+					head,
 					frontBase,servoSupport,
 					tiltServo,panServo,
 					panServo.movex(servoSeperation),
@@ -372,6 +376,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
+		head.setName("frontOfHead")
 		head.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(-90)
@@ -379,6 +384,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
+		head.setName("headBack")
 		headBack.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(90)
