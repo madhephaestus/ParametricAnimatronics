@@ -65,7 +65,7 @@ class EyeMakerClass{
 		(int)10
 		).collect{it.rotz(servoSweep/-2)}
 		)
-		return cup//.rotz(180).movez(eyemechRadius.getMM())
+		return cup.rotz(180).movez(eyemechRadius.getMM())
 	}
 	List<CSG>  getEye(double diameter){
 	
