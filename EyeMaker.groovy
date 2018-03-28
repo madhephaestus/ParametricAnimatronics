@@ -25,6 +25,10 @@ class EyeMakerClass{
 	CSG ballJoint=null
 	CSG ballJointKeepAway =null
 	double ballRadius = 4
+	double servoSweep = 60
+	CSG supportPin =new Cylinder(	1.75,
+								12)
+					.toCSG() 
 	CSG getEyeLinkageCup(){
 		double overallThickness = 1.28*ballRadius//  Z dimention
 		//println boltMeasurments.toString() +" and "+nutMeasurments.toString()
@@ -34,7 +38,7 @@ class EyeMakerClass{
 		boltDiam.setMM(boltDimeMeasurment)
 		nutDiam.setMM(nutDimeMeasurment)
 		nutThick.setMM(nutThickMeasurment)
-		double ballSize  = ballRadius+printerOffset.getMM()
+		double ballSize  = ballRadius+printerOffset.getMM()*0.75
 		
 
 		CSG cup = new Sphere((1.32*ballSize )
@@ -45,7 +49,7 @@ class EyeMakerClass{
 			3*4,// Y dimention
 			overallThickness//  Z dimention
 			).toCSG()// 
-			.movex(3.5)
+			.movex(3)
 		CSG linkage =new Cube(	3*3,// X dimention
 			ballRadius,// Y dimention
 			overallThickness//  Z dimention
@@ -55,8 +59,13 @@ class EyeMakerClass{
 		cup = cup.intersect(ringBox)
 				.union(linkage)
 				.difference(pin)
-				//.difference(Link)
-		return cup.rotz(180).movez(eyemechRadius.getMM())
+				.difference(Extrude.revolve(supportPin.roty(90),
+		(double)0, // rotation center radius, if 0 it is a circle, larger is a donut. Note it can be negative too
+		(double)servoSweep,// degrees through wich it should sweep
+		(int)10
+		).collect{it.rotz(servoSweep/-2)}
+		)
+		return cup//.rotz(180).movez(eyemechRadius.getMM())
 	}
 	List<CSG>  getEye(double diameter){
 	
@@ -132,10 +141,7 @@ class EyeMakerClass{
 						.movex(-4.5)
 						
 		CSG pin = new Sphere(ballRadius,30,15).toCSG()
-					.union(
-					new Cylinder(	1.75,
-								12)
-					.toCSG() 
+					.union(supportPin 
 					.toZMax()
 					)
 					//.union(pinSupport)
@@ -149,6 +155,6 @@ class EyeMakerClass{
 	}
 }
 if(devMode)
-	return new EyeMakerClass().make(args.get(0))
+	return new EyeMakerClass().getEyeLinkageCup()//.make(args.get(0))
 else
 	return new EyeMakerClass()
