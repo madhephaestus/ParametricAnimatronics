@@ -15,8 +15,8 @@ class HeadMakerClass{
 	List<CSG> make(){
 		double boltLength = 12
 		double bite = boltLength/2
-		double bearingHoleDiam = 12
-		double washerSize = boltData.headDiameter/2+bearingHoleDiam/4
+		double bearingHoleDiam = 8
+		double washerSize = boltData.headDiameter/2+1.2
 		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
 		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
 					.movez(bite)
@@ -232,7 +232,7 @@ class HeadMakerClass{
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX()+4)
 							.movey(frontBase.getMinY())
-		double backBaseX =eyeDiam.getMM()*0.75+4
+		double backBaseX =eyeDiam.getMM()*0.75
 		CSG backtBase = new RoundedCube(backBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ()
@@ -257,14 +257,14 @@ class HeadMakerClass{
 							.movey(frontBase.getMaxY())
 		CSG attachmentBolt = bolt
 						.movez(5)
-						.roty(-90)
-						.movey(eyeCenter.getMM()/2+bolt.getMaxY()*1.5)
-						.movex(frontBase.getMinX())	
-						.movez(frontBase.getMinZ()/2)		
+						.roty(-90).toZMin()
+						.movey(eyeCenter.getMM()-bolt.getMaxY()*2-2.5)
+						.movex(frontBase.getMinX()+5)	
+						.movez(frontBase.getMinZ()+2)		
 		CSG MountBolts = bolt.union(bolt.movex(-12.5))
 						.roty(180)
 						.movey(eyeCenter.getMM()/2)
-						.movex(backtBase.getMinX()+bolt.getMaxY()+printerOffset.getMM()*4)	
+						.movex(backtBase.getMinX()+bolt.getMaxY()+printerOffset.getMM()*4+4)	
 						.toZMin()
 						.movez(backtBase.getMaxZ()-boltLength-boltData.headHeight)							
 		println "Making head"
@@ -288,6 +288,7 @@ class HeadMakerClass{
 					tiltServo,panServo,
 					panServo.movex(servoSeperation),
 					panServo.movex(servoSeperation*1.5),
+					panServo.movex(servoSeperation*2),
 					eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,
@@ -465,7 +466,7 @@ class HeadMakerClass{
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
 		ltiltLinkage,llinkPinTilt,
-		//attachmentBolt,MountBolts
+		//attachmentBolt//,MountBolts
 		]//.collect{it.prepForManufacturing()}
 	}
 	CSG makeLinkage(CSG a, CSG b){
