@@ -5,6 +5,8 @@
 Classic classic;
 Servo pan;
 Servo tilt;
+Servo pan2;
+Servo tilt2;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -13,6 +15,8 @@ void setup() {
   classic.begin();
   pan.attach(2);
   tilt.attach(15);
+  pan2.attach(4);
+  tilt2.attach(16);
 }
 
 void loop() {
@@ -23,8 +27,13 @@ void loop() {
   int panval = map(classic.getJoyXLeft(), 0, 63, 125,76 );
   int tiltval = map(classic.getJoyYLeft(), 0, 63, 125,65 );
 
+  int panval2 = map(classic.getJoyXRight(), 0, 31, 125,76 );
+  int tiltval2 = map(classic.getJoyYRight(), 0, 31, 125,65 );
+
   pan.write(panval);
+  pan2.write(panval2);
   tilt.write(tiltval);
-  Serial.println("Eye values "+String(panval)+" "+String(tiltval));
+  tilt2.write(tiltval2);
+  Serial.println("Eye values "+String(panval)+" "+String(tiltval)+" "+String(panval2)+" "+String(tiltval2));
   //Serial.println(joyLeftY, DEC);
 }
