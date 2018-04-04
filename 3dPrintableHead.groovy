@@ -2,7 +2,7 @@
 if (args==null){
 	CSGDatabase.clear()
 }
-class HeadMakerClass{
+class HeadMakerClass implements IParameterChanged{
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",39,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
@@ -14,7 +14,22 @@ class HeadMakerClass{
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
 	double servoSweep = 60
+	def eyePartsMaker=null
+	def retparts=null
+		/**
+	 * This is a listener for a parameter changing
+	 * @param name
+	 * @param p
+	 */
+	 
+	public void parameterChanged(String name, Parameter p){
+		//new RuntimeException().printStackTrace(System.out);
+		println "All Parts was set to null "+name
+		retparts=null
+	}
 	List<CSG> make(){
+		if(retparts != null)
+			return retparts
 		double boltLength = 12
 		double bite = boltLength/2
 		double bearingHoleDiam = 8
@@ -73,8 +88,8 @@ class HeadMakerClass{
 		CSG panServo = servo
 					//.roty(180)
 					.transformed(panServoLocation)
-					
-		def eyePartsMaker= ScriptingEngine.gitScriptRun(
+		if( eyePartsMaker==null)			
+		eyePartsMaker= ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
 		                              "EyeMaker.groovy" , // file to load
 		                              []// no parameters (see next tutorial)
@@ -457,7 +472,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
-		return [
+		retparts= [
 		//tiltServo,panServo,
 		eye,lEye,
 		tiltLinkage,panLinkage,
@@ -471,7 +486,20 @@ class HeadMakerClass{
 		ltiltLinkage,llinkPinTilt,
 		//attachmentBolt//,MountBolts
 		]//.collect{it.prepForManufacturing()}
+		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter]
+		for(int i = 0;i< retparts.size();i++){
+			int index = i;
+			retparts.get(i).setRegenerate({return make().get(index)})
+			params.collect{
+				retparts.get(i).setParameter(it)
+			}
+		}
+		params.collect{
+			CSGDatabase.addParameterListener(it.getName() ,this);
+		}
+		return retparts
 	}
+	
 	CSG makeLinkage(CSG a, CSG b){
 		CSG aSlice = a.intersect(a.getBoundingBox().toXMin().movex(a.getMaxX()-1))
 		CSG bSlice = b.intersect(b.getBoundingBox().toXMax().movex(b.getMinX()+1))
