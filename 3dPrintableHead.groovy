@@ -3,11 +3,13 @@ if (args==null){
 	CSGDatabase.clear()
 }
 class HeadMakerClass{
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",39,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
+	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",41,[100,50])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
@@ -44,6 +46,7 @@ class HeadMakerClass{
 					.roty(180).rotz(180+45).movez(1)
 		CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 					.toZMax()
+					.movez(1)
 					//.union(horn)
 		double servoThickness = Math.abs(servo.getMinX())
 		double servoSeperation = 4
@@ -476,5 +479,6 @@ class HeadMakerClass{
 		return CSG.unionAll([a,b,bar])
 	}
 }
+//println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 
 return new HeadMakerClass().make()
