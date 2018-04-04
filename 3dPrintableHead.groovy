@@ -24,7 +24,7 @@ class HeadMakerClass implements IParameterChanged{
 	 
 	public void parameterChanged(String name, Parameter p){
 		//new RuntimeException().printStackTrace(System.out);
-		println "All Parts was set to null "+name
+		//println "All Parts was set to null "+name
 		retparts=null
 	}
 	List<CSG> make(){
