@@ -80,7 +80,7 @@ class HeadMakerClass{
 		                              []// no parameters (see next tutorial)
 	                        )
 	     println "Generate eyes..."
-	     List<CSG> eyeParts =    eyePartsMaker.make(38)  
+	     List<CSG> eyeParts =    eyePartsMaker.make(eyeDiam.getMM())  
 	     println "Eyes made"    
 		CSG eye = eyeParts.get(0)
 	    	CSG eyeMount = eyeParts.get(1)
@@ -226,7 +226,7 @@ class HeadMakerClass{
 							.movex(-eyemechRadius.getMM()*2-servoThickness)
 							.movey(-eyeDiam.getMM()/2-bearing.getTotalY()/4)
 		CSG servoSupport = new RoundedCube(servoSeperation+4,
-							18,
+							eyeDiam.getMM()/2-(38.0/2.0-18.0),
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() 
 							).cornerRadius(2).toCSG()
 							.toZMin()
