@@ -2,25 +2,42 @@
 if (args==null){
 	CSGDatabase.clear()
 }
-class HeadMakerClass{
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",38,[60,38])
+class HeadMakerClass implements IParameterChanged{
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
+	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",39,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
+	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",38,[100,50])
+	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",41,[100,50])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
 	double servoSweep = 60
+	def eyePartsMaker=null
+	def retparts=null
+		/**
+	 * This is a listener for a parameter changing
+	 * @param name
+	 * @param p
+	 */
+	 
+	public void parameterChanged(String name, Parameter p){
+		//new RuntimeException().printStackTrace(System.out);
+		//println "All Parts was set to null "+name
+		retparts=null
+	}
 	List<CSG> make(){
+		if(retparts != null)
+			return retparts
 		double boltLength = 12
 		double bite = boltLength/2
-		double bearingHoleDiam = 7
-		double washerSize = boltData.headDiameter/2+2
+		double bearingHoleDiam = 8
+		double washerSize = boltData.headDiameter/2+1.2
 		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
 		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
 					.movez(bite)
-		CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),boltData.headHeight).toCSG()
+		CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),100).toCSG()
 					.movez(boltLength+1)
 		CSG bolt = CSG.unionAll([bitePart,loosePart,headBolt])
 					.roty(180)
@@ -36,7 +53,7 @@ class HeadMakerClass{
 						.toZMax()
 						.movez(1)
 		bolt=bolt.movez(-2)						
-		//return [bearingAss,bolt]
+		//return [bolt]
 		
 		CSG bearing = bearingKeepawy
 					
@@ -44,6 +61,7 @@ class HeadMakerClass{
 					.roty(180).rotz(180+45).movez(1)
 		CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 					.toZMax()
+					.movez(1)
 					//.union(horn)
 		double servoThickness = Math.abs(servo.getMinX())
 		double servoSeperation = 4
@@ -70,14 +88,14 @@ class HeadMakerClass{
 		CSG panServo = servo
 					//.roty(180)
 					.transformed(panServoLocation)
-					
-		def eyePartsMaker= ScriptingEngine.gitScriptRun(
+		if( eyePartsMaker==null)			
+		eyePartsMaker= ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
 		                              "EyeMaker.groovy" , // file to load
 		                              []// no parameters (see next tutorial)
 	                        )
 	     println "Generate eyes..."
-	     List<CSG> eyeParts =    eyePartsMaker.make(38)  
+	     List<CSG> eyeParts =    eyePartsMaker.make(eyeDiam.getMM())  
 	     println "Eyes made"    
 		CSG eye = eyeParts.get(0)
 	    	CSG eyeMount = eyeParts.get(1)
@@ -115,7 +133,7 @@ class HeadMakerClass{
 				.union(horn)
 				.hull()
 				.toolOffset(2)
-		CSG linkKeepaway  = new Sphere(5.5,30,7).toCSG()
+		CSG linkKeepaway  = new Sphere(6.5,30,7).toCSG()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(servoSweep/-2)).hull()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.move(6,0,0).rotz(-servoSweep/-2)).hull()
 		linkKeepaway=linkKeepaway.union(linkKeepaway.movez(5)).hull()
@@ -212,69 +230,89 @@ class HeadMakerClass{
 		CSG tiltBearing = bearing.transformed(tiltBearingLocation)	
 		
 		// Begin building head base
-		CSG frontBase = new Cube(eyeDiam.getMM()/2+2,
+		CSG frontBase = new RoundedCube(eyeDiam.getMM()/2,
 							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMax()
 							.toXMin()
 							.toYMin()
 							.movez(linkageKeepaway.getMinZ()+eyemechRadius.getMM())
 							.movex(-eyemechRadius.getMM()*2-servoThickness)
 							.movey(-eyeDiam.getMM()/2-bearing.getTotalY()/4)
-		CSG servoSupport = new Cube(servoSeperation,
-							20,
+		CSG servoSupport = new RoundedCube(servoSeperation+4,
+							eyeDiam.getMM()/2-(38.0/2.0-18.0),
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() 
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
 							.movez(frontBase.getMinZ())
-							.movex(frontBase.getMinX())
+							.movex(frontBase.getMinX()+4)
 							.movey(frontBase.getMinY())
 		double backBaseX =eyeDiam.getMM()*0.75
-		CSG backtBase = new Cube(backBaseX,
+		CSG backtBase = new RoundedCube(backBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ()
-							).toCSG()
+							).cornerRadius(2).toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX())
 							.movey(frontBase.getMinY())
-		CSG bearingSupport = new Cube(backBaseX,
+		CSG bearingSupport = new RoundedCube(backBaseX,
 							bearing.getTotalY()+2,	
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
-							).toCSG()
+							)
+							.cornerRadius(2)
+							.toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMax()
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX())
 							.movey(frontBase.getMaxY())
+		CSG attachmentBolt = bolt
+						.movez(5)
+						.roty(-90).toZMin()
+						.movey(eyeCenter.getMM()-bolt.getMaxY()*2-2.5)
+						.movex(frontBase.getMinX()+5)	
+						.movez(frontBase.getMinZ()+2)		
+		CSG MountBolts = bolt.union(bolt.movex(-12.5))
+						.roty(180)
+						.movey(eyeCenter.getMM()/2)
+						.movex(backtBase.getMinX()+bolt.getMaxY()+printerOffset.getMM()*4+4)	
+						.toZMin()
+						.movez(backtBase.getMaxZ()-boltLength-boltData.headHeight)							
 		println "Making head"
 		CSG head = frontBase
 					.union(servoSupport)
 					.difference([
 					tiltServo,panServo,
+					tiltServo.movex(-2),
 					eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+					attachmentBolt,MountBolts
 					])					
 		CSG headBack = backtBase
 					.union(bearingSupport)
+					.movex(4)
 					.difference([
+					head,
 					frontBase,servoSupport,
 					tiltServo,panServo,
 					panServo.movex(servoSeperation),
 					panServo.movex(servoSeperation*1.5),
+					panServo.movex(servoSeperation*2),
 					eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,
 					panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+					attachmentBolt,MountBolts
 					])	
 		println headBack.getTotalY()
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
@@ -299,8 +337,8 @@ class HeadMakerClass{
 										.difference(tiltServo.movey(-2))
 		CSG eyestockPinUpperB = eyestockPinUpper.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.rotx(180).movey(eyeCenter.getMM()))
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
-		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM())
-		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM())
+		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM()*2)
+		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM()*2)
 		CSG lEye = eye.movey(eyeCenter.getMM())
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
@@ -357,6 +395,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
+		head.setName("frontOfHead")
 		head.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(-90)
@@ -364,6 +403,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
+		head.setName("headBack")
 		headBack.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(90)
@@ -432,7 +472,7 @@ class HeadMakerClass{
 					.toXMin()
 					.toYMin()
 		})
-		return [
+		retparts= [
 		//tiltServo,panServo,
 		eye,lEye,
 		tiltLinkage,panLinkage,
@@ -443,9 +483,23 @@ class HeadMakerClass{
 		//panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
-		ltiltLinkage,llinkPinTilt
+		ltiltLinkage,llinkPinTilt,
+		//attachmentBolt//,MountBolts
 		]//.collect{it.prepForManufacturing()}
+		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter]
+		for(int i = 0;i< retparts.size();i++){
+			int index = i;
+			retparts.get(i).setRegenerate({return make().get(index)})
+			params.collect{
+				retparts.get(i).setParameter(it)
+			}
+		}
+		params.collect{
+			CSGDatabase.addParameterListener(it.getName() ,this);
+		}
+		return retparts
 	}
+	
 	CSG makeLinkage(CSG a, CSG b){
 		CSG aSlice = a.intersect(a.getBoundingBox().toXMin().movex(a.getMaxX()-1))
 		CSG bSlice = b.intersect(b.getBoundingBox().toXMax().movex(b.getMinX()+1))
@@ -453,5 +507,6 @@ class HeadMakerClass{
 		return CSG.unionAll([a,b,bar])
 	}
 }
+//println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 
 return new HeadMakerClass().make()
