@@ -112,7 +112,7 @@ class EyeMakerClass{
 				.union(slot)
 				.hull()
 		slot=slot.difference(pin)
-		for (int i=0;i<3;i++){
+		for (int i=0;i<2;i++){
 			
 			eye=eye
 			.difference(
