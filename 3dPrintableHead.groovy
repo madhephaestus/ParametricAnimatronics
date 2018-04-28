@@ -4,16 +4,21 @@ if (args==null){
 }
 class HeadMakerClass implements IParameterChanged{
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
-	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",39,[60,38])
+	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",41,[100,50])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",43,[100,50])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
+	double washerSize = boltData.headDiameter/2+1.2
+	double headTotalWidth = eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2
 	double servoSweep = 60
+	double backBaseX =eyeDiam.getMM()*0.75
+	double frontBaseX =eyeDiam.getMM()/2
+	double backOfEyes = backBaseX+frontBaseX
 	def eyePartsMaker=null
 	def retparts=null
 		/**
@@ -27,13 +32,26 @@ class HeadMakerClass implements IParameterChanged{
 		//println "All Parts was set to null "+name
 		retparts=null
 	}
+	List<CSG> jawParts(){
+		
+		CSG frontBase = new RoundedCube(eyeDiam.getMM()/2,
+							headTotalWidth,
+							eyeDiam.getMM()
+							).cornerRadius(2).toCSG()
+							.toYMin()
+							.toXMax()
+							.movey(-eyeDiam.getMM()/2-washerSize/4)
+							.movex(backOfEyes)
+	
+		return [frontBase]
+	}
 	List<CSG> make(){
 		if(retparts != null)
 			return retparts
 		double boltLength = 12
 		double bite = boltLength/2
 		double bearingHoleDiam = 8
-		double washerSize = boltData.headDiameter/2+1.2
+		
 		CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
 		CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
 					.movez(bite)
@@ -231,7 +249,7 @@ class HeadMakerClass implements IParameterChanged{
 		
 		// Begin building head base
 		CSG frontBase = new RoundedCube(eyeDiam.getMM()/2,
-							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
+							eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
 							).cornerRadius(2).toCSG()
 							.toZMax()
@@ -239,7 +257,7 @@ class HeadMakerClass implements IParameterChanged{
 							.toYMin()
 							.movez(linkageKeepaway.getMinZ()+eyemechRadius.getMM())
 							.movex(-eyemechRadius.getMM()*2-servoThickness)
-							.movey(-eyeDiam.getMM()/2-bearing.getTotalY()/4)
+							.movey(-eyeDiam.getMM()/2-washerSize/4)
 		CSG servoSupport = new RoundedCube(servoSeperation+4,
 							eyeDiam.getMM()/2-(38.0/2.0-18.0),
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() 
@@ -250,9 +268,9 @@ class HeadMakerClass implements IParameterChanged{
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX()+4)
 							.movey(frontBase.getMinY())
-		double backBaseX =eyeDiam.getMM()*0.75
+		
 		CSG backtBase = new RoundedCube(backBaseX,
-							eyeCenter.getMM()+eyeDiam.getMM()+bearing.getTotalY()/2,
+							eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ()
 							).cornerRadius(2).toCSG()
 							.toZMin()
@@ -508,5 +526,5 @@ class HeadMakerClass implements IParameterChanged{
 	}
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
-
-return new HeadMakerClass().make()
+def maker = new HeadMakerClass()
+return [maker.jawParts(),maker.make()]
