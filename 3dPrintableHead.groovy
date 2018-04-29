@@ -92,18 +92,26 @@ class HeadMakerClass implements IParameterChanged{
 			.difference(jawMountBolts)
 		double jawXLocation =locationOfBackOfhead-servoThickness
 		double jawYLocation =jawServoBlock.getMaxY()
+		double jawBoltYLocation =jawServoBlock.getMinY()
 		double jawZLocation =-eyeDiam.getMM()/2+servoChordSideDistance
 		CSG JawServo = servo
 					.movez(servoNub)
 					.rotx(90)
 					.move(jawXLocation,jawYLocation,jawZLocation)
+		CSG jawBolt = bolt
+					.rotx(90)
+					.move(jawXLocation,jawBoltYLocation,jawZLocation)
+					.union(bolt
+					.roty(-90)
+					.move(locationOfBackOfhead+overlap,jawBoltYLocation+15,jawZLocation-5))
 		jawServoBlock=jawServoBlock
 			.difference([  JawServo,
 						JawServo.movex(cornerRadius),
 						JawServo.movex(cornerRadius*2),
 						JawServo.movex(cornerRadius*3),
-						JawServo.movex(cornerRadius*4)])			
-		return [jawServoBlock,JawServo,servo]
+						JawServo.movex(cornerRadius*4),
+						jawBolt])			
+		return [jawServoBlock,JawServo,jawBolt]
 	}
 	List<CSG> make(){
 		if(retparts != null)
@@ -409,8 +417,13 @@ class HeadMakerClass implements IParameterChanged{
 						.difference([headBack,panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
 						])
-		CSG jawServo = 	jawPartList[1]		
+		CSG jawBolts = 	jawPartList[2]		
+		CSG jawServo = 	jawPartList[1]	
+		headBack=headBack.difference(jawBolts)
 		jawServo.setManufacturing({ toMfg ->
+			return null
+		})
+		jawBolts.setManufacturing({ toMfg ->
 			return null
 		})
 		servoBlock.setName("JawServoBlock")
@@ -589,5 +602,5 @@ class HeadMakerClass implements IParameterChanged{
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 def maker = new HeadMakerClass()
-return [maker.jawParts()]
+//return [maker.jawParts()]
 return [maker.make()]
