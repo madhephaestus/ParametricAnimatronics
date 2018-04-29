@@ -17,7 +17,8 @@ class HeadMakerClass implements IParameterChanged{
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
 	HashMap<String, Object>  servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 				//.union(horn)
-	
+	CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
+					.roty(180).rotz(180+45).movez(1)
 	CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 			.toZMax()
 			.movez(1)
@@ -104,6 +105,12 @@ class HeadMakerClass implements IParameterChanged{
 		double jawZLocation =-eyeDiam.getMM()/2+servoChordSideDistance
 		double jawLowerZ = jawZLocation -jawLength.getMM()
 		double jawattachTHickness = 30
+		CSG jawHorn = horn
+					.rotz(-45-180)
+					.movez(servoNub)
+					.rotx(90)
+		jawHorn=jawHorn.union([jawHorn.movey(1),jawHorn.movey(2),jawHorn.movey(3)])
+					.move(jawXLocation,jawYLocation,jawZLocation)
 		CSG JawServo = servo
 					.movez(servoNub)
 					.rotx(90)
@@ -151,7 +158,7 @@ class HeadMakerClass implements IParameterChanged{
 						.move(jawXLocation,0,jawLowerZ)
 						.union(driven)
 						.union(passive)
-						.difference([jawBolt,JawServo])
+						.difference([jawBolt,JawServo,jawHorn])
 						
 		CSG uppweJaw = jawBlank
 						.toZMax()
@@ -164,7 +171,7 @@ class HeadMakerClass implements IParameterChanged{
 		
 
 		
-		return [jawServoBlock,JawServo,jawBolt,uppweJaw,lowerJaw]
+		return [jawServoBlock,JawServo,jawBolt,uppweJaw,lowerJaw,jawHorn]
 	}
 	List<CSG> make(){
 		if(retparts != null)
@@ -185,8 +192,7 @@ class HeadMakerClass implements IParameterChanged{
 		
 		CSG bearing = bearingKeepawy
 					
-		CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
-					.roty(180).rotz(180+45).movez(1)
+		
 
 		double servoSeperation = 4
 		Transform panServoLocation = new Transform()
