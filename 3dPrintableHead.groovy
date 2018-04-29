@@ -482,7 +482,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG jawBolts = 	jawPartList[2]		
 		CSG jawServo = 	jawPartList[1]	
 		headBack=headBack.difference(jawBolts)
-		jaw.swtName("jaw")
+		jaw.setName("jaw")
 		jaw.setManufacturing({ toMfg ->
 			return toMfg.toZMin()
 		})
@@ -631,6 +631,7 @@ class HeadMakerClass implements IParameterChanged{
 		})
 		retparts= [
 		//tiltServo,panServo,
+		jaw,
 		jawServo,
 		servoBlock,
 		eye,lEye,
@@ -645,7 +646,7 @@ class HeadMakerClass implements IParameterChanged{
 		ltiltLinkage,llinkPinTilt,
 		//attachmentBolt//,MountBolts
 		]//.collect{it.prepForManufacturing()}
-		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter]
+		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength]
 		for(int i = 0;i< retparts.size();i++){
 			int index = i;
 			retparts.get(i).setRegenerate({return make().get(index)})
