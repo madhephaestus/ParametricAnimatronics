@@ -165,7 +165,7 @@ class HeadMakerClass implements IParameterChanged{
 						.move(jawXLocation,0,-eyeDiam.getMM()/2+cornerRadius)
 		jawServoBlock=jawServoBlock
 					.union(	uppweJaw)
-					.difference(jawBolt)		
+					.difference([jawBolt,jawMountBolts])		
 		
 
 		
