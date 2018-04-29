@@ -4,6 +4,8 @@ if (args==null){
 }
 class HeadMakerClass implements IParameterChanged{
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
+	LengthParameter noseLength		= new LengthParameter("noseLength",10,[200,001])
+	LengthParameter jawLength		= new LengthParameter("jawLength",40,[200,001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
@@ -35,17 +37,20 @@ class HeadMakerClass implements IParameterChanged{
 	double bite = boltLength/2
 	double bearingHoleDiam = 8
 	double mountBoltDistance =20
-	double servoNub = servoData.tipOfShaftToBottomOfFlange-servoData.bottomOfFlangeToTopOfBody
+	double servoNub = servoData.tipOfShaftToBottomOfFlange-
+				   servoData.bottomOfFlangeToTopOfBody-
+				   servoData.flangeThickness+
+				   printerOffset.getMM()*2
 	
 	CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
 	CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
 				.movez(bite)
 	CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),100).toCSG()
 				.movez(boltLength+1)
-	CSG bolt = CSG.unionAll([bitePart,loosePart,headBolt])
+	CSG boltStub = CSG.unionAll([bitePart,loosePart,headBolt])
 				.roty(180)
 				.movez(bite+1)
-	CSG mountBoltStub = bolt.union(bolt.movex(-mountBoltDistance))
+	CSG mountBoltStub = boltStub.union(boltStub.movex(-mountBoltDistance))
 						.roty(180)
 						.movey(eyeCenter.getMM()/2)
 						.movex(locationOfBackOfhead+6)	
@@ -62,13 +67,16 @@ class HeadMakerClass implements IParameterChanged{
 		retparts=null
 	}
 	List<CSG> jawParts(){
+		println servoData
+		
 		double overlap = cornerRadius+4
 		double mountBlockX = eyeDiam.getMM()/2
 		double servoChordSideDistance = servo.getMaxY()
+		double jawThickness = 6 
 		
 		CSG jawMount = new RoundedCube(mountBlockX+mountBoltDistance+boltData.headDiameter,
 							boltData.headDiameter*2+cornerRadius,
-							6+cornerRadius*2
+							jawThickness+cornerRadius*2
 							).cornerRadius(cornerRadius).toCSG()
 							.toZMax()
 							.toXMin()
@@ -83,7 +91,7 @@ class HeadMakerClass implements IParameterChanged{
 							.toXMax()
 							.movey(-eyeDiam.getMM()/2-washerSize/4)
 							.movex(locationOfBackOfhead+overlap)
-							.union(jawMount)
+							.union([jawMount])
 							
 		CSG jawMountBolts = mountBoltStub
 						.toZMin()
@@ -94,14 +102,15 @@ class HeadMakerClass implements IParameterChanged{
 		double jawYLocation =jawServoBlock.getMaxY()
 		double jawBoltYLocation =jawServoBlock.getMinY()
 		double jawZLocation =-eyeDiam.getMM()/2+servoChordSideDistance
+		double jawLowerZ = jawZLocation -jawLength.getMM()
 		CSG JawServo = servo
 					.movez(servoNub)
 					.rotx(90)
 					.move(jawXLocation,jawYLocation,jawZLocation)
-		CSG jawBolt = bolt
+		CSG jawBolt = boltStub
 					.rotx(90)
 					.move(jawXLocation,jawBoltYLocation,jawZLocation)
-					.union(bolt
+					.union(boltStub
 					.roty(-90)
 					.move(locationOfBackOfhead+overlap,jawBoltYLocation+15,jawZLocation-5))
 		jawServoBlock=jawServoBlock
@@ -109,9 +118,30 @@ class HeadMakerClass implements IParameterChanged{
 						JawServo.movex(cornerRadius),
 						JawServo.movex(cornerRadius*2),
 						JawServo.movex(cornerRadius*3),
-						JawServo.movex(cornerRadius*4),
-						jawBolt])			
-		return [jawServoBlock,JawServo,jawBolt]
+						JawServo.movex(cornerRadius*4)])	
+		double jawWidth = headTotalWidth/2
+		CSG jawBlank = new Cylinder(jawWidth,jawThickness).toCSG()	
+						.difference(new Cube(jawWidth*2).toCSG().toXMax())
+						.movex(noseLength.getMM()+50)
+						.union(new RoundedCube(mountBlockX,
+							jawWidth*2,jawThickness).cornerRadius(cornerRadius).toCSG().toZMin())
+						.hull()
+						.movey(eyeCenter.getMM()/2)
+		CSG cutter = jawBlank.scalez(10)
+							.movez(-30)
+									.toolOffset(-30)
+		cutter=cutter.union(cutter.movex(-30)).hull()						
+		CSG lowerJaw = jawBlank
+						.difference(cutter)
+						.move(jawXLocation,0,jawLowerZ)
+		CSG uppweJaw = jawBlank
+						.toZMax()
+						.move(jawXLocation,0,-eyeDiam.getMM()/2+cornerRadius)
+		jawServoBlock=jawServoBlock
+					.union(	uppweJaw)
+					.difference(jawBolt)		
+		
+		return [jawServoBlock,JawServo,jawBolt,uppweJaw,lowerJaw]
 	}
 	List<CSG> make(){
 		if(retparts != null)
@@ -122,12 +152,12 @@ class HeadMakerClass implements IParameterChanged{
 		CSG bearingAss = CSG.unionAll([washerHole,washer])
 					.toZMax()
 					.movez(1)
-					.difference(bolt)
+					.difference(boltStub)
 					
 		CSG bearingKeepawy= CSG.unionAll([washerHole.toolOffset(printerOffset.getMM()),new Cylinder(washerSize+1,100).toCSG().toZMax().movez(1)])
 						.toZMax()
 						.movez(1)
-		bolt=bolt.movez(-2)						
+		CSG bolt=boltStub.movez(-2)						
 		//return [bolt]
 		
 		CSG bearing = bearingKeepawy
@@ -364,7 +394,9 @@ class HeadMakerClass implements IParameterChanged{
 					tiltBearing,panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
-					])					
+					])	
+		CSG eyesKeepaway = 	CSG.unionAll([eyeKeepaway,
+					eyeKeepaway.movey(eyeCenter.getMM())])			
 		CSG headBack = backtBase
 					.union(bearingSupport)
 					.toXMin()
@@ -376,8 +408,7 @@ class HeadMakerClass implements IParameterChanged{
 					panServo.movex(servoSeperation),
 					panServo.movex(servoSeperation*1.5),
 					panServo.movex(servoSeperation*2),
-					eyeKeepaway,
-					eyeKeepaway.movey(eyeCenter.getMM()),
+					eyesKeepaway,
 					tiltBearing,
 					panBearing,
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
@@ -414,8 +445,9 @@ class HeadMakerClass implements IParameterChanged{
 
 		def jawPartList = jawParts()
 		CSG servoBlock = jawPartList[0]
-						.difference([headBack,panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
-					attachmentBolt,MountBolts
+						.difference([head.hull(),headBack.hull(),panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+					attachmentBolt,MountBolts,
+					tiltServo,panServo,eyesKeepaway
 						])
 		CSG jawBolts = 	jawPartList[2]		
 		CSG jawServo = 	jawPartList[1]	
