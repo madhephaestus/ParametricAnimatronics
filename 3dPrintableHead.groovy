@@ -103,6 +103,7 @@ class HeadMakerClass implements IParameterChanged{
 		double jawBoltYLocation =jawServoBlock.getMinY()
 		double jawZLocation =-eyeDiam.getMM()/2+servoChordSideDistance
 		double jawLowerZ = jawZLocation -jawLength.getMM()
+		double jawattachTHickness = 30
 		CSG JawServo = servo
 					.movez(servoNub)
 					.rotx(90)
@@ -128,18 +129,40 @@ class HeadMakerClass implements IParameterChanged{
 						.hull()
 						.movey(eyeCenter.getMM()/2)
 		CSG cutter = jawBlank.scalez(10)
-							.movez(-30)
+							.movez(-jawattachTHickness)
 									.toolOffset(-30)
-		cutter=cutter.union(cutter.movex(-30)).hull()						
+		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
+		CSG jawLug = new RoundedCube(30,
+							jawThickness+jawattachTHickness/2,jawThickness*3).cornerRadius(cornerRadius).toCSG()
+							.toZMin()
+							.toYMax()
+							.movey(jawThickness)
+		CSG jawAttach= new Cylinder(eyeDiam.getMM()/2+(-jawZLocation),jawThickness).toCSG()
+					.rotx(90)
+		jawAttach=jawAttach.union(jawLug.movez(jawLowerZ-jawZLocation))
+					//.intersect(new Cube(jawLength.getMM()*1.75).toCSG().movez(-jawLength.getMM()*0.25))
+		CSG driven = jawAttach
+					.move(jawXLocation,jawYLocation,jawZLocation)
+		CSG passive = jawAttach
+					.rotz(180)
+					.move(jawXLocation,jawBoltYLocation,jawZLocation)						
 		CSG lowerJaw = jawBlank
 						.difference(cutter)
 						.move(jawXLocation,0,jawLowerZ)
+						.union(driven)
+						.union(passive)
+						.difference([jawBolt,JawServo])
+						
 		CSG uppweJaw = jawBlank
 						.toZMax()
 						.move(jawXLocation,0,-eyeDiam.getMM()/2+cornerRadius)
 		jawServoBlock=jawServoBlock
 					.union(	uppweJaw)
 					.difference(jawBolt)		
+		
+
+		
+
 		
 		return [jawServoBlock,JawServo,jawBolt,uppweJaw,lowerJaw]
 	}
@@ -634,5 +657,5 @@ class HeadMakerClass implements IParameterChanged{
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 def maker = new HeadMakerClass()
-//return [maker.jawParts()]
+return [maker.jawParts()]
 return [maker.make()]
