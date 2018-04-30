@@ -128,11 +128,17 @@ class HeadMakerClass implements IParameterChanged{
 						JawServo.movex(cornerRadius*3),
 						JawServo.movex(cornerRadius*4)])	
 		double jawWidth = headTotalWidth/2
+		CSG backMountUpperJaw =new RoundedCube(mountBlockX,
+							jawWidth*2,jawThickness)
+							.cornerRadius(cornerRadius)
+							.toCSG()
+							.toZMin()
+							
 		CSG jawBlank = new Cylinder(jawWidth,jawThickness).toCSG()	
 						.difference(new Cube(jawWidth*2).toCSG().toXMax())
 						.movex(noseLength.getMM()+50)
-						.union(new RoundedCube(mountBlockX,
-							jawWidth*2,jawThickness).cornerRadius(cornerRadius).toCSG().toZMin())
+						
+		jawBlank=jawBlank.union(backMountUpperJaw)
 						.hull()
 						.movey(eyeCenter.getMM()/2)
 		CSG cutter = jawBlank.scalez(10)
@@ -162,7 +168,9 @@ class HeadMakerClass implements IParameterChanged{
 						
 		CSG uppweJaw = jawBlank
 						.toZMax()
-						.move(jawXLocation,0,-eyeDiam.getMM()/2+cornerRadius)
+						.toXMin()
+						.move(jawServoBlock.getMinX(),0,-eyeDiam.getMM()/2+cornerRadius)
+						
 		jawServoBlock=jawServoBlock
 					.union(	uppweJaw)
 					.difference([jawBolt,jawMountBolts])		
