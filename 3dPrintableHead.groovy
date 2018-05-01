@@ -3,7 +3,7 @@ if (args==null){
 	CSGDatabase.clear()
 }
 class HeadMakerClass implements IParameterChanged{
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.3,[2,0.001])
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.6,[2,0.001])
 	LengthParameter noseLength		= new LengthParameter("noseLength",10,[200,001])
 	LengthParameter jawLength		= new LengthParameter("jawLength",40,[200,001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
