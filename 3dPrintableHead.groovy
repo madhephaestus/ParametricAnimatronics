@@ -70,7 +70,7 @@ class HeadMakerClass implements IParameterChanged{
 	List<CSG> jawParts(){
 		println servoData
 		
-		double overlap = cornerRadius+4
+		double overlap = cornerRadius
 		double mountBlockX = eyeDiam.getMM()/2
 		double servoChordSideDistance = servo.getMaxY()
 		double jawThickness = 6 
