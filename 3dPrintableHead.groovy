@@ -4,7 +4,7 @@ if (args==null){
 }
 class HeadMakerClass implements IParameterChanged{
 	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-	LengthParameter noseLength		= new LengthParameter("noseLength",10,[200,001])
+	LengthParameter noseLength		= new LengthParameter("noseLength",20,[200,001])
 	LengthParameter jawLength		= new LengthParameter("jawLength",40,[200,001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
 	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
@@ -12,7 +12,8 @@ class HeadMakerClass implements IParameterChanged{
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
 	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",43,[100,50])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()*2,[100,eyeDiam.getMM()])
+	LengthParameter noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
 	HashMap<String, Object>  servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
@@ -70,7 +71,7 @@ class HeadMakerClass implements IParameterChanged{
 	List<CSG> jawParts(){
 		println servoData
 		
-		double overlap = cornerRadius
+		double overlap = 0
 		double mountBlockX = eyeDiam.getMM()/2
 		double servoChordSideDistance = servo.getMaxY()
 		double jawThickness = 6 
@@ -134,9 +135,10 @@ class HeadMakerClass implements IParameterChanged{
 							.toCSG()
 							.toZMin()
 							
-		CSG jawBlank = new Cylinder(jawWidth,jawThickness).toCSG()	
+		CSG jawBlank = new Cylinder(noseDiameter.getMM()/2,jawThickness).toCSG()	
 						.difference(new Cube(jawWidth*2).toCSG().toXMax())
-						.movex(noseLength.getMM()+50)
+						.toXMax()
+						.movex(noseLength.getMM()+100)
 						
 		jawBlank=jawBlank.union(backMountUpperJaw)
 						.hull()
@@ -154,14 +156,16 @@ class HeadMakerClass implements IParameterChanged{
 					.rotx(90)
 		jawAttach=jawAttach.union(jawLug.movez(jawLowerZ-jawZLocation))
 					//.intersect(new Cube(jawLength.getMM()*1.75).toCSG().movez(-jawLength.getMM()*0.25))
+		double lugXAllignenment= jawServoBlock.getMinX()+jawLug.getMaxX()
 		CSG driven = jawAttach
-					.move(jawXLocation,jawYLocation,jawZLocation)
+					.move(lugXAllignenment,jawYLocation,jawZLocation)
 		CSG passive = jawAttach
 					.rotz(180)
-					.move(jawXLocation,jawBoltYLocation,jawZLocation)						
+					.move(lugXAllignenment,jawBoltYLocation,jawZLocation)						
 		CSG lowerJaw = jawBlank
 						.difference(cutter)
-						.move(jawXLocation,0,jawLowerZ)
+						.toXMin()
+						.move(jawServoBlock.getMinX(),0,jawLowerZ)
 						.union(driven)
 						.union(passive)
 						.difference([jawBolt,JawServo,jawHorn])
@@ -654,7 +658,7 @@ class HeadMakerClass implements IParameterChanged{
 		ltiltLinkage,llinkPinTilt,
 		//attachmentBolt//,MountBolts
 		]//.collect{it.prepForManufacturing()}
-		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength]
+		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength,noseDiameter]
 		for(int i = 0;i< retparts.size();i++){
 			int index = i;
 			retparts.get(i).setRegenerate({return make().get(index)})
