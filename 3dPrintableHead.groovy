@@ -7,12 +7,12 @@ class HeadMakerClass implements IParameterChanged{
 	LengthParameter noseLength		= new LengthParameter("noseLength",20,[200,001])
 	LengthParameter jawLength		= new LengthParameter("jawLength",40,[200,001])
 	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
-	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
+	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
-	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","DHV56mg_sub_Micro_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","tproSG90_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()*2,[100,eyeDiam.getMM()])
+	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()*1.5,[100,eyeDiam.getMM()])
 	LengthParameter noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
 	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
@@ -93,6 +93,7 @@ class HeadMakerClass implements IParameterChanged{
 							.toXMax()
 							.movey(-eyeDiam.getMM()/2-washerSize/4)
 							.movex(locationOfBackOfhead+overlap)
+							
 							.union([jawMount])
 							
 		CSG jawMountBolts = mountBoltStub
