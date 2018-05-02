@@ -112,14 +112,16 @@ class HeadMakerClass implements IParameterChanged{
 		//println "All Parts was set to null "+name
 		if(retparts!=null){
 			retparts=null
+			try{
 			compute()
+			}catch(Exception e){}
 		}
 		
 		
 	}
 	List<CSG> jawParts(){
 		println servoData
-		
+		headTotalWidth = eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2
 		double overlap = 0
 		double mountBlockX = servoThickness*2+cornerRadius
 		double servoChordSideDistance = servo.getMaxY()
