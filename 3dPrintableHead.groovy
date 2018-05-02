@@ -204,7 +204,7 @@ class HeadMakerClass implements IParameterChanged{
 							.movez(-jawattachTHickness)
 									.toolOffset(-30)
 		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
-		double jawWidthOfLug = servoThickness*2+cornerRadius*2
+		double jawWidthOfLug = (servoThickness*2+cornerRadius*2)*2
 		CSG jawLug = new RoundedCube(jawWidthOfLug,
 							jawThickness+jawattachTHickness/2,
 							jawThickness*3)
