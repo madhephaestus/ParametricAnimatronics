@@ -3,60 +3,101 @@ if (args==null){
 	CSGDatabase.clear()
 }
 class HeadMakerClass implements IParameterChanged{
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
-	LengthParameter noseLength		= new LengthParameter("noseLength",20,[200,001])
-	LengthParameter jawLength		= new LengthParameter("jawLength",40,[200,001])
-	LengthParameter eyeDiam 		= new LengthParameter("Eye Diameter",40,[60,38])
-	StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
-	//StringParameter servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
-	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
-	StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","tproSG90_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	//StringParameter hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-	LengthParameter eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()*1.5,[100,eyeDiam.getMM()])
-	LengthParameter noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
-	StringParameter bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
-	HashMap<String, Object>  boltData = Vitamins.getConfiguration( "capScrew","M5")
-	HashMap<String, Object>  servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
-				//.union(horn)
-	CSG horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
-					.roty(180).rotz(180+45).movez(1)
-	CSG servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
-			.toZMax()
-			.movez(1)
-	double servoThickness = Math.abs(servo.getMinX())
-	double servoY = Math.abs(servo.getTotalY())
-	double washerSize = boltData.headDiameter/2+1.2
-	double headTotalWidth = eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2
-	double servoSweep = 60
-	double backBaseX =eyeDiam.getMM()*1.1
-	double frontBaseX =eyeDiam.getMM()/2
-	double backOfEyes = backBaseX+frontBaseX
+	LengthParameter printerOffset
+	LengthParameter noseLength
+	LengthParameter jawLength
+	LengthParameter eyeDiam
+	StringParameter servoSizeParam
+	
+	LengthParameter eyemechRadius
+	StringParameter hornSizeParam
+	LengthParameter eyeCenter 	
+	LengthParameter noseDiameter 	
+	StringParameter bearingSizeParam
+	HashMap<String, Object>  boltData
+	HashMap<String, Object>  servoData
+	CSG horn 
+	CSG servo 
+	double servoThickness 
+	double servoY 
+	double washerSize
+	double headTotalWidth
+	double servoSweep 
+	double backBaseX 
+	double frontBaseX
+	double backOfEyes
 	def eyePartsMaker=null
 	def retparts=null
-	double cornerRadius = 2
-	double locationOfBackOfhead = -backOfEyes-servoThickness+(cornerRadius*3)-(eyemechRadius.getMM()/2)
-	double boltLength = 12
-	double bite = boltLength/2
-	double bearingHoleDiam = 8
-	double mountBoltDistance =20
-	double servoNub = servoData.tipOfShaftToBottomOfFlange-
-				   servoData.bottomOfFlangeToTopOfBody-
-				   servoData.flangeThickness+
-				   printerOffset.getMM()*2
-	
-	CSG bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
-	CSG loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
-				.movez(bite)
-	CSG headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),100).toCSG()
-				.movez(boltLength+1)
-	CSG boltStub = CSG.unionAll([bitePart,loosePart,headBolt])
-				.roty(180)
-				.movez(bite+1)
-	CSG mountBoltStub = boltStub.union(boltStub.movex(-mountBoltDistance))
-						.roty(180)
-						.movey(eyeCenter.getMM()/2)
-						.movex(locationOfBackOfhead+6)	
-						
+	double cornerRadius 
+	double locationOfBackOfhead
+	double boltLength 
+	double bite
+	double bearingHoleDiam
+	double mountBoltDistance
+	double servoNub
+	CSG bitePart 
+	CSG loosePart
+	CSG headBolt 
+	CSG boltStub 
+	CSG mountBoltStub
+	public 	HeadMakerClass(){
+		compute()				
+	}
+	void compute(){
+		 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+		 noseLength		= new LengthParameter("noseLength",20,[200,001])
+		 jawLength		= new LengthParameter("jawLength",40,[200,001])
+		 eyeDiam 		= new LengthParameter("Eye Diameter",100,[60,38])
+		 servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
+		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
+		 eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
+		 hornSizeParam 			= new StringParameter("hobbyServoHorn Default","tproSG90_1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+		// hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+		 eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()*1.5,[100,eyeDiam.getMM()])
+		 noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
+		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
+		 boltData = Vitamins.getConfiguration( "capScrew","M5")
+		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
+					//.union(horn)
+		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())	
+						.roty(180).rotz(180+45).movez(1)
+		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
+				.toZMax()
+				.movez(1)
+		 servoThickness = Math.abs(servo.getMinX())
+		 servoY = Math.abs(servo.getTotalY())
+		 washerSize = boltData.headDiameter/2+1.2
+		 headTotalWidth = eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2
+		 servoSweep = 60
+		 backBaseX =eyeDiam.getMM()*1.1
+		 frontBaseX =eyeDiam.getMM()/2
+		 backOfEyes = backBaseX+frontBaseX
+		def eyePartsMaker=null
+		def retparts=null
+		 cornerRadius = 2
+		 locationOfBackOfhead = -backOfEyes-servoThickness+(cornerRadius*3)-(eyemechRadius.getMM()/2)
+		 boltLength = 12
+		 bite = boltLength/2
+		 bearingHoleDiam = 8
+		 mountBoltDistance =20
+		 servoNub = servoData.tipOfShaftToBottomOfFlange-
+					   servoData.bottomOfFlangeToTopOfBody-
+					   servoData.flangeThickness+
+					   printerOffset.getMM()*2
+		
+		 bitePart =new Cylinder(boltData.outerDiameter/2,bite).toCSG()
+		 loosePart =new Cylinder(boltData.outerDiameter/2+printerOffset.getMM(),boltLength-bite+1).toCSG()
+					.movez(bite)
+		 headBolt =new Cylinder(boltData.headDiameter/2+printerOffset.getMM(),100).toCSG()
+					.movez(boltLength+1)
+		boltStub = CSG.unionAll([bitePart,loosePart,headBolt])
+					.roty(180)
+					.movez(bite+1)
+		 mountBoltStub = boltStub.union(boltStub.movex(-mountBoltDistance))
+							.roty(180)
+							.movey(eyeCenter.getMM()/2)
+							.movex(locationOfBackOfhead+6)						
+	}
 		/**
 	 * This is a listener for a parameter changing
 	 * @param name
@@ -66,15 +107,21 @@ class HeadMakerClass implements IParameterChanged{
 	public void parameterChanged(String name, Parameter p){
 		//new RuntimeException().printStackTrace(System.out);
 		//println "All Parts was set to null "+name
-		retparts=null
+		if(retparts!=null){
+			retparts=null
+			compute()
+		}
+		
+		
 	}
 	List<CSG> jawParts(){
 		println servoData
 		
 		double overlap = 0
-		double mountBlockX = eyeDiam.getMM()/2
+		double mountBlockX = servoThickness*2+cornerRadius
 		double servoChordSideDistance = servo.getMaxY()
 		double jawThickness = 6 
+		double backBlockz = servoData.flangeLongDimention+cornerRadius
 		
 		CSG jawMount = new RoundedCube(mountBlockX+mountBoltDistance+boltData.headDiameter,
 							boltData.headDiameter*2+cornerRadius,
@@ -83,14 +130,16 @@ class HeadMakerClass implements IParameterChanged{
 							.toZMax()
 							.toXMin()
 							.movez(-eyeDiam.getMM()/2+cornerRadius*2)
-							.movex(locationOfBackOfhead+overlap-eyeDiam.getMM()/2)
+							.movex(locationOfBackOfhead+overlap-mountBlockX)
 							.movey(eyeCenter.getMM()/2)
 		CSG jawServoBlock = new RoundedCube(mountBlockX,
 							headTotalWidth,
-							eyeDiam.getMM()
+							backBlockz
 							).cornerRadius(cornerRadius).toCSG()
 							.toYMin()
 							.toXMax()
+							.toZMin()
+							.movez(-eyeDiam.getMM()/2)
 							.movey(-eyeDiam.getMM()/2-washerSize/4)
 							.movex(locationOfBackOfhead+overlap)
 							
@@ -136,6 +185,8 @@ class HeadMakerClass implements IParameterChanged{
 							.toCSG()
 							.toZMin()
 							
+							
+							
 		CSG jawBlank = new Cylinder(noseDiameter.getMM()/2,jawThickness).toCSG()	
 						.difference(new Cube(jawWidth*2).toCSG().toXMax())
 						.toXMax()
@@ -148,13 +199,22 @@ class HeadMakerClass implements IParameterChanged{
 							.movez(-jawattachTHickness)
 									.toolOffset(-30)
 		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
-		CSG jawLug = new RoundedCube(30,
-							jawThickness+jawattachTHickness/2,jawThickness*3).cornerRadius(cornerRadius).toCSG()
+		double jawWidthOfLug = servoThickness*2+cornerRadius*2
+		CSG jawLug = new RoundedCube(jawWidthOfLug,
+							jawThickness+jawattachTHickness/2,
+							jawThickness*3)
+							.cornerRadius(cornerRadius).toCSG()
 							.toZMin()
 							.toYMax()
 							.movey(jawThickness)
-		CSG jawAttach= new Cylinder(eyeDiam.getMM()/2+(-jawZLocation),jawThickness).toCSG()
-					.rotx(90)
+		CSG jawAttach= new RoundedCube(jawWidthOfLug,
+							jawThickness,
+							jawLength.getMM()+jawWidthOfLug/2)
+							.cornerRadius(cornerRadius).toCSG()
+							.toYMin()
+							.toZMax()
+							.movez(jawWidthOfLug/2)
+					
 		jawAttach=jawAttach.union(jawLug.movez(jawLowerZ-jawZLocation))
 					//.intersect(new Cube(jawLength.getMM()*1.75).toCSG().movez(-jawLength.getMM()*0.25))
 		double lugXAllignenment= jawServoBlock.getMinX()+jawLug.getMaxX()
@@ -682,5 +742,5 @@ class HeadMakerClass implements IParameterChanged{
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 def maker = new HeadMakerClass()
-//return [maker.jawParts()]
+return [maker.jawParts()]
 return [maker.make()]
