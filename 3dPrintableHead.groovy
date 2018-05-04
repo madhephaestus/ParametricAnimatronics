@@ -244,9 +244,10 @@ class HeadMakerClass implements IParameterChanged{
 		jawServoBlock=jawServoBlock
 					.union(	uppweJaw)
 					.difference([jawBolt,jawMountBolts])		
-		
-
-		
+				
+		BowlerStudioController.addCsg(jawServoBlock);
+		BowlerStudioController.addCsg(lowerJaw);
+				
 
 		
 		return [jawServoBlock,JawServo,jawBolt,lowerJaw,jawHorn]
@@ -296,6 +297,8 @@ class HeadMakerClass implements IParameterChanged{
 		CSG panServo = servo
 					//.roty(180)
 					.transformed(panServoLocation)
+		BowlerStudioController.setCsg([tiltServo,panServo]);
+		
 		if( eyePartsMaker==null)			
 		eyePartsMaker= ScriptingEngine.gitScriptRun(
 	                                "https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
@@ -306,6 +309,12 @@ class HeadMakerClass implements IParameterChanged{
 	     List<CSG> eyeParts =    eyePartsMaker.make(eyeDiam.getMM())  
 	     println "Eyes made"    
 		CSG eye = eyeParts.get(0)
+		CSG lEye = eye.movey(eyeCenter.getMM())
+		BowlerStudioController.addCsg(eye);
+		BowlerStudioController.addCsg(lEye);
+		def jawPartList = jawParts()
+		
+		
 	    	CSG eyeMount = eyeParts.get(1)
 	    	CSG eyeKeepawaCutter = eyeParts.get(2)
 		CSG cup =  eyeParts.get(3)
@@ -375,7 +384,8 @@ class HeadMakerClass implements IParameterChanged{
 		CSG slaveLinkage = slaveCup.union(slaveCup.movey(eyeCenter.getMM()))
 						.union(bar)
 		CSG panLinkage = makeLinkage(cupPanSrv,cupPan)
-		CSG tiltLinkage = makeLinkage(cupTiltSrv,cup)				
+		CSG tiltLinkage = makeLinkage(cupTiltSrv,cup)	
+		println "Making Linkage keepaways"			
 		CSG slavelinkageKeepaway=CSG.unionAll([slaveLinkage.getBoundingBox().toolOffset(1),
 							slaveLinkage.getBoundingBox().toolOffset(1)
 							.move(Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
@@ -437,7 +447,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG panBearing = bearing.transformed(panBearingLocation)	
 		CSG tiltBearing = bearing.transformed(tiltBearingLocation)	
 		
-		// Begin building head base
+		println "Begin building head base"
 		CSG frontBase = new RoundedCube(frontBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM())
@@ -502,6 +512,7 @@ class HeadMakerClass implements IParameterChanged{
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
 					])	
+		BowlerStudioController.addCsg(head);
 		CSG eyesKeepaway = 	CSG.unionAll([eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM())])			
 		CSG headBack = backtBase
@@ -521,6 +532,7 @@ class HeadMakerClass implements IParameterChanged{
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
 					])	
+		BowlerStudioController.addCsg(headBack);
 		println headBack.getTotalY()
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
@@ -546,11 +558,11 @@ class HeadMakerClass implements IParameterChanged{
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
 		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM()*2)
 		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM()*2)
-		CSG lEye = eye.movey(eyeCenter.getMM())
+		
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
 
-		def jawPartList = jawParts()
+		
 		CSG jaw = jawPartList[3]
 		CSG servoBlock = jawPartList[0]
 						.difference([head.hull(),headBack.hull(),panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
