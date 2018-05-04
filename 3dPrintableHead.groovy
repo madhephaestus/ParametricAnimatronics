@@ -427,11 +427,14 @@ class HeadMakerClass implements IParameterChanged{
 		CSG panTotalLinkageKeepaway =	linkageKeepaway.transformed(panServoLocation)
 		CSG tiltTotalLinkageKeepaway =	linkageKeepaway.transformed(tiltServoLocation)
 		
+		
 		CSG panBolt =	bolt.transformed(panBearingLocation)
 		CSG tiltBolt =	bolt.transformed(tiltBearingLocation)
 		
 		CSG slaveLinkagePan = slaveLinkage.transformed(panServoLocation)
 		CSG slaveLinkageTilt = slaveLinkage.transformed(tiltServoLocation)
+		BowlerStudioController.addCsg(slaveLinkagePan);
+		BowlerStudioController.addCsg(slaveLinkageTilt);
 		CSG linkPinTiltBearing =beringLinkage
 				.transformed(tiltBearingLocation)
 		CSG linkPinPanBearing =beringLinkage
@@ -441,6 +444,10 @@ class HeadMakerClass implements IParameterChanged{
 		CSG linkPinPan =servoHornLinkage
 				.transformed(panServoLocation)
 		
+		BowlerStudioController.addCsg(slaveLinkagePan);
+		BowlerStudioController.addCsg(slaveLinkageTilt);
+		BowlerStudioController.addCsg(linkPinTilt);
+		BowlerStudioController.addCsg(linkPinPan);
 		
 		CSG panBearingPart = bearingAss.transformed(panBearingLocation)	
 		CSG tiltBearingPart = bearingAss.transformed(tiltBearingLocation)
