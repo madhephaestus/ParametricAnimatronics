@@ -331,7 +331,8 @@ class HeadMakerClass implements IParameterChanged{
 					.transformed(tiltServoLocation)
 		CSG cupPanSrv	=linkCup
 					.transformed(panServoLocation)
-			
+		BowlerStudioController.addCsg(cupTiltSrv);
+		BowlerStudioController.addCsg(cupPanSrv);
 		double cupThick = cup.getTotalZ()
 		CSG linkPin =  eyeParts.get(4)
 						.movez(-eyemechRadius.getMM())
