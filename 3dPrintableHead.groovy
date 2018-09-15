@@ -299,10 +299,10 @@ class HeadMakerClass implements IParameterChanged{
 								eyeCenter.getMM()+eyemechRadius.getMM(),
 								eyemechRadius.getMM())
 		CSG tiltServo = servo
-					.movez(-servoNub)
+					.movez(-servoNub+printerOffset.getMM())
 					.transformed(tiltServoLocation)
 		CSG panServo = servo
-					.movez(-servoNub)
+					.movez(-servoNub+printerOffset.getMM())
 					//.roty(180)
 					.transformed(panServoLocation)
 		BowlerStudioController.setCsg([tiltServo,panServo]);
