@@ -10,8 +10,8 @@
   "printerOffset": {
     "name": "printerOffset",
     "options": [
-      "1",
-      "0.001"
+      "1.2",
+      "0"
     ],
     "value": 500
   },
@@ -49,7 +49,7 @@
       "hv5932mg",
       "es08maII"
     ],
-    "strValue": "DHV56mg_sub_Micro"
+    "strValue": "towerProMG91"
   },
   "Ball Joint Pin Size": {
     "name": "Ball Joint Pin Size",
@@ -213,7 +213,7 @@
       "hv6214mg_6",
       "hv6214mg_1"
     ],
-    "strValue": "DHV56mg_sub_Micro_1"
+    "strValue": "standardMicro1"
   },
   "Eye Mech Linkage": {
     "name": "Eye Mech Linkage",
