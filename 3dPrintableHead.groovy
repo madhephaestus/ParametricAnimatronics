@@ -65,7 +65,7 @@ class HeadMakerClass implements IParameterChanged{
 						.roty(180).rotz(180+45).movez(1)
 		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 				.toZMax()
-				.movez(1)
+				//.movez(1)
 		 servoThickness = Math.abs(servo.getMinX())
 		 servoSeperation = 4
 		 servoY = Math.abs(servo.getTotalY())
@@ -84,6 +84,7 @@ class HeadMakerClass implements IParameterChanged{
 		 bite = boltLength/2
 		 bearingHoleDiam = 8
 		 mountBoltDistance =20
+		 
 		 servoNub = servoData.tipOfShaftToBottomOfFlange-
 					   servoData.bottomOfFlangeToTopOfBody-
 					   servoData.flangeThickness+
@@ -169,7 +170,7 @@ class HeadMakerClass implements IParameterChanged{
 		jawHorn=jawHorn.union([jawHorn.movey(1),jawHorn.movey(2),jawHorn.movey(3)])
 					.move(jawXLocation,jawYLocation,jawZLocation)
 		CSG JawServo = servo
-					.movez(servoNub)
+					//.movez(servoNub)
 					.rotx(90)
 					.move(jawXLocation,jawYLocation,jawZLocation)
 		CSG jawBolt = boltStub
@@ -298,8 +299,10 @@ class HeadMakerClass implements IParameterChanged{
 								eyeCenter.getMM()+eyemechRadius.getMM(),
 								eyemechRadius.getMM())
 		CSG tiltServo = servo
+					.movez(-servoNub)
 					.transformed(tiltServoLocation)
 		CSG panServo = servo
+					.movez(-servoNub)
 					//.roty(180)
 					.transformed(panServoLocation)
 		BowlerStudioController.setCsg([tiltServo,panServo]);
