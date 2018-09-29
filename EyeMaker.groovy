@@ -101,7 +101,7 @@ class EyeMakerClass{
 		CSG eye = new Sphere(diameter/2,30,15)// Spheres radius
 					.toCSG()// convert to CSG to display
 					.difference(backOfEyeCutter)// back of the eye
-					//.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
+					.difference(new Cube(diameter).toCSG().toXMin().movex(diameter/2-6))// form the flat on the front of the eye
 					.difference(ballJointKeepAway)
 		//return eye
 		
