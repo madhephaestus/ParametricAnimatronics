@@ -8,7 +8,7 @@ A script to create laser cut animatronic heads using BowlerStudio.
 
 3 x TPro MG92b servo            https://www.amazon.com/Pink-Lizard-Towerpro-Torque-Digital/dp/B01ING04YY
 
-3x 25mm Googly eyes             https://www.amazon.com/Fun-Express-Super-Wiggle-Googly/dp/B005DS5T28
+2 x 25mm Googly eyes             https://www.amazon.com/Fun-Express-Super-Wiggle-Googly/dp/B005DS5T28
 
 1 x RIB circuit board           https://github.com/WPIRoboticsEngineering/RobotInterfaceBoard/releases/tag/rev5-1
 
