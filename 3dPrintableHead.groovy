@@ -48,7 +48,7 @@ class HeadMakerClass implements IParameterChanged{
 	void compute(){
 		 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
-		 jawLength		= new LengthParameter("jawLength",40,[200,001])
+		 jawLength		= new LengthParameter("jawLength",70,[200,001])
 		 eyeDiam 		= new LengthParameter("Eye Diameter",50,[60,38])
 		 servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
