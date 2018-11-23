@@ -46,7 +46,7 @@ class HeadMakerClass implements IParameterChanged{
 		compute()				
 	}
 	void compute(){
-		 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+	 	 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
 		 jawLength		= new LengthParameter("jawLength",70,[200,001])
 		 eyeDiam 		= new LengthParameter("Eye Diameter",46,[60,38])
@@ -65,6 +65,7 @@ class HeadMakerClass implements IParameterChanged{
 						.roty(180).rotz(180+45).movez(1)
 		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 				.toZMax()
+				.toolOffset(printerOffset.getMM())
 				//.movez(1)
 		 servoThickness = Math.abs(servo.getMinX())
 		 servoSeperation = 4
@@ -667,7 +668,7 @@ class HeadMakerClass implements IParameterChanged{
 		head.setName("frontOfHead")
 		head.setManufacturing({ toMfg ->
 			return toMfg
-					.roty(-90)
+					.roty(90)
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
