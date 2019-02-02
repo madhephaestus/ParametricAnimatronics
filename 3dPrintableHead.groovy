@@ -13,6 +13,7 @@ class HeadMakerClass implements IParameterChanged{
 	StringParameter hornSizeParam
 	LengthParameter eyeCenter 	
 	LengthParameter noseDiameter 	
+	LengthParameter noseHeight
 	StringParameter bearingSizeParam
 	HashMap<String, Object>  boltData
 	HashMap<String, Object>  servoData
@@ -43,6 +44,7 @@ class HeadMakerClass implements IParameterChanged{
 	CSG mountBoltStub
 	boolean debug =true
 	double eyeLenseThickness=2.0;
+	double blinkBracketWidth = 5
 	public 	HeadMakerClass(){
 		compute()				
 	}
@@ -56,8 +58,9 @@ class HeadMakerClass implements IParameterChanged{
 		 eyemechRadius		= new LengthParameter("Eye Mech Linkage",14,[20,5])
 		 hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 		// hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-		 eyeCenter 		= new LengthParameter("Eye Center Distance",55,[100,eyeDiam.getMM()])
+		 eyeCenter 		= new LengthParameter("Eye Center Distance",55,[100,eyeDiam.getMM()+blinkBracketWidth])
 		 noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
+		 noseHeight= new LengthParameter("Nose Height",30,[jawLength.getMM(),10])
 		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 		 boltData = Vitamins.getConfiguration( "capScrew","M5")
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
@@ -244,18 +247,31 @@ class HeadMakerClass implements IParameterChanged{
 		CSG uppweJaw = jawBlank
 						.toZMax()
 						.toXMin()
-						.move(jawServoBlock.getMinX(),0,-eyeDiam.getMM()/2+cornerRadius)
+						.move(jawServoBlock.getMinX(),0,
+						-eyeDiam.getMM()/2+cornerRadius-noseHeight.getMM())
+		def noseSection = new RoundedCube(Math.abs(uppweJaw.getMinX()),
+							headTotalWidth,
+							noseHeight.getMM()+cornerRadius*2)
+							.cornerRadius(cornerRadius).toCSG()
+							.toZMin()
+							.toXMin()
+							.toYMin()
+							.movey(uppweJaw.getMinY())
+							.movex(uppweJaw.getMinX())
+							.movez(uppweJaw.getMaxZ()-cornerRadius)
+							
 						
 		jawServoBlock=jawServoBlock
-					.union(	uppweJaw)
+					.union(	[uppweJaw,noseSection])
 					.difference([jawBolt,jawMountBolts])		
 				
 		BowlerStudioController.addCsg(jawServoBlock);
 		BowlerStudioController.addCsg(lowerJaw);
-				
+
+		def keepaway = CSG.unionAll([jawServoBlock,JawServo,lowerJaw,jawHorn])
 
 		
-		return [jawServoBlock,JawServo,jawBolt,lowerJaw,jawHorn]
+		return [jawServoBlock,JawServo,jawBolt,lowerJaw,jawHorn,keepaway]
 	}
 	List<CSG> make(){
 		if(retparts != null)
@@ -324,7 +340,7 @@ class HeadMakerClass implements IParameterChanged{
 		BowlerStudioController.addCsg(lEye);
 		def jawPartList = jawParts()
 		
-		
+		def jawKeepaway = jawPartList.get(5)
 	    	CSG eyeMount = eyeParts.get(1)
 	    	CSG eyeKeepawaCutter = eyeParts.get(2)
 		CSG cup =  eyeParts.get(3)
@@ -743,8 +759,34 @@ class HeadMakerClass implements IParameterChanged{
 					.toXMin()
 					.toYMin()
 		})
+		double neckWidth =(eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2)
+		def neckLength = 150
+		def topKW =  new Cube(Math.abs(jawKeepaway.getMinX()),
+					neckWidth,
+					eyeDiam.getMM() )
+						.toCSG()
+						.toXMax()
+						.toYMin()
+						.toZMax()
+		jawKeepaway = jawKeepaway.union([
+					new Sphere(eyeDiam.getMM()/2+eyeLenseThickness*2).toCSG(),
+					new Sphere(eyeDiam.getMM()/2+eyeLenseThickness*2).toCSG().movey(eyeCenter.getMM()),
+						topKW
+						.move(0,-eyeDiam.getMM()/2-cornerRadius,eyeDiam.getMM()/2),
+					new Cube(Math.abs(jawKeepaway.getMinX())/2,
+							neckWidth/2,
+							neckLength )
+						.toCSG()
+						.toXMin()
+						.toYMin()
+						.toZMax()
+						.move(jawKeepaway.getMinX(),-eyeDiam.getMM()/2-cornerRadius+neckWidth/4,0),
+						topKW
+						.toZMin()
+						.move(0,-eyeDiam.getMM()/2-cornerRadius,-neckLength),
+					])
 		retparts= [
-		//tiltServo,panServo,
+		jawKeepaway,
 		jaw,
 		jawServo,
 		servoBlock,
@@ -783,5 +825,5 @@ class HeadMakerClass implements IParameterChanged{
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 def maker = new HeadMakerClass()
-return [maker.jawParts()]
+//return [maker.jawParts()]
 return [maker.make()]
