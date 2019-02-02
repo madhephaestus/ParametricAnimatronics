@@ -42,6 +42,7 @@ class HeadMakerClass implements IParameterChanged{
 	CSG boltStub 
 	CSG mountBoltStub
 	boolean debug =true
+	double eyeLenseThickness=2.0;
 	public 	HeadMakerClass(){
 		compute()				
 	}
@@ -391,7 +392,7 @@ class HeadMakerClass implements IParameterChanged{
 		(int)10)//number of sweep increments
 		).rotz(servoSweep/-2)
 		eyeKeepaway=eyeKeepaway.union(eyeKeepaway.rotx(90))
-			.intersect(new Sphere(eyeDiam.getMM()/2+4).toCSG())
+			.intersect(new Sphere(eyeDiam.getMM()/2+eyeLenseThickness*2).toCSG())
 		CSG beringLinkage = 	servolinkBlank		
 							.difference(bolt)
 		CSG aSlice = slaveCup.intersect(slaveCup.getBoundingBox().toXMax().movex(slaveCup.getMinX()+cupThick))
@@ -782,5 +783,5 @@ class HeadMakerClass implements IParameterChanged{
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()  
 def maker = new HeadMakerClass()
-//return [maker.jawParts()]
+return [maker.jawParts()]
 return [maker.make()]
