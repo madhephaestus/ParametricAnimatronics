@@ -15,6 +15,7 @@ class HeadMakerClass implements IParameterChanged{
 	LengthParameter noseDiameter 	
 	LengthParameter noseHeight
 	StringParameter bearingSizeParam
+	LengthParameter tailLength
 	HashMap<String, Object>  boltData
 	HashMap<String, Object>  servoData
 	CSG horn 
@@ -49,9 +50,12 @@ class HeadMakerClass implements IParameterChanged{
 		compute()				
 	}
 	void compute(){
-	 	 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+		 tailLength		= new LengthParameter("Cable Cut Out Length",30,[500,0.01])
+		 
+	 	 printerOffset		= new LengthParameter("printerOffset",0.6,[2,0.001])
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
 		 jawLength		= new LengthParameter("jawLength",70,[200,001])
+		 tailLength.setMM(jawLength.getMM())
 		 eyeDiam 		= new LengthParameter("Eye Diameter",46,[60,38])
 		 servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
@@ -268,7 +272,7 @@ class HeadMakerClass implements IParameterChanged{
 		BowlerStudioController.addCsg(jawServoBlock);
 		BowlerStudioController.addCsg(lowerJaw);
 
-		def keepaway = CSG.unionAll([jawServoBlock,JawServo,lowerJaw,jawHorn])
+		def keepaway = CSG.unionAll([jawServoBlock,lowerJaw,jawHorn])
 
 		
 		return [jawServoBlock,JawServo,jawBolt,lowerJaw,jawHorn,keepaway]
@@ -760,7 +764,7 @@ class HeadMakerClass implements IParameterChanged{
 					.toYMin()
 		})
 		double neckWidth =(eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2)
-		def neckLength = 150
+		def neckLength = 130
 		def topKW =  new Cube(Math.abs(jawKeepaway.getMinX()),
 					neckWidth,
 					eyeDiam.getMM() )
@@ -782,6 +786,7 @@ class HeadMakerClass implements IParameterChanged{
 						.toZMax()
 						.move(jawKeepaway.getMinX(),-eyeDiam.getMM()/2-cornerRadius+neckWidth/4,0),
 						topKW
+						.scalez(0.25)
 						.toZMin()
 						.move(0,-eyeDiam.getMM()/2-cornerRadius,-neckLength),
 					])
