@@ -1,4 +1,4 @@
-import com.neuronrobotics.bowlerstudio.BowlerStudioController
+import com.neuronrobotics.bowlerstudio.//BowlerStudioController
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 
 import eu.mihosoft.vrl.v3d.CSG
@@ -262,8 +262,8 @@ class HeadMakerClass implements IParameterChanged{
 					.union(	uppweJaw)
 					.difference([jawBolt,jawMountBolts])
 				
-		BowlerStudioController.addCsg(jawServoBlock);
-		BowlerStudioController.addCsg(lowerJaw);
+		//BowlerStudioController.addCsg(jawServoBlock);
+		//BowlerStudioController.addCsg(lowerJaw);
 				
 
 		
@@ -319,7 +319,7 @@ class HeadMakerClass implements IParameterChanged{
 					.movez(-servoNub+printerOffset.getMM())
 					//.roty(180)
 					.transformed(panServoLocation)
-		BowlerStudioController.setCsg([tiltServo,panServo]);
+		//BowlerStudioController.setCsg([tiltServo,panServo]);
 		
 		if( eyePartsMaker==null)
 		eyePartsMaker= ScriptingEngine.gitScriptRun(
@@ -332,8 +332,8 @@ class HeadMakerClass implements IParameterChanged{
 		 println "Eyes made"
 		CSG eye = eyeParts.get(0)
 		CSG lEye = eye.movey(eyeCenter.getMM())
-		BowlerStudioController.addCsg(eye);
-		BowlerStudioController.addCsg(lEye);
+		//BowlerStudioController.addCsg(eye);
+		//BowlerStudioController.addCsg(lEye);
 		def jawPartList = jawParts()
 		
 		
@@ -353,8 +353,8 @@ class HeadMakerClass implements IParameterChanged{
 					.transformed(tiltServoLocation)
 		CSG cupPanSrv	=linkCup
 					.transformed(panServoLocation)
-		BowlerStudioController.addCsg(cupTiltSrv);
-		BowlerStudioController.addCsg(cupPanSrv);
+		//BowlerStudioController.addCsg(cupTiltSrv);
+		//BowlerStudioController.addCsg(cupPanSrv);
 		double cupThick = cup.getTotalZ()
 		CSG linkPin =  eyeParts.get(4)
 						.movez(-eyemechRadius.getMM())
@@ -462,8 +462,8 @@ class HeadMakerClass implements IParameterChanged{
 		
 		CSG slaveLinkagePan = slaveLinkage.transformed(panServoLocation)
 		CSG slaveLinkageTilt = slaveLinkage.transformed(tiltServoLocation)
-		BowlerStudioController.addCsg(slaveLinkagePan);
-		BowlerStudioController.addCsg(slaveLinkageTilt);
+		//BowlerStudioController.addCsg(slaveLinkagePan);
+		//BowlerStudioController.addCsg(slaveLinkageTilt);
 		CSG linkPinTiltBearing =beringLinkage
 				.transformed(tiltBearingLocation)
 		CSG linkPinPanBearing =beringLinkage
@@ -473,10 +473,10 @@ class HeadMakerClass implements IParameterChanged{
 		CSG linkPinPan =servoHornLinkage
 				.transformed(panServoLocation)
 		
-		BowlerStudioController.addCsg(slaveLinkagePan);
-		BowlerStudioController.addCsg(slaveLinkageTilt);
-		BowlerStudioController.addCsg(linkPinTilt);
-		BowlerStudioController.addCsg(linkPinPan);
+		//BowlerStudioController.addCsg(slaveLinkagePan);
+		//BowlerStudioController.addCsg(slaveLinkageTilt);
+		//BowlerStudioController.addCsg(linkPinTilt);
+		//BowlerStudioController.addCsg(linkPinPan);
 		
 		CSG panBearingPart = bearingAss.transformed(panBearingLocation)
 		CSG tiltBearingPart = bearingAss.transformed(tiltBearingLocation)
@@ -548,7 +548,7 @@ class HeadMakerClass implements IParameterChanged{
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
 					])
-		BowlerStudioController.addCsg(head);
+		//BowlerStudioController.addCsg(head);
 		CSG eyesKeepaway = 	CSG.unionAll([eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM())])
 		CSG headBack = backtBase
@@ -568,7 +568,7 @@ class HeadMakerClass implements IParameterChanged{
 					panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts
 					])
-		BowlerStudioController.addCsg(headBack);
+		//BowlerStudioController.addCsg(headBack);
 		println headBack.getTotalY()
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
