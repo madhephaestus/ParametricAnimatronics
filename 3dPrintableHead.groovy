@@ -54,7 +54,7 @@ class HeadMakerClass implements IParameterChanged{
 		 
 	 	 printerOffset		= new LengthParameter("printerOffset",0.6,[2,0.001])
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
-		 jawLength		= new LengthParameter("jawLength",70,[200,001])
+		 jawLength		= new LengthParameter("jawLength",30,[200,001])
 		 tailLength.setMM(jawLength.getMM())
 		 eyeDiam 		= new LengthParameter("Eye Diameter",46,[60,38])
 		 servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
@@ -577,7 +577,8 @@ class HeadMakerClass implements IParameterChanged{
 					attachmentBolt,MountBolts
 					])	
 		BowlerStudioController.addCsg(headBack);
-		println headBack.getTotalY()
+		
+		println "Head Back Total Y"+headBack.getTotalY()
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
 						.movex(-eyemechRadius.getMM())
