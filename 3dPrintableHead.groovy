@@ -1,3 +1,17 @@
+import com.neuronrobotics.bowlerstudio.BowlerStudioController
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
+
+import eu.mihosoft.vrl.v3d.CSG
+import eu.mihosoft.vrl.v3d.Cube
+import eu.mihosoft.vrl.v3d.Cylinder
+import eu.mihosoft.vrl.v3d.RoundedCube
+import eu.mihosoft.vrl.v3d.Sphere
+import eu.mihosoft.vrl.v3d.Transform
+import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged
+import eu.mihosoft.vrl.v3d.parametrics.LengthParameter
+import eu.mihosoft.vrl.v3d.parametrics.Parameter
+import eu.mihosoft.vrl.v3d.parametrics.StringParameter
+
 //Your code here
 if (args==null){
 	CSGDatabase.clear()
@@ -81,7 +95,7 @@ class HeadMakerClass implements IParameterChanged{
 		 washerSize = boltData.headDiameter/2+1.2
 		 headTotalWidth = eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2
 		 servoSweep = 60
-		 cornerRadius = 2
+		 cornerRadius = 0
 		 backBaseX =servoThickness*2+servoSeperation+cornerRadius+eyemechRadius.getMM()*2
 		 frontBaseX =eyemechRadius.getMM()+servoThickness+4
 		 backOfEyes = backBaseX+frontBaseX
