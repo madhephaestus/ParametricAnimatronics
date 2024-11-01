@@ -1,0 +1,19 @@
+name: "Release"
+on: 
+   push:
+       tags:       
+         - '*'
+permissions:
+    contents: write
+    packages: write
+jobs:
+  call-release:
+    uses: CommonWealthRobotics/Bowler-Script-Release-CI/.github/workflows/reusable-release.yml@main
+    with:
+      filename: "3dPrintableHead"
+      filelocation: "./3dPrintableHead.groovy"   
+  use-url-job:
+    runs-on: ubuntu-latest
+    needs: call-release
+    steps:
+      - run: echo "URL is:"${{ needs.call-release.outputs.outputURL }} 
