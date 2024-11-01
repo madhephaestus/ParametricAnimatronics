@@ -299,6 +299,7 @@ class HeadMakerClass implements IParameterChanged{
 		return [jawServoBlock,JawServo,jawBolt,lowerJaw,jawHorn,keepaway]
 	}
 	List<CSG> make(){
+		new Exception().printStackTrace()
 		if(retparts != null)
 			return retparts
 	
@@ -583,8 +584,10 @@ class HeadMakerClass implements IParameterChanged{
 					attachmentBolt,MountBolts
 					])	
 		BowlerStudioController.addCsg(head);
+		println "Make eyesKeepaway"
 		CSG eyesKeepaway = 	CSG.unionAll([eyeKeepaway,
-					eyeKeepaway.movey(eyeCenter.getMM())])			
+					eyeKeepaway.movey(eyeCenter.getMM())])
+		println "Make headBack"			
 		CSG headBack = backtBase
 					.union(bearingSupport)
 					.toXMin()
@@ -608,6 +611,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
 						.movex(-eyemechRadius.getMM())
+		println "Make eyeStockShaft"
 		CSG eyeStockShaft = new Cube(backBaseX,
 									eyeKeepawaCutter.getTotalY(),
 									eyeKeepawaCutter.getTotalY())
@@ -627,9 +631,10 @@ class HeadMakerClass implements IParameterChanged{
 										.difference(tiltServo.movey(-2))
 		CSG eyestockPinUpperB = eyestockPinUpper.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.rotx(180).movey(eyeCenter.getMM()))
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
-		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM()*2)
-		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM()*2)
-		
+		println "head.minkowskiDifference ..."
+		head=head.difference(eyestockPin)
+		.difference(eyestockPin.movey(eyeCenter.getMM()))
+		println "head.minkowskiDifference done"
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
 
@@ -837,14 +842,14 @@ class HeadMakerClass implements IParameterChanged{
 		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength,noseDiameter]
 		for(int i = 0;i< retparts.size();i++){
 			int index = i;
-			retparts.get(i).setRegenerate({return make().get(index)})
-			params.collect{
-				retparts.get(i).setParameter(it)
-			}
+//			retparts.get(i).setRegenerate({return make().get(index)})
+//			params.collect{
+//				retparts.get(i).setParameter(it)
+//			}
 		}
-		params.collect{
-			CSGDatabase.addParameterListener(it.getName() ,this);
-		}
+//		params.collect{
+//			CSGDatabase.addParameterListener(it.getName() ,this);
+//		}
 		return retparts
 	}
 	
