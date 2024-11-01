@@ -4,7 +4,7 @@ import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 import eu.mihosoft.vrl.v3d.CSG
 import eu.mihosoft.vrl.v3d.Cube
 import eu.mihosoft.vrl.v3d.Cylinder
-import eu.mihosoft.vrl.v3d.RoundedCube
+//import eu.mihosoft.vrl.v3d.Cube
 import eu.mihosoft.vrl.v3d.Sphere
 import eu.mihosoft.vrl.v3d.Transform
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged
@@ -153,19 +153,23 @@ class HeadMakerClass implements IParameterChanged{
 		double jawThickness = 6 
 		double backBlockz = servoData.flangeLongDimention+cornerRadius
 		
-		CSG jawMount = new RoundedCube(mountBlockX+mountBoltDistance+boltData.headDiameter,
+		CSG jawMount = new Cube(mountBlockX+mountBoltDistance+boltData.headDiameter,
 							boltData.headDiameter*2+cornerRadius,
 							jawThickness+cornerRadius*2
-							).cornerRadius(cornerRadius).toCSG()
+							)
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMax()
 							.toXMin()
 							.movez(-eyeDiam.getMM()/2+cornerRadius*2)
 							.movex(locationOfBackOfhead+overlap-mountBlockX)
 							.movey(eyeCenter.getMM()/2)
-		CSG jawServoBlock = new RoundedCube(mountBlockX,
+		CSG jawServoBlock = new Cube(mountBlockX,
 							headTotalWidth,
 							backBlockz
-							).cornerRadius(cornerRadius).toCSG()
+							)
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toYMin()
 							.toXMax()
 							.toZMin()
@@ -209,9 +213,9 @@ class HeadMakerClass implements IParameterChanged{
 						JawServo.movex(cornerRadius*3),
 						JawServo.movex(cornerRadius*4)])	
 		double jawWidth = headTotalWidth/2
-		CSG backMountUpperJaw =new RoundedCube(mountBlockX,
+		CSG backMountUpperJaw =new Cube(mountBlockX,
 							jawWidth*2,jawThickness)
-							.cornerRadius(cornerRadius)
+							//.cornerRadius(cornerRadius)
 							.toCSG()
 							.toZMin()
 							
@@ -231,17 +235,19 @@ class HeadMakerClass implements IParameterChanged{
 		cutter=cutter.toolOffset(-30)
 		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
 		double jawWidthOfLug = (servoThickness*2+cornerRadius*2)*2
-		CSG jawLug = new RoundedCube(jawWidthOfLug,
+		CSG jawLug = new Cube(jawWidthOfLug,
 							jawThickness+jawattachTHickness/2,
 							jawThickness*3)
-							.cornerRadius(cornerRadius).toCSG()
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMin()
 							.toYMax()
 							.movey(jawThickness)
-		CSG jawAttach= new RoundedCube(jawWidthOfLug,
+		CSG jawAttach= new Cube(jawWidthOfLug,
 							jawThickness,
 							jawLength.getMM()+jawWidthOfLug/2)
-							.cornerRadius(cornerRadius).toCSG()
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toYMin()
 							.toZMax()
 							.movez(jawWidthOfLug/2)
@@ -267,10 +273,11 @@ class HeadMakerClass implements IParameterChanged{
 						.toXMin()
 						.move(jawServoBlock.getMinX(),0,
 						-eyeDiam.getMM()/2+cornerRadius-noseHeight.getMM())
-		def noseSection = new RoundedCube(Math.abs(uppweJaw.getMinX()),
+		def noseSection = new Cube(Math.abs(uppweJaw.getMinX()),
 							headTotalWidth,
 							noseHeight.getMM()+cornerRadius*2)
-							.cornerRadius(cornerRadius).toCSG()
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMin()
 							.toXMin()
 							.toYMin()
@@ -506,20 +513,23 @@ class HeadMakerClass implements IParameterChanged{
 		CSG tiltBearing = bearing.transformed(tiltBearingLocation)	
 		
 		println "Begin building head base"
-		CSG frontBase = new RoundedCube(frontBaseX,
+		CSG frontBase = new Cube(frontBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM())
-						.cornerRadius(cornerRadius).toCSG()
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMax()
 							.toXMin()
 							.toYMin()
 							.movez(linkageKeepaway.getMinZ()+eyemechRadius.getMM())
 							.movex(-eyemechRadius.getMM()*2-servoThickness)
 							.movey(-eyeDiam.getMM()/2-washerSize/4)
-		CSG servoSupport = new RoundedCube(servoSeperation+4,
+		CSG servoSupport = new Cube(servoSeperation+4,
 							eyeDiam.getMM()/2-(38.0/2.0-18.0),
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() 
-							).cornerRadius(cornerRadius).toCSG()
+							)
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
@@ -527,21 +537,23 @@ class HeadMakerClass implements IParameterChanged{
 							.movex(frontBase.getMinX()+4)
 							.movey(frontBase.getMinY())
 		
-		CSG backtBase = new RoundedCube(backBaseX,
+		CSG backtBase = new Cube(backBaseX,
 							eyeCenter.getMM()+eyeDiam.getMM()+washerSize/2,
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ()
-							).cornerRadius(cornerRadius).toCSG()
+							)
+							//.cornerRadius(cornerRadius)
+							.toCSG()
 							.toZMin()
 							.toXMax()
 							.toYMin()
 							.movez(frontBase.getMinZ())
 							.movex(frontBase.getMinX())
 							.movey(frontBase.getMinY())
-		CSG bearingSupport = new RoundedCube(backBaseX,
+		CSG bearingSupport = new Cube(backBaseX,
 							bearing.getTotalY()+2,	
 							eyeDiam.getMM()/2+linkageKeepaway.getMinZ() + eyemechRadius.getMM()
 							)
-							.cornerRadius(cornerRadius)
+							//.cornerRadius(cornerRadius)
 							.toCSG()
 							.toZMin()
 							.toXMax()
@@ -596,10 +608,10 @@ class HeadMakerClass implements IParameterChanged{
 		CSG eyestockPin = new Cylinder(eyeKeepawaCutter.getMaxY(),6).toCSG()
 						.roty(-90)
 						.movex(-eyemechRadius.getMM())
-		CSG eyeStockShaft = new RoundedCube(backBaseX,
+		CSG eyeStockShaft = new Cube(backBaseX,
 									eyeKeepawaCutter.getTotalY(),
 									eyeKeepawaCutter.getTotalY())
-									.cornerRadius(1)
+									//.cornerRadius(1)
 									.toCSG()
 									.toXMax()
 									.movex(-eyemechRadius.getMM())
