@@ -369,8 +369,10 @@ class HeadMakerClass implements IParameterChanged{
 		servolinkPin=servolinkPin.union(	slaveLink
 										.intersect(slaveLink.getBoundingBox().movez(1)))
 				.movey(-eyemechRadius.getMM())
+		double hornKeepawayZone = 4
 		CSG servolinkBlank= servolinkPin
-				.union(horn)
+				.union(horn.scaleToMeasurmentX(horn.getTotalX()+hornKeepawayZone)
+					.scaleToMeasurmentY(horn.getTotalY()+hornKeepawayZone))
 				.hull()
 		if(!debug){
 			servolinkBlank=servolinkBlank.toolOffset(2)
