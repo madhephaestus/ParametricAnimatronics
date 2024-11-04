@@ -1,5 +1,15 @@
 import eu.mihosoft.vrl.v3d.parametrics.*;
+
+import com.neuronrobotics.bowlerstudio.BowlerStudioController
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+
+import eu.mihosoft.vrl.v3d.CSG
+import eu.mihosoft.vrl.v3d.Cube
+import eu.mihosoft.vrl.v3d.Cylinder
+import eu.mihosoft.vrl.v3d.ICSGProgress
+import eu.mihosoft.vrl.v3d.RoundedCube
+import eu.mihosoft.vrl.v3d.Sphere
 import eu.mihosoft.vrl.v3d.Transform;
 
 class Headmaker implements IParameterChanged{
