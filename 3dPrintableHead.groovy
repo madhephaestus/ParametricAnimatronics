@@ -631,6 +631,7 @@ class HeadMakerClass implements IParameterChanged{
 					.toXMin()
 					.toYMin()
 		})
+		eye.setName("eye")
 		eye.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(90)// fix the orentation
@@ -638,6 +639,7 @@ class HeadMakerClass implements IParameterChanged{
 					.toXMin()
 					.toYMin()
 		})
+		lEye.setName("lEye")
 		lEye.setManufacturing({ toMfg ->
 			return toMfg
 					.roty(90)// fix the orentation
@@ -645,6 +647,7 @@ class HeadMakerClass implements IParameterChanged{
 					.toXMin()
 					.toYMin()
 		})
+		eyestockPinUpperS.setName("eyestockPinUpperS")
 		eyestockPinUpperS.setManufacturing({ toMfg ->
 			return toMfg
 					.rotx(-180)// fix the orentation
@@ -652,6 +655,7 @@ class HeadMakerClass implements IParameterChanged{
 					.toXMin()
 					.toYMin()
 		})
+		eyestockPinLowerS.setName("eyestockPinLowerS")
 		eyestockPinLowerS.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
@@ -664,25 +668,25 @@ class HeadMakerClass implements IParameterChanged{
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("eyestockPinUpperB")
 		eyestockPinLowerB.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("eyestockPinLowerB")
 		ltiltLinkage.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("ltiltLinkage")
 		llinkPinTilt.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("llinkPinTilt")
 		head.setName("frontOfHead")
 		head.setManufacturing({ toMfg ->
 			return toMfg
@@ -704,62 +708,62 @@ class HeadMakerClass implements IParameterChanged{
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("tiltLinkage")
 		panLinkage.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("panLinkage")
 		linkPinTilt.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("linkPinTilt")
 		linkPinPan.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("linkPinPan")
 		
 		linkPinTiltBearing.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("linkPinTiltBearing")
 		linkPinPanBearing.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("linkPinPanBearing")
 		slaveLinkagePan.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("slaveLinkagePan")
 		slaveLinkageTilt.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("slaveLinkageTilt")
 		tiltBearingPart.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("tiltBearingPart")
 		panBearingPart.setManufacturing({ toMfg ->
 			return toMfg
 					.toZMin()//move it down to the flat surface
 					.toXMin()
 					.toYMin()
-		})
+		}).setName("panBearingPart")
 		retparts= [
 		//tiltServo,panServo,
 		jaw,
@@ -771,11 +775,9 @@ class HeadMakerClass implements IParameterChanged{
 		linkPinTiltBearing,linkPinPanBearing,
 		slaveLinkagePan,slaveLinkageTilt,
 		tiltBearingPart,panBearingPart,
-		//panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
-		ltiltLinkage,llinkPinTilt,
-		//attachmentBolt//,MountBolts
+		ltiltLinkage,llinkPinTilt
 		]//.collect{it.prepForManufacturing()}
 		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength,noseDiameter]
 		for(int i = 0;i< retparts.size();i++){
