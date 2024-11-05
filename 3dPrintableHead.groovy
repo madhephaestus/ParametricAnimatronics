@@ -64,7 +64,7 @@ class HeadMakerClass implements IParameterChanged{
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
 		 jawLength		= new LengthParameter("jawLength",40,[200,001])
 		 eyeDiam 		= new LengthParameter("Eye Diameter",50,[60,38])
-		 servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
+		 servoSizeParam 			= new StringParameter("hobbyServo Default","mg92b",Vitamins.listVitaminSizes("hobbyServo"))
 		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 		 eyemechRadius		= new LengthParameter("Eye Mech Linkage",14,[20,5])
 		 hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
@@ -72,7 +72,7 @@ class HeadMakerClass implements IParameterChanged{
 		 eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()+5,[100,eyeDiam.getMM()])
 		 noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
 		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
-		 boltData = Vitamins.getConfiguration( "capScrew","M5")
+		 boltData = Vitamins.getConfiguration( "capScrew","M3")
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 					//.union(horn)
 		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())
@@ -597,8 +597,10 @@ class HeadMakerClass implements IParameterChanged{
 //		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM()*2)
 //		.minkowskiDifference(eyestockPin.movey(eyeCenter.getMM()),printerOffset.getMM()*2)
 //		
-		head=head.difference(eyestockPin)
-		.difference(eyestockPin.movey(eyeCenter.getMM()))
+		
+		CSG eyestockPinMakeKeepaway = eyestockPin.makeKeepaway(printerOffset.getMM()*2)
+		head=head.difference(eyestockPinMakeKeepaway)
+		.difference(eyestockPinMakeKeepaway.movey(eyeCenter.getMM()))
 
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
@@ -608,7 +610,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG servoBlock = jawPartList[0]
 						.difference([head.hull(),headBack.hull(),panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts,
-					tiltServo,panServo,eyesKeepaway
+					tiltServo.makeKeepaway(printerOffset.getMM()*2),panServo.makeKeepaway(printerOffset.getMM()*2),eyesKeepaway
 						])
 		CSG jawBolts = 	jawPartList[2]
 		CSG jawServo = 	jawPartList[1]
