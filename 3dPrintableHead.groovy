@@ -219,7 +219,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG cutter = jawBlank.scalez(10)
 							.movez(-jawattachTHickness)
 				
-		cutter=cutter.toolOffset(-30)
+		cutter=cutter.makeKeepaway(-30)
 		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
 		double jawWidthOfLug = (servoThickness*2+cornerRadius*2)*2
 		CSG jawLug = new RoundedCube(jawWidthOfLug,
@@ -274,7 +274,7 @@ class HeadMakerClass implements IParameterChanged{
 			return retparts
 	
 		CSG washerHole =new Cylinder(bearingHoleDiam/2,boltLength-bite+1).toCSG()
-		CSG washer =new Cylinder(washerSize,1).toCSG()
+		CSG washer =new Cylinder(bearingHoleDiam/2-printerOffset.getMM(),1).toCSG()
 		CSG bearingAss = CSG.unionAll([washerHole,washer])
 					.toZMax()
 					.movez(1)
@@ -375,7 +375,7 @@ class HeadMakerClass implements IParameterChanged{
 					.scaleToMeasurmentY(horn.getTotalY()+hornKeepawayZone))
 				.hull()
 		if(!debug){
-			servolinkBlank=servolinkBlank.toolOffset(2)
+			servolinkBlank=servolinkBlank.makeKeepaway(2)
 		}
 				
 		CSG linkKeepaway  = new Sphere(6.5,30,7).toCSG()
@@ -392,7 +392,7 @@ class HeadMakerClass implements IParameterChanged{
 						.difference(horn.movez(2.5))
 		def servoKw = servolinkBlank.getBoundingBox()
 		if(!debug)
-			servoKw=servoKw.toolOffset(1)
+			servoKw=servoKw.makeKeepaway(1)
 		CSG linkageKeepaway = CSG.unionAll(
 		Extrude.revolve(servoKw,
 		(double)0, // rotation center radius, if 0 it is a circle, larger is a donut. Note it can be negative too
@@ -400,7 +400,7 @@ class HeadMakerClass implements IParameterChanged{
 		(int)10)//number of sweep increments
 		).rotz(servoSweep/-2)
 		CSG eyeKeepaway = CSG.unionAll(
-		Extrude.revolve(eye.getBoundingBox().toolOffset(debug?0:1),
+		Extrude.revolve(eye.getBoundingBox().makeKeepaway(debug?0:1),
 		(double)0, // rotation center radius, if 0 it is a circle, larger is a donut. Note it can be negative too
 		(double)servoSweep,// degrees through wich it should sweep
 		(int)10)//number of sweep increments
@@ -417,13 +417,13 @@ class HeadMakerClass implements IParameterChanged{
 		CSG panLinkage = makeLinkage(cupPanSrv,cupPan)
 		CSG tiltLinkage = makeLinkage(cupTiltSrv,cup)
 		println "Making Linkage keepaways"
-		CSG slavelinkageKeepaway=CSG.unionAll([slaveLinkage.getBoundingBox().toolOffset(debug?0:1),
-							slaveLinkage.getBoundingBox().toolOffset(debug?0:1)
+		CSG slavelinkageKeepaway=CSG.unionAll([slaveLinkage.getBoundingBox().makeKeepaway(debug?0:1),
+							slaveLinkage.getBoundingBox().makeKeepaway(debug?0:1)
 							.move(Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								Math.cos(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								0
 								),
-							slaveLinkage.getBoundingBox().toolOffset(debug?0:1)
+							slaveLinkage.getBoundingBox().makeKeepaway(debug?0:1)
 							.move(Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								-Math.cos(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								0
@@ -432,13 +432,13 @@ class HeadMakerClass implements IParameterChanged{
 		CSG panKeepaway = panLinkage.getBoundingBox()
 				.movex(eyemechRadius.getMM()*2)
 				.movey(-eyemechRadius.getMM()*0.85)
-		CSG panlinkageKeepaway=CSG.unionAll([panKeepaway.toolOffset(debug?0:1),
-							panKeepaway.toolOffset(debug?0:1)
+		CSG panlinkageKeepaway=CSG.unionAll([panKeepaway.makeKeepaway(debug?0:1),
+							panKeepaway.makeKeepaway(debug?0:1)
 							.move(Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								Math.cos(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								0
 								),
-							panKeepaway.toolOffset(debug?0:1)
+							panKeepaway.makeKeepaway(debug?0:1)
 							.move(-Math.sin(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								Math.cos(Math.toRadians(servoSweep/2))*eyemechRadius.getMM(),
 								0
