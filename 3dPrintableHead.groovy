@@ -55,7 +55,7 @@ class HeadMakerClass implements IParameterChanged{
 	CSG headBolt
 	CSG boltStub
 	CSG mountBoltStub
-	boolean debug =true
+	boolean debug =false
 	public 	HeadMakerClass(){
 		compute()
 	}
@@ -94,7 +94,7 @@ class HeadMakerClass implements IParameterChanged{
 		def retparts=null
 		 
 		 locationOfBackOfhead = -backOfEyes-servoThickness+(cornerRadius*3)-(eyemechRadius.getMM()/2)
-		 boltLength = 12
+		 boltLength = 20
 		 bite = boltLength/2
 		 bearingHoleDiam = 8
 		 mountBoltDistance =20
@@ -281,7 +281,7 @@ class HeadMakerClass implements IParameterChanged{
 					.difference(boltStub)
 		def kwPart = washerHole
 		if(!debug){
-			kwPart=kwPart	.toolOffset(printerOffset.getMM())
+			kwPart=kwPart	.makeKeepaway(printerOffset.getMM())
 		}
 		CSG bearingKeepawy= CSG.unionAll([kwPart,new Cylinder(washerSize+1,100).toCSG().toZMax().movez(1)])
 						.toZMax()
