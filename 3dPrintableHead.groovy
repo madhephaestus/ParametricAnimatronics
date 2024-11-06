@@ -179,7 +179,7 @@ class HeadMakerClass implements IParameterChanged{
 		double jawattachTHickness = 30
 		CSG jawHorn = horn
 					.rotz(-45-180)
-					.movez(servoNub)
+					.movez(servoNub+2)
 					.rotx(90)
 		jawHorn=jawHorn.union([jawHorn.movey(1),jawHorn.movey(2),jawHorn.movey(3)])
 					.move(jawXLocation,jawYLocation,jawZLocation)
