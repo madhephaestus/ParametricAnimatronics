@@ -76,7 +76,7 @@ class HeadMakerClass implements IParameterChanged{
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 					//.union(horn)
 		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())
-						.roty(180).rotz(180+45).movez(1)
+						.roty(0).rotz(180+45).toZMax().movez(3)
 		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
 				.toZMax()
 				//.movez(1)
@@ -219,7 +219,7 @@ class HeadMakerClass implements IParameterChanged{
 		CSG cutter = jawBlank.scalez(10)
 							.movez(-jawattachTHickness)
 				
-		cutter=cutter.makeKeepaway(-30)
+		cutter=cutter.toolOffset(-30)
 		cutter=cutter.union(cutter.movex(-jawattachTHickness)).hull()
 		double jawWidthOfLug = (servoThickness*2+cornerRadius*2)*2
 		CSG jawLug = new RoundedCube(jawWidthOfLug,
@@ -274,7 +274,7 @@ class HeadMakerClass implements IParameterChanged{
 			return retparts
 	
 		CSG washerHole =new Cylinder(bearingHoleDiam/2,boltLength-bite+1).toCSG()
-		CSG washer =new Cylinder(bearingHoleDiam/2-printerOffset.getMM(),1).toCSG()
+		CSG washer =new Cylinder(bearingHoleDiam/2+printerOffset.getMM(),1).toCSG()
 		CSG bearingAss = CSG.unionAll([washerHole,washer])
 					.toZMax()
 					.movez(1)
