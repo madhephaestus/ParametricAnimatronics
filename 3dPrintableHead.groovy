@@ -601,6 +601,8 @@ class HeadMakerClass implements IParameterChanged{
 		CSG eyestockPinMakeKeepaway = eyestockPin.makeKeepaway(printerOffset.getMM()*2)
 		head=head.difference(eyestockPinMakeKeepaway)
 		.difference(eyestockPinMakeKeepaway.movey(eyeCenter.getMM()))
+		CSG headHull = head.hull()
+		head=head.intersect(head.getBoundingBox().movex(-2))
 
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
@@ -608,7 +610,7 @@ class HeadMakerClass implements IParameterChanged{
 		
 		CSG jaw = jawPartList[3]
 		CSG servoBlock = jawPartList[0]
-						.difference([head.hull(),headBack.hull(),panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
+						.difference([headHull,headBack.hull(),panTotalLinkageKeepaway,tiltTotalLinkageKeepaway,
 					attachmentBolt,MountBolts,
 					tiltServo.makeKeepaway(printerOffset.getMM()*2),panServo.makeKeepaway(printerOffset.getMM()*2),eyesKeepaway
 						])
