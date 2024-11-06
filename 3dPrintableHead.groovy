@@ -387,8 +387,8 @@ class HeadMakerClass implements IParameterChanged{
 						.difference(linkKeepaway.rotz(180).movex(-eyemechRadius.getMM()))
 						.union(servolinkPin)
 		CSG servoHornLinkage=servolinkBlank
-						.difference(horn)
-						.difference(horn.movez(1.5))
+						//.difference(horn.movez(1))
+						.difference(horn.movez(2))
 						.difference(horn.movez(2.5))
 		def servoKw = servolinkBlank.getBoundingBox()
 		if(!debug)
