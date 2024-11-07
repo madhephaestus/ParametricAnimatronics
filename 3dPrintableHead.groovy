@@ -183,8 +183,12 @@ class HeadMakerClass implements IParameterChanged{
 					.rotx(90)
 		jawHorn=jawHorn.union([jawHorn.movey(1),jawHorn.movey(2),jawHorn.movey(3)])
 					.move(jawXLocation,jawYLocation,jawZLocation)
+		CSG jawCordPath = new Cube(20,10,10).toCSG().toXMax().toZMin().toYMax()
+							.movez(servo.getMinZ())
+							.movey(servo.getMaxY())
 		CSG JawServo = servo
 					//.movez(servoNub)
+					.union(jawCordPath)
 					.rotx(90)
 					.move(jawXLocation,jawYLocation,jawZLocation)
 		CSG jawBolt = boltStub
@@ -783,6 +787,12 @@ class HeadMakerClass implements IParameterChanged{
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
 		ltiltLinkage,llinkPinTilt
 		]//.collect{it.prepForManufacturing()}
+		int numSteps = 2
+		jaw.addAssemblyStep(numSteps, new Transform().movez(-150))
+		servoBlock.addAssemblyStep(numSteps-1, new Transform().movez(-50))
+		jawServo.addAssemblyStep(numSteps-1, new Transform().movez(-50))
+		jawServo.addAssemblyStep(numSteps-2, new Transform().movex(25))
+		
 		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength,noseDiameter]
 		for(int i = 0;i< retparts.size();i++){
 			int index = i;
