@@ -796,7 +796,7 @@ class HeadMakerClass implements IParameterChanged{
 		int numSteps = 16
 		jaw.addAssemblyStep(numSteps, new Transform().movez(-100))
 		servoBlock.addAssemblyStep(numSteps-1, new Transform().movez(-50))
-		servoBlock.setColor(Color.GOLD);
+		servoBlock.setColor(Color.CYAN);
 		head.setColor(Color.INDIGO)
 		jawServo.addAssemblyStep(numSteps-1, new Transform().movez(-50))
 		jawServo.addAssemblyStep(numSteps-2, new Transform().movex(25))
