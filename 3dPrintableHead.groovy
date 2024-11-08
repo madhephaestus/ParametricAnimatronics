@@ -557,10 +557,11 @@ class HeadMakerClass implements IParameterChanged{
 		//BowlerStudioController.addCsg(head);
 		CSG eyesKeepaway = 	CSG.unionAll([eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM())])
-		CSG supportPin = new Cube(6,6,eyemechRadius.getMM()).toCSG().toZMin()
+		CSG supportPin = new Cube(6,6,eyemechRadius.getMM()+2.5).toCSG().toZMin()
+							.movez(-1.5)
 							.movey(eyeCenter.getMM()/2-6)
-							.movez(backtBase.getMaxZ()+1)
-							.movex(locationOfBackOfhead+mountBoltDistance+5)
+							.movez(backtBase.getMaxZ())
+							.movex(locationOfBackOfhead+mountBoltDistance+7)
 		CSG headBack = backtBase
 					.union(bearingSupport)
 					.toXMin()
