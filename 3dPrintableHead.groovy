@@ -793,7 +793,7 @@ class HeadMakerClass implements IParameterChanged{
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
 		ltiltLinkage,llinkPinTilt
 		]//.collect{it.prepForManufacturing()}
-		int numSteps = 20
+		int numSteps = 16
 		jaw.addAssemblyStep(numSteps, new Transform().movez(-100))
 		servoBlock.addAssemblyStep(numSteps-1, new Transform().movez(-50))
 		servoBlock.setColor(Color.GOLD);
