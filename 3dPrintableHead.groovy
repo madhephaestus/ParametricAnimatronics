@@ -11,6 +11,7 @@ import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter
 import eu.mihosoft.vrl.v3d.parametrics.Parameter
 import eu.mihosoft.vrl.v3d.parametrics.StringParameter
+import javafx.scene.paint.Color
 
 //Your code here
 if (args==null){
@@ -781,7 +782,6 @@ class HeadMakerClass implements IParameterChanged{
 		retparts= [
 		//tiltServo,panServo,
 		jaw,
-		jawServo,
 		servoBlock,
 		eye,lEye,
 		tiltLinkage,panLinkage,
@@ -793,11 +793,75 @@ class HeadMakerClass implements IParameterChanged{
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
 		ltiltLinkage,llinkPinTilt
 		]//.collect{it.prepForManufacturing()}
-		int numSteps = 2
-		jaw.addAssemblyStep(numSteps, new Transform().movez(-150))
+		int numSteps = 20
+		jaw.addAssemblyStep(numSteps, new Transform().movez(-100))
 		servoBlock.addAssemblyStep(numSteps-1, new Transform().movez(-50))
+		servoBlock.setColor(Color.GOLD);
+		head.setColor(Color.INDIGO)
 		jawServo.addAssemblyStep(numSteps-1, new Transform().movez(-50))
 		jawServo.addAssemblyStep(numSteps-2, new Transform().movex(25))
+		// back heaad assembly
+		def backHeadAssemble = new Transform().movex(-100)
+		headBack.addAssemblyStep(numSteps-3, backHeadAssemble)
+		headBack.setColor(Color.SALMON)
+		panBearingPart.addAssemblyStep(numSteps-3, backHeadAssemble)
+		linkPinPanBearing.addAssemblyStep(numSteps-3, backHeadAssemble)
+		linkPinPan.addAssemblyStep(numSteps-3, backHeadAssemble)
+		slaveLinkagePan.addAssemblyStep(numSteps-3, backHeadAssemble)
+		//linkages
+		panLinkage.addAssemblyStep(numSteps-4, new Transform().movex(-50))
+		llinkPinTilt.addAssemblyStep(numSteps-4, new Transform().movex(-50))
+		panLinkage.addAssemblyStep(numSteps-5, new Transform().movey(-100))
+		llinkPinTilt.addAssemblyStep(numSteps-5, new Transform().movey(100))
+		panLinkage.setColor(Color.LEMONCHIFFON)
+		llinkPinTilt.setColor(Color.LEMONCHIFFON)
+		
+		slaveLinkagePan.addAssemblyStep(numSteps-6,  new Transform().movex(-25))
+		slaveLinkageTilt.addAssemblyStep(numSteps-8,  new Transform().movex(-25))
+		slaveLinkagePan.setColor(Color.ORANGE)
+		slaveLinkageTilt.setColor(Color.ORANGE)
+		
+		panBearingPart.addAssemblyStep(numSteps-7, new Transform().movez(-50))
+		linkPinPanBearing.addAssemblyStep(numSteps-7, new Transform().movez(50))
+		linkPinPan.addAssemblyStep(numSteps-7, new Transform().movez(50))
+		
+		tiltBearingPart.addAssemblyStep(numSteps-9, new Transform().movez(-50))
+		linkPinTiltBearing.addAssemblyStep(numSteps-9, new Transform().movez(50))
+		linkPinTilt.addAssemblyStep(numSteps-9, new Transform().movez(50))
+		
+		linkPinTiltBearing.setColor(Color.BLUE)
+		linkPinPanBearing.setColor(Color.BLUE)
+		tiltBearingPart.setColor(Color.BEIGE)
+		panBearingPart.setColor(Color.BEIGE)
+		
+		// side linkages
+		tiltLinkage.addAssemblyStep(numSteps-10, new Transform().movex(-50))
+		ltiltLinkage.addAssemblyStep(numSteps-10, new Transform().movex(-50))
+		ltiltLinkage.addAssemblyStep(numSteps-11, new Transform().movey(100))
+		tiltLinkage.addAssemblyStep(numSteps-11, new Transform().movey(-100))
+		ltiltLinkage.setColor(Color.AZURE)
+		tiltLinkage.setColor(Color.AZURE)
+		// eyes
+		eyestockPinUpperB.addAssemblyStep(numSteps-12, new Transform().movex(-50))
+		eyestockPinUpperS.addAssemblyStep(numSteps-12, new Transform().movex(-50))
+		eyestockPinUpperB.addAssemblyStep(numSteps-13, new Transform().movez(-10))
+		eyestockPinUpperS.addAssemblyStep(numSteps-13, new Transform().movez(-10))
+		
+		
+		eye.addAssemblyStep(numSteps-14, new Transform().movex(50))
+		lEye.addAssemblyStep(numSteps-14, new Transform().movex(50))
+		
+		eyestockPinLowerB.addAssemblyStep(numSteps-15, new Transform().movex(-50))
+		eyestockPinLowerS.addAssemblyStep(numSteps-15, new Transform().movex(-50))
+		
+		eye.setColor(Color.WHITE)
+		lEye.setColor(Color.WHITE)
+		
+		eyestockPinLowerB.setColor(Color.GREEN)
+		eyestockPinLowerS.setColor(Color.GREEN)
+		eyestockPinUpperB.setColor(Color.YELLOW)
+		eyestockPinUpperS.setColor(Color.YELLOW)
+		
 		
 		def params =[printerOffset,eyeDiam,servoSizeParam,eyemechRadius,hornSizeParam,eyeCenter,noseLength,jawLength,noseDiameter]
 		for(int i = 0;i< retparts.size();i++){
