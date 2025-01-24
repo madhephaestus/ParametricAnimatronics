@@ -56,6 +56,8 @@ class HeadMakerClass implements IParameterChanged{
 	CSG headBolt
 	CSG boltStub
 	CSG mountBoltStub
+	CSG eyeStockScrew
+	
 	boolean debug =false
 	public 	HeadMakerClass(){
 		compute()
@@ -117,6 +119,8 @@ class HeadMakerClass implements IParameterChanged{
 							.roty(180)
 							.movey(eyeCenter.getMM()/2)
 							.movex(locationOfBackOfhead+6)
+		eyeStockScrew=Vitamins.get("chamferedScrew", "M3x16")
+		
 	}
 		/**
 	 * This is a listener for a parameter changing
@@ -613,7 +617,17 @@ class HeadMakerClass implements IParameterChanged{
 		head=head.difference(eyestockPinMakeKeepaway)
 		.difference(eyestockPinMakeKeepaway.movey(eyeCenter.getMM()))
 		CSG headHull = head.hull()
+		
 		head=head.intersect(head.getBoundingBox().movex(-2))
+		
+		eyeStockScrew=eyeStockScrew.toZMax().movez(frontBase.getMaxZ()).movex(head.getMaxX()-5)
+		CSG eyeStockScrewLeft = eyeStockScrew.movey(eyeCenter.getMM())
+		
+		eyestockPinUpperS=eyestockPinUpperS.difference(eyeStockScrew)
+		eyestockPinLowerS=eyestockPinLowerS.difference(eyeStockScrew)
+		eyestockPinUpperB=eyestockPinUpperB.difference(eyeStockScrewLeft)
+		eyestockPinLowerB=eyestockPinLowerB.difference(eyeStockScrewLeft)
+		head=head.difference(eyeStockScrew,eyeStockScrewLeft)
 
 		CSG ltiltLinkage=tiltLinkage.movey(eyeCenter.getMM())
 		CSG llinkPinTilt=panLinkage.movey(eyeCenter.getMM())
@@ -628,6 +642,16 @@ class HeadMakerClass implements IParameterChanged{
 		CSG jawBolts = 	jawPartList[2]
 		CSG jawServo = 	jawPartList[1]
 		headBack=headBack.difference(jawBolts)
+		
+		
+		eyeStockScrewLeft.setName("eyeStockScrewL")
+		eyeStockScrewLeft.setManufacturing({ toMfg ->
+			return null
+		})
+		eyeStockScrew.setName("eyeStockScrewR")
+		eyeStockScrew.setManufacturing({ toMfg ->
+			return null
+		})
 		jaw.setName("jaw")
 		jaw.setManufacturing({ toMfg ->
 			return toMfg.toZMin()
@@ -791,9 +815,9 @@ class HeadMakerClass implements IParameterChanged{
 		tiltBearingPart,panBearingPart,
 		head,headBack,
 		eyestockPinUpperS,eyestockPinLowerS,eyestockPinUpperB,eyestockPinLowerB,
-		ltiltLinkage,llinkPinTilt
+		ltiltLinkage,llinkPinTilt,eyeStockScrew,eyeStockScrewLeft
 		]//.collect{it.prepForManufacturing()}
-		int numSteps = 16
+		int numSteps = 17
 		jaw.addAssemblyStep(numSteps, new Transform().movez(-100))
 		servoBlock.addAssemblyStep(numSteps-1, new Transform().movez(-50))
 		servoBlock.setColor(Color.CYAN);
@@ -842,17 +866,20 @@ class HeadMakerClass implements IParameterChanged{
 		ltiltLinkage.setColor(Color.AZURE)
 		tiltLinkage.setColor(Color.AZURE)
 		// eyes
-		eyestockPinUpperB.addAssemblyStep(numSteps-12, new Transform().movex(-50))
-		eyestockPinUpperS.addAssemblyStep(numSteps-12, new Transform().movex(-50))
-		eyestockPinUpperB.addAssemblyStep(numSteps-13, new Transform().movez(-10))
-		eyestockPinUpperS.addAssemblyStep(numSteps-13, new Transform().movez(-10))
+		eyestockPinUpperB.addAssemblyStep(numSteps-13, new Transform().movex(-50))
+		eyestockPinUpperS.addAssemblyStep(numSteps-13, new Transform().movex(-50))
+		eyestockPinUpperB.addAssemblyStep(numSteps-14, new Transform().movez(-10))
+		eyestockPinUpperS.addAssemblyStep(numSteps-14, new Transform().movez(-10))
 		
 		
-		eye.addAssemblyStep(numSteps-14, new Transform().movex(50))
-		lEye.addAssemblyStep(numSteps-14, new Transform().movex(50))
+		eye.addAssemblyStep(numSteps-15, new Transform().movex(50))
+		lEye.addAssemblyStep(numSteps-15, new Transform().movex(50))
 		
-		eyestockPinLowerB.addAssemblyStep(numSteps-15, new Transform().movex(-50))
-		eyestockPinLowerS.addAssemblyStep(numSteps-15, new Transform().movex(-50))
+		eyestockPinLowerB.addAssemblyStep(numSteps-16, new Transform().movex(-50))
+		eyestockPinLowerS.addAssemblyStep(numSteps-16, new Transform().movex(-50))
+		eyeStockScrew.addAssemblyStep(numSteps-12, new Transform().movez(50))	
+		eyeStockScrewLeft.addAssemblyStep(numSteps-12, new Transform().movez(50))
+		
 		
 		eye.setColor(Color.WHITE)
 		lEye.setColor(Color.WHITE)
