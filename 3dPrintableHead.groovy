@@ -604,9 +604,12 @@ class HeadMakerClass implements IParameterChanged{
 		
 		CSG eyestockPinUpperS = eyestockPinUpper.intersect(head).union(eyeMount.rotx(180))
 										.difference(tiltServo.movey(-2))
+										.difference(tiltServo.movey(-6))
 										.difference(servoSupport)
 		CSG eyestockPinLowerS = eyestockPinLower.intersect(head).union(eyeMount)
 										.difference(tiltServo.movey(-2))
+										.difference(tiltServo.movey(-6))
+										
 		CSG eyestockPinUpperB = eyestockPinUpper.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.rotx(180).movey(eyeCenter.getMM()))
 		CSG eyestockPinLowerB = eyestockPinLower.movey(eyeCenter.getMM()).intersect(head).union(eyeMount.movey(eyeCenter.getMM()))
 //		head=head.minkowskiDifference(eyestockPin,printerOffset.getMM()*2)

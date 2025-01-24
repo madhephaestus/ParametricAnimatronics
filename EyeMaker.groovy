@@ -35,7 +35,7 @@ class EyeMakerClass{
 	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
 	CSG ballJoint=null
 	CSG ballJointKeepAway =null
-	double ballRadius = 4
+	double ballRadius = 4.5
 	double servoSweep = 60
 	CSG supportPin =new Cylinder(	1.75,
 								12)
