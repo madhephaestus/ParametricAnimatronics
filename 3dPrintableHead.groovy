@@ -17,6 +17,8 @@ import javafx.scene.paint.Color
 if (args==null){
 	CSGDatabase.clear()
 }
+LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
+printerOffset.setMM(0.2)
 class HeadMakerClass implements IParameterChanged{
 	LengthParameter printerOffset
 	LengthParameter noseLength
@@ -63,7 +65,7 @@ class HeadMakerClass implements IParameterChanged{
 		compute()
 	}
 	void compute(){
-		 printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+		 printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
 		 noseLength		= new LengthParameter("noseLength",5,[200,001])
 		 jawLength		= new LengthParameter("jawLength",40,[200,001])
 		 eyeDiam 		= new LengthParameter("Eye Diameter",45,[60,38])
@@ -553,7 +555,7 @@ class HeadMakerClass implements IParameterChanged{
 					.union(servoSupport)
 					.difference([
 					tiltServo,panServo,
-					tiltServo.movex(-2),
+					tiltServo.movex(-6),
 					eyeKeepaway,
 					eyeKeepaway.movey(eyeCenter.getMM()),
 					tiltBearing,panBearing,

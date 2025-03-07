@@ -17,9 +17,11 @@ if (args==null){
 	devMode = true
 	println "Development mode for eyes"
 }
+LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
+printerOffset.setMM(0.2)
 class EyeMakerClass{
 	ArrayList<CSG> ballJointParts=null
-	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","8#32",Vitamins.listVitaminSizes("capScrew"))
+	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
 	
 	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
 	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
@@ -28,7 +30,7 @@ class EyeMakerClass{
 	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
 	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
 	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.5,[2,0.001])
+	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
 	LengthParameter thickness 		= new LengthParameter(	"Material Thickness",
 													5.1,
 													[10,1])
