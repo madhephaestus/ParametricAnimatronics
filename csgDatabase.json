@@ -1,4 +1,12 @@
 {
+  "Camera Stand Height": {
+    "name": "Camera Stand Height",
+    "options": [
+      "445.618",
+      "45.618"
+    ],
+    "value": 245618
+  },
   "Bolt Hole Facet Count": {
     "name": "Bolt Hole Facet Count",
     "options": [
@@ -6,6 +14,13 @@
       "10"
     ],
     "value": 10000
+  },
+  "VexWireless Default": {
+    "name": "VexWireless Default",
+    "options": [
+      "v5_Vexnet"
+    ],
+    "strValue": "v5_Vexnet"
   },
   "Cable Cut Out Length": {
     "name": "Cable Cut Out Length",
@@ -31,6 +46,41 @@
     ],
     "value": 500
   },
+  "smallKatElectronics Default": {
+    "name": "smallKatElectronics Default",
+    "options": [
+      "batteryInterface",
+      "dji-mavic-pro-battery",
+      "motherboard"
+    ],
+    "strValue": "motherboard"
+  },
+  "vexWheels Default": {
+    "name": "vexWheels Default",
+    "options": [
+      "2.75inchSmooth",
+      "2_75InchOmni",
+      "3_25InchOmni",
+      "4InchOmni",
+      "4inchSmooth",
+      "4inchStandard"
+    ],
+    "strValue": "4InchOmni"
+  },
+  "omniWheelRoller Default": {
+    "name": "omniWheelRoller Default",
+    "options": [
+      "4inch13Roller"
+    ],
+    "strValue": "4inch13Roller"
+  },
+  "steelPin Default": {
+    "name": "steelPin Default",
+    "options": [
+      "2x10mm"
+    ],
+    "strValue": "2x10mm"
+  },
   "Nose Diameter": {
     "name": "Nose Diameter",
     "options": [
@@ -40,28 +90,52 @@
     "value": 90000
   },
   "chamferedScrew Default": {
-    "options2": [
-      "M3x16"
-    ],
     "name": "chamferedScrew Default",
     "options": [
       "M3x16"
     ],
     "strValue": "M3x16"
   },
-  "hobbyServo Default": {
-    "options2": [
-      "DHV56mg_sub_Micro",
-      "fs90r",
-      "hv5932mg",
-      "hv6214mg",
-      "mg92b",
-      "standard",
-      "standardMicro",
-      "towerProMG91",
-      "tproSG90",
-      "tproTG90"
+  "squareNut Default": {
+    "name": "squareNut Default",
+    "options": [
+      "M3"
     ],
+    "strValue": "M3"
+  },
+  "vexMotor Default": {
+    "name": "vexMotor Default",
+    "options": [
+      "269",
+      "393",
+      "v5_11w"
+    ],
+    "strValue": "v5_11w"
+  },
+  "LewanSoulHorn Default": {
+    "name": "LewanSoulHorn Default",
+    "options": [
+      "fordemo_m3_round",
+      "round",
+      "round_m3_bolts"
+    ],
+    "strValue": "round_m3_bolts"
+  },
+  "LewanSoulMotor Default": {
+    "name": "LewanSoulMotor Default",
+    "options": [
+      "lx_224"
+    ],
+    "strValue": "lx_224"
+  },
+  "VexBattery Default": {
+    "name": "VexBattery Default",
+    "options": [
+      "v5_14wh"
+    ],
+    "strValue": "v5_14wh"
+  },
+  "hobbyServo Default": {
     "name": "hobbyServo Default",
     "options": [
       "DHV56mg_sub_Micro",
@@ -78,17 +152,6 @@
     "strValue": "mg92b"
   },
   "hobbyServoHorn Default": {
-    "options2": [
-      "DHV56mg_sub_Micro_1",
-      "DHV56mg_sub_Micro_2",
-      "DHV56mg_sub_Micro_4",
-      "fs90r_1",
-      "hv6214mg_1",
-      "hv6214mg_6",
-      "standard4",
-      "standardMicro1",
-      "tproSG90_1"
-    ],
     "name": "hobbyServoHorn Default",
     "options": [
       "DHV56mg_sub_Micro_1",
@@ -103,14 +166,6 @@
     ],
     "strValue": "standardMicro1"
   },
-  "Eye Mech Linkage": {
-    "name": "Eye Mech Linkage",
-    "options": [
-      "20",
-      "5"
-    ],
-    "value": 14000
-  },
   "Ball Joint Pin Size": {
     "name": "Ball Joint Pin Size",
     "options": [
@@ -119,38 +174,39 @@
     ],
     "value": 4500
   },
-  "Bolt Size": {
-    "options2": [
-      "6#32",
-      "8#32",
-      "Inch-1_4-20",
-      "M1.6",
-      "M10",
-      "M12",
-      "M14",
-      "M16",
-      "M18",
-      "M2",
-      "M2.5",
-      "M20",
-      "M22",
-      "M24",
-      "M27",
-      "M3",
-      "M30",
-      "M36",
-      "M3x16",
-      "M4",
-      "M42",
-      "M5",
-      "M5x100",
-      "M5x12",
-      "M5x25",
-      "M5x45",
-      "M5x75",
-      "M6",
-      "M8"
+  "Eye Mech Linkage": {
+    "name": "Eye Mech Linkage",
+    "options": [
+      "20",
+      "5"
     ],
+    "value": 14000
+  },
+  "vexLchannel Default": {
+    "name": "vexLchannel Default",
+    "options": [
+      "2x2x25_Aluminum",
+      "2x2x35_Aluminum",
+      "3x3x25_Aluminum",
+      "Aluminum 10",
+      "Aluminum 15",
+      "Aluminum 35",
+      "Aluminum 5",
+      "Steel 10",
+      "Steel 15",
+      "Steel 35",
+      "Steel 5"
+    ],
+    "strValue": "Aluminum 10"
+  },
+  "VexBrain Default": {
+    "name": "VexBrain Default",
+    "options": [
+      "v5"
+    ],
+    "strValue": "v5"
+  },
+  "Bolt Size": {
     "name": "Bolt Size",
     "options": [
       "6#32",
@@ -185,6 +241,31 @@
     ],
     "strValue": "8#32"
   },
+  "vexCchannel Default": {
+    "name": "vexCchannel Default",
+    "options": [
+      "Aluminum 2x15",
+      "Aluminum 2x35",
+      "Aluminum 3x15",
+      "Aluminum 3x35",
+      "Aluminum 3x5",
+      "Aluminum 5x15",
+      "Aluminum 5x35",
+      "Aluminum 5x5",
+      "Aluminum_1x2x10",
+      "Aluminum_1x2x25",
+      "Steel 2x15",
+      "Steel 2x35",
+      "Steel 2x5",
+      "Steel 3x15",
+      "Steel 3x35",
+      "Steel 3x5",
+      "Steel 5x15",
+      "Steel 5x35",
+      "Steel 5x5"
+    ],
+    "strValue": "Steel 2x15"
+  },
   "Eye Diameter": {
     "name": "Eye Diameter",
     "options": [
@@ -201,56 +282,9 @@
     ],
     "value": 4200
   },
-  "Nut Thickness": {
-    "name": "Nut Thickness",
+  "ballBearing Default": {
+    "name": "ballBearing Default",
     "options": [
-      "10",
-      "3"
-    ],
-    "value": 4000
-  },
-  "Nut Diameter": {
-    "name": "Nut Diameter",
-    "options": [
-      "10",
-      "3"
-    ],
-    "value": 8600
-  },
-  "Ball Joint Ball Radius": {
-    "name": "Ball Joint Ball Radius",
-    "options": [
-      "50",
-      "4"
-    ],
-    "value": 4500
-  },
-  "noseLength": {
-    "name": "noseLength",
-    "options": [
-      "200",
-      "1"
-    ],
-    "value": 5000
-  },
-  "Eye Center Distance": {
-    "name": "Eye Center Distance",
-    "options": [
-      "100",
-      "45.0"
-    ],
-    "value": 50000
-  },
-  "Center Of Ball": {
-    "name": "Center Of Ball",
-    "options": [
-      "50",
-      "4.5"
-    ],
-    "value": 10125
-  },
-  "Bearing Size": {
-    "options2": [
       "603zz",
       "604zz",
       "605zz",
@@ -285,6 +319,117 @@
       "R8-60355K505",
       "Thrust_1andAHalfinch"
     ],
+    "strValue": "Thrust_1andAHalfinch"
+  },
+  "Nut Thickness": {
+    "name": "Nut Thickness",
+    "options": [
+      "10",
+      "3"
+    ],
+    "value": 4000
+  },
+  "Nut Diameter": {
+    "name": "Nut Diameter",
+    "options": [
+      "10",
+      "3"
+    ],
+    "value": 8600
+  },
+  "vexStandoff Default": {
+    "name": "vexStandoff Default",
+    "options": [
+      "0.25 inch",
+      "0.5 inch",
+      "0.75 inch",
+      "1 inch",
+      "1.5 inch",
+      "2 inch",
+      "2.5 inch",
+      "3 inch",
+      "4 inch",
+      "5 inch",
+      "6 inch"
+    ],
+    "strValue": "4 inch"
+  },
+  "Ball Joint Ball Radius": {
+    "name": "Ball Joint Ball Radius",
+    "options": [
+      "50",
+      "4"
+    ],
+    "value": 4500
+  },
+  "noseLength": {
+    "name": "noseLength",
+    "options": [
+      "200",
+      "1"
+    ],
+    "value": 5000
+  },
+  "Eye Center Distance": {
+    "name": "Eye Center Distance",
+    "options": [
+      "100",
+      "45.0"
+    ],
+    "value": 50000
+  },
+  "Center Of Ball": {
+    "name": "Center Of Ball",
+    "options": [
+      "50",
+      "4.5"
+    ],
+    "value": 10125
+  },
+  "capScrew Default": {
+    "name": "capScrew Default",
+    "options": [
+      "6#32",
+      "8#32",
+      "Inch-1_4-20",
+      "M1.6",
+      "M10",
+      "M12",
+      "M14",
+      "M16",
+      "M18",
+      "M2",
+      "M2.5",
+      "M20",
+      "M22",
+      "M24",
+      "M27",
+      "M3",
+      "M30",
+      "M36",
+      "M3x16",
+      "M4",
+      "M42",
+      "M5",
+      "M5x100",
+      "M5x12",
+      "M5x25",
+      "M5x45",
+      "M5x75",
+      "M6",
+      "M8"
+    ],
+    "strValue": "M5x25"
+  },
+  "Axle Length": {
+    "name": "Axle Length",
+    "options": [
+      "10",
+      "152.4"
+    ],
+    "value": 50800
+  },
+  "Bearing Size": {
     "name": "Bearing Size",
     "options": [
       "603zz",
@@ -323,6 +468,25 @@
     ],
     "strValue": "608zz"
   },
+  "lockNut Default": {
+    "name": "lockNut Default",
+    "options": [
+      "8#32",
+      "Inch-1_4-20",
+      "M10",
+      "M12",
+      "M14",
+      "M16",
+      "M18",
+      "M20",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M8"
+    ],
+    "strValue": "M5"
+  },
   "Material Thickness": {
     "name": "Material Thickness",
     "options": [
@@ -338,5 +502,17 @@
       "10"
     ],
     "value": 16000
+  },
+  "heatedThreadedInsert Default": {
+    "name": "heatedThreadedInsert Default",
+    "options": [
+      "8#32",
+      "M3",
+      "M3-pressIn",
+      "M5",
+      "M5-pressIn",
+      "M8"
+    ],
+    "strValue": "M5"
   }
 }
