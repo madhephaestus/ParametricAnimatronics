@@ -78,7 +78,9 @@ class HeadMakerClass implements IParameterChanged{
 		 eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()+5,[100,eyeDiam.getMM()])
 		 noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
 		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
-		 boltData = Vitamins.getConfiguration( "capScrew","M3")
+		 boltData = Vitamins.getConfiguration( "chamferedScrew", "M3x16")
+		 //CSG vitamin_chamferedScrew_M3x16 = Vitamins.get("chamferedScrew", "M3x16")
+
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 					//.union(horn)
 		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())
