@@ -70,7 +70,7 @@ class HeadMakerClass implements IParameterChanged{
 		 jawLength		= new LengthParameter("jawLength",40,[200,001])
 		 eyeDiam 		= new LengthParameter("Eye Diameter",45,[60,38])
 		 //CSG vitamin_hobbyServo_S51_Smaraza = Vitamins.get("hobbyServo", "S51_Smaraza")
-		 servoSizeParam 			= new StringParameter("hobbyServo Animatronic","S51_Smaraza",Vitamins.listVitaminSizes("hobbyServo"))
+		 servoSizeParam 			= new StringParameter("hobbyServo Animatronic","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
 		 eyemechRadius		= new LengthParameter("Eye Mech Linkage",14,[20,5])
 		 hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
@@ -80,9 +80,12 @@ class HeadMakerClass implements IParameterChanged{
 		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
 		 boltData = Vitamins.getConfiguration( "chamferedScrew", "M3x16")
 		 //CSG vitamin_chamferedScrew_M3x16 = Vitamins.get("chamferedScrew", "M3x16")
-
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 					//.union(horn)
+		 println "Servo data: "+servoSizeParam.getStrValue()+" is "+servoData
+		 if(servoData==null)
+			 throw new NullPointerException()
+		 
 		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())
 						.roty(0).rotz(180+45).toZMax().movez(3)
 		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
