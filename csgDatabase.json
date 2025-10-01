@@ -1,4 +1,12 @@
 {
+  "Camera Stand Height": {
+    "name": "Camera Stand Height",
+    "options": [
+      "445.618",
+      "45.618"
+    ],
+    "value": 245618
+  },
   "Bolt Hole Facet Count": {
     "name": "Bolt Hole Facet Count",
     "options": [
@@ -40,12 +48,6 @@
     "value": 90000
   },
   "chamferedScrew Default": {
-    "options2": [
-      "M3x16",
-      "M3x25",
-      "M3x35",
-      "M3x40"
-    ],
     "name": "chamferedScrew Default",
     "options": [
       "M3x16",
@@ -56,18 +58,6 @@
     "strValue": "M3x16"
   },
   "hobbyServo Animatronic": {
-    "options2": [
-      "DHV56mg_sub_Micro",
-      "fs90r",
-      "hv5932mg",
-      "hv6214mg",
-      "mg92b",
-      "standard",
-      "standardMicro",
-      "towerProMG91",
-      "tproSG90",
-      "tproTG90"
-    ],
     "name": "hobbyServo Animatronic",
     "options": [
       "DHV56mg_sub_Micro",
@@ -83,45 +73,23 @@
     ],
     "strValue": "DHV56mg_sub_Micro"
   },
-  "hobbyServoHorn Default": {
-    "options2": [
-      "DHV56mg_sub_Micro_1",
-      "DHV56mg_sub_Micro_2",
-      "DHV56mg_sub_Micro_4",
-      "fs90r_1",
-      "hv6214mg_1",
-      "hv6214mg_6",
-      "standard4",
-      "standardMicro1",
-      "tproSG90_1"
-    ],
-    "name": "hobbyServoHorn Default",
+  "LewanSoulHorn Default": {
+    "name": "LewanSoulHorn Default",
     "options": [
-      "DHV56mg_sub_Micro_1",
-      "DHV56mg_sub_Micro_2",
-      "DHV56mg_sub_Micro_4",
-      "fs90r_1",
-      "hv6214mg_1",
-      "hv6214mg_6",
-      "standard4",
-      "standardMicro1",
-      "tproSG90_1"
+      "fordemo_m3_round",
+      "round",
+      "round_m3_bolts"
     ],
-    "strValue": "standardMicro1"
+    "strValue": "round_m3_bolts"
+  },
+  "LewanSoulMotor Default": {
+    "name": "LewanSoulMotor Default",
+    "options": [
+      "lx_224"
+    ],
+    "strValue": "lx_224"
   },
   "hobbyServo Default": {
-    "options2": [
-      "DHV56mg_sub_Micro",
-      "fs90r",
-      "hv5932mg",
-      "hv6214mg",
-      "mg92b",
-      "standard",
-      "standardMicro",
-      "towerProMG91",
-      "tproSG90",
-      "tproTG90"
-    ],
     "name": "hobbyServo Default",
     "options": [
       "DHV56mg_sub_Micro",
@@ -136,6 +104,21 @@
       "tproTG90"
     ],
     "strValue": "DHV56mg_sub_Micro"
+  },
+  "hobbyServoHorn Default": {
+    "name": "hobbyServoHorn Default",
+    "options": [
+      "DHV56mg_sub_Micro_1",
+      "DHV56mg_sub_Micro_2",
+      "DHV56mg_sub_Micro_4",
+      "fs90r_1",
+      "hv6214mg_1",
+      "hv6214mg_6",
+      "standard4",
+      "standardMicro1",
+      "tproSG90_1"
+    ],
+    "strValue": "standardMicro1"
   },
   "Eye Mech Linkage": {
     "name": "Eye Mech Linkage",
@@ -154,37 +137,6 @@
     "value": 4500
   },
   "Bolt Size": {
-    "options2": [
-      "6#32",
-      "8#32",
-      "Inch-1_4-20",
-      "M1.6",
-      "M10",
-      "M12",
-      "M14",
-      "M16",
-      "M18",
-      "M2",
-      "M2.5",
-      "M20",
-      "M22",
-      "M24",
-      "M27",
-      "M3",
-      "M30",
-      "M36",
-      "M3x16",
-      "M4",
-      "M42",
-      "M5",
-      "M5x100",
-      "M5x12",
-      "M5x25",
-      "M5x45",
-      "M5x75",
-      "M6",
-      "M8"
-    ],
     "name": "Bolt Size",
     "options": [
       "6#32",
@@ -235,6 +187,45 @@
     ],
     "value": 3000
   },
+  "ballBearing Default": {
+    "name": "ballBearing Default",
+    "options": [
+      "603zz",
+      "604zz",
+      "605zz",
+      "606zz",
+      "607zz",
+      "608zz",
+      "623zz",
+      "624zz",
+      "625zz",
+      "626zz",
+      "627zz",
+      "634zz",
+      "635zz",
+      "673zz",
+      "6810_2RS",
+      "683zz",
+      "684zz",
+      "685zz",
+      "686zz",
+      "687zz",
+      "688zz",
+      "689zz",
+      "6920_2RS",
+      "693zz",
+      "694zz",
+      "695zz",
+      "696zz",
+      "697zz",
+      "698zz",
+      "699zz",
+      "R8-2RS",
+      "R8-60355K505",
+      "Thrust_1andAHalfinch"
+    ],
+    "strValue": "Thrust_1andAHalfinch"
+  },
   "Nut Thickness": {
     "name": "Nut Thickness",
     "options": [
@@ -283,42 +274,61 @@
     ],
     "value": 10125
   },
-  "Bearing Size": {
-    "options2": [
-      "603zz",
-      "604zz",
-      "605zz",
-      "606zz",
-      "607zz",
-      "608zz",
-      "623zz",
-      "624zz",
-      "625zz",
-      "626zz",
-      "627zz",
-      "634zz",
-      "635zz",
-      "673zz",
-      "6810_2RS",
-      "683zz",
-      "684zz",
-      "685zz",
-      "686zz",
-      "687zz",
-      "688zz",
-      "689zz",
-      "6920_2RS",
-      "693zz",
-      "694zz",
-      "695zz",
-      "696zz",
-      "697zz",
-      "698zz",
-      "699zz",
-      "R8-2RS",
-      "R8-60355K505",
-      "Thrust_1andAHalfinch"
+  "capScrew Default": {
+    "name": "capScrew Default",
+    "options": [
+      "6#32",
+      "8#32",
+      "Inch-1_4-20",
+      "M1.6",
+      "M10",
+      "M12",
+      "M14",
+      "M16",
+      "M18",
+      "M2",
+      "M2.5",
+      "M20",
+      "M22",
+      "M24",
+      "M27",
+      "M3",
+      "M30",
+      "M36",
+      "M3x16",
+      "M4",
+      "M42",
+      "M5",
+      "M5x100",
+      "M5x12",
+      "M5x25",
+      "M5x45",
+      "M5x75",
+      "M6",
+      "M8"
     ],
+    "strValue": "M5x25"
+  },
+  "lockNut Default": {
+    "name": "lockNut Default",
+    "options": [
+      "8#32",
+      "Inch-1_4-20",
+      "M10",
+      "M12",
+      "M14",
+      "M16",
+      "M18",
+      "M20",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M8"
+    ],
+    "strValue": "M5"
+  },
+  "Bearing Size": {
     "name": "Bearing Size",
     "options": [
       "603zz",
@@ -357,6 +367,13 @@
     ],
     "strValue": "608zz"
   },
+  "ElecFreakShaft Default": {
+    "name": "ElecFreakShaft Default",
+    "options": [
+      "40mm"
+    ],
+    "strValue": "40mm"
+  },
   "Material Thickness": {
     "name": "Material Thickness",
     "options": [
@@ -372,5 +389,17 @@
       "10"
     ],
     "value": 16000
+  },
+  "heatedThreadedInsert Default": {
+    "name": "heatedThreadedInsert Default",
+    "options": [
+      "8#32",
+      "M3",
+      "M3-pressIn",
+      "M5",
+      "M5-pressIn",
+      "M8"
+    ],
+    "strValue": "M5"
   }
 }
