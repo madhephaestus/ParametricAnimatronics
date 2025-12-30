@@ -1,3 +1,4 @@
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 
 import eu.mihosoft.vrl.v3d.CSG
@@ -87,7 +88,7 @@ class EyeMakerClass{
 			return [eyeCache.get(diameter).clone(),ballJoint.rotz(180),ballJointKeepAway]
 		}
 		ballJointPinSize.setMM(ballRadius)
-		ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(
+		ArrayList<CSG> ballJointParts= (ArrayList<CSG>)ScriptingEngine.gitScriptRun(csgdb,
 	                                "https://github.com/madhephaestus/cablePullServo.git", // git location of the library
 		                              "ballJointBall.groovy" , // file to load
 		                              null// no parameters (see next tutorial)
