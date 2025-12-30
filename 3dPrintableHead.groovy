@@ -14,9 +14,6 @@ import eu.mihosoft.vrl.v3d.parametrics.StringParameter
 import javafx.scene.paint.Color
 
 //Your code here
-if (args==null){
-	CSGDatabase.clear()
-}
 LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
 printerOffset.setMM(0.2)
 class HeadMakerClass implements IParameterChanged{
