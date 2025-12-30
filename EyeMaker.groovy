@@ -17,24 +17,24 @@ if (args==null){
 	devMode = true
 	println "Development mode for eyes"
 }
-LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
+LengthParameter printerOffset		= new LengthParameter(csgdb,"printerOffset",0.2,[2,0.001])
 printerOffset.setMM(0.2)
 class EyeMakerClass{
-	ArrayList<CSG> ballJointParts=null
-	StringParameter boltSizeParam 			= new StringParameter("Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
+	eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance csgdb;
 	
-	HashMap<String, Object>  boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
-	HashMap<String, Object>  nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+	ArrayList<CSG> ballJointParts=null
+	StringParameter boltSizeParam 			= null
+	
+	HashMap<String, Object>  boltMeasurments = null
+	HashMap<String, Object>  nutMeasurments = null
 
-	LengthParameter eyemechRadius		= new LengthParameter("Eye Mech Linkage",12,[20,5])
-	LengthParameter boltDiam 		= new LengthParameter("Bolt Diameter",3.0,[8,2])
-	LengthParameter nutDiam 		 	= new LengthParameter("Nut Diameter",5.42,[10,3])
-	LengthParameter nutThick 		= new LengthParameter("Nut Thickness",2.4,[10,3])
-	LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
-	LengthParameter thickness 		= new LengthParameter(	"Material Thickness",
-													5.1,
-													[10,1])
-	LengthParameter ballJointPinSize 		= new LengthParameter("Ball Joint Ball Radius",8,[50,4])
+	LengthParameter eyemechRadius		= null
+	LengthParameter boltDiam 		=null
+	LengthParameter nutDiam 		 	= null
+	LengthParameter nutThick 		= null
+	LengthParameter printerOffset		= null
+	LengthParameter thickness 		= null
+	LengthParameter ballJointPinSize 		= null
 	CSG ballJoint=null
 	CSG ballJointKeepAway =null
 	double ballRadius = 4.5
@@ -161,13 +161,31 @@ class EyeMakerClass{
 		return pin
 	}
 	HashMap<Double,CSG> eyeCache=new HashMap<>();
-	List<CSG> make(double size){
+	List<CSG> make(	double size){
+		
 		def parts=getEye(size)
 		parts.addAll([getEyeLinkageCup(),linkPin().movez(eyemechRadius.getMM())])
 		return parts
 	}
+	public EyeMakerClass(eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance csgdbin) {
+		csgdb=csgdbin;
+		 boltSizeParam 			= new StringParameter(csgdb,"Bolt Size","M3",Vitamins.listVitaminSizes("capScrew"))
+		
+		 boltMeasurments = Vitamins.getConfiguration( "capScrew",boltSizeParam.getStrValue())
+		 nutMeasurments = Vitamins.getConfiguration( "nut",boltSizeParam.getStrValue())
+	
+		 eyemechRadius		= new LengthParameter(csgdb,"Eye Mech Linkage",12,[20,5])
+		 boltDiam 		= new LengthParameter(csgdb,"Bolt Diameter",3.0,[8,2])
+		 nutDiam 		 	= new LengthParameter(csgdb,"Nut Diameter",5.42,[10,3])
+		 nutThick 		= new LengthParameter(csgdb,"Nut Thickness",2.4,[10,3])
+		 printerOffset		= new LengthParameter(csgdb,"printerOffset",0.2,[2,0.001])
+		 thickness 		= new LengthParameter(csgdb,	"Material Thickness",
+														5.1,
+														[10,1])
+		 ballJointPinSize 		= new LengthParameter(csgdb,"Ball Joint Ball Radius",8,[50,4])
+	}
 }
 if(devMode)
-	return new EyeMakerClass().make(args.get(0))
+	return new EyeMakerClass( csgdb).make(args.get(0))
 else
-	return new EyeMakerClass()
+	return new EyeMakerClass( csgdb)

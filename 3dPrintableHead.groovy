@@ -1,4 +1,5 @@
 //import com.neuronrobotics.bowlerstudio.//BowlerStudioController
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 
 import eu.mihosoft.vrl.v3d.CSG
@@ -7,6 +8,7 @@ import eu.mihosoft.vrl.v3d.Cylinder
 import eu.mihosoft.vrl.v3d.RoundedCube
 import eu.mihosoft.vrl.v3d.Sphere
 import eu.mihosoft.vrl.v3d.Transform
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase
 import eu.mihosoft.vrl.v3d.parametrics.IParameterChanged
 import eu.mihosoft.vrl.v3d.parametrics.LengthParameter
 import eu.mihosoft.vrl.v3d.parametrics.Parameter
@@ -14,9 +16,10 @@ import eu.mihosoft.vrl.v3d.parametrics.StringParameter
 import javafx.scene.paint.Color
 
 //Your code here
-LengthParameter printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
+LengthParameter printerOffset		= new LengthParameter(csgdb,"printerOffset",0.2,[2,0.001])
 printerOffset.setMM(0.2)
 class HeadMakerClass implements IParameterChanged{
+	eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance csgdb;
 	LengthParameter printerOffset
 	LengthParameter noseLength
 	LengthParameter jawLength
@@ -58,24 +61,25 @@ class HeadMakerClass implements IParameterChanged{
 	CSG eyeStockScrew
 	
 	boolean debug =false
-	public 	HeadMakerClass(){
+	public 	HeadMakerClass(eu.mihosoft.vrl.v3d.parametrics.CSGDatabaseInstance csgdbIn){
+		csgdb=csgdbIn;
 		compute()
 	}
 	void compute(){
-		 printerOffset		= new LengthParameter("printerOffset",0.2,[2,0.001])
-		 noseLength		= new LengthParameter("noseLength",5,[200,001])
-		 jawLength		= new LengthParameter("jawLength",40,[200,001])
-		 eyeDiam 		= new LengthParameter("Eye Diameter",45,[60,38])
+		 printerOffset		= new LengthParameter(csgdb,"printerOffset",0.2,[2,0.001])
+		 noseLength		= new LengthParameter(csgdb,"noseLength",5,[200,001])
+		 jawLength		= new LengthParameter(csgdb,"jawLength",40,[200,001])
+		 eyeDiam 		= new LengthParameter(csgdb,"Eye Diameter",45,[60,38])
 		 //CSG vitamin_hobbyServo_S51_Smaraza = Vitamins.get("hobbyServo", "S51_Smaraza")
-		 servoSizeParam 			= new StringParameter("hobbyServo Animatronic","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
+		 servoSizeParam 			= new StringParameter(csgdb,"hobbyServo Animatronic","DHV56mg_sub_Micro",Vitamins.listVitaminSizes("hobbyServo"))
 		// servoSizeParam 			= new StringParameter("hobbyServo Default","towerProMG91",Vitamins.listVitaminSizes("hobbyServo"))
-		 eyemechRadius		= new LengthParameter("Eye Mech Linkage",14,[20,5])
-		 hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
+		 eyemechRadius		= new LengthParameter(csgdb,"Eye Mech Linkage",14,[20,5])
+		 hornSizeParam 			= new StringParameter(csgdb,"hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
 		// hornSizeParam 			= new StringParameter("hobbyServoHorn Default","standardMicro1",Vitamins.listVitaminSizes("hobbyServoHorn"))
-		 eyeCenter 		= new LengthParameter("Eye Center Distance",eyeDiam.getMM()+5,[100,eyeDiam.getMM()])
-		 noseDiameter 		= new LengthParameter("Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
-		 bearingSizeParam 			= new StringParameter("Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
-		 boltData = Vitamins.getConfiguration( "chamferedScrew", "M3x16")
+		 eyeCenter 		= new LengthParameter(csgdb,"Eye Center Distance",eyeDiam.getMM()+5,[100,eyeDiam.getMM()])
+		 noseDiameter 		= new LengthParameter(csgdb,"Nose Diameter",eyeDiam.getMM()*2,[eyeDiam.getMM()*3,10])
+		 bearingSizeParam 			= new StringParameter(csgdb,"Bearing Size","608zz",Vitamins.listVitaminSizes("ballBearing"))
+		 boltData = Vitamins.getConfiguration("chamferedScrew", "M3x16")
 		 //CSG vitamin_chamferedScrew_M3x16 = Vitamins.get("chamferedScrew", "M3x16")
 		 servoData = Vitamins.getConfiguration( "hobbyServo",servoSizeParam.getStrValue())
 					//.union(horn)
@@ -83,9 +87,9 @@ class HeadMakerClass implements IParameterChanged{
 		 if(servoData==null)
 			 throw new NullPointerException()
 		 
-		 horn = Vitamins.get("hobbyServoHorn",hornSizeParam.getStrValue())
+		 horn = Vitamins.get(csgdb,"hobbyServoHorn",hornSizeParam.getStrValue())
 						.roty(0).rotz(180+45).toZMax().movez(3)
-		 servo = Vitamins.get("hobbyServo",servoSizeParam.getStrValue())
+		 servo = Vitamins.get(csgdb,"hobbyServo",servoSizeParam.getStrValue())
 				.toZMax()
 				//.movez(1)
 		 servoThickness = Math.abs(servo.getMinX())
@@ -124,7 +128,7 @@ class HeadMakerClass implements IParameterChanged{
 							.roty(180)
 							.movey(eyeCenter.getMM()/2)
 							.movex(locationOfBackOfhead+6)
-		eyeStockScrew=Vitamins.get("chamferedScrew", "M3x16")
+		eyeStockScrew=Vitamins.get(csgdb,"chamferedScrew", "M3x16")
 		
 	}
 		/**
@@ -336,7 +340,7 @@ class HeadMakerClass implements IParameterChanged{
 		//BowlerStudioController.setCsg([tiltServo,panServo]);
 		
 		if( eyePartsMaker==null)
-		eyePartsMaker= ScriptingEngine.gitScriptRun(
+		eyePartsMaker= ScriptingEngine.gitScriptRun(csgdb,
 									"https://github.com/madhephaestus/ParametricAnimatronics.git", // git location of the library
 									  "EyeMaker.groovy" , // file to load
 									  []// no parameters (see next tutorial)
@@ -907,7 +911,7 @@ class HeadMakerClass implements IParameterChanged{
 			}
 		}
 		params.collect{
-			CSGDatabase.addParameterListener(it.getName() ,this);
+			csgdb.addParameterListener(it.getName() ,this);
 		}
 		return retparts
 	}
@@ -920,7 +924,7 @@ class HeadMakerClass implements IParameterChanged{
 	}
 }
 //println new HeadMakerClass().metaClass.methods*.name.sort().unique()
-def maker = new HeadMakerClass()
+def maker = new HeadMakerClass(csgdb)
 //return [maker.jawParts()]
 CSG.setPreventNonManifoldTriangles(true)
 return maker.make()
