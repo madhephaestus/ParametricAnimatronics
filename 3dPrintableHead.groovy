@@ -907,7 +907,7 @@ class HeadMakerClass implements IParameterChanged{
 			int index = i;
 			retparts.get(i).setRegenerate({return make().get(index)})
 			params.collect{
-				retparts.get(i).setParameter(it)
+				retparts.get(i).setParameter(csgdb,it)
 			}
 		}
 		params.collect{
